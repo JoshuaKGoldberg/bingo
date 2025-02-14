@@ -24,6 +24,8 @@ export default tseslint.config(
 			"packages/*/dist",
 			"packages/*/lib",
 			"packages/*/tsconfig.tsbuildinfo",
+			"packages/*/src/**/*.d.ts",
+			"packages/*/src/**/*.js",
 			"packages/site/.astro",
 			"packages/site/src/content",
 			"packages/site/src/env.d.ts",
