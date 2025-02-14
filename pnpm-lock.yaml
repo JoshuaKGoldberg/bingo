@@ -248,8 +248,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       starlight-package-managers:
-        specifier: ^0.9.0
-        version: 0.9.0(@astrojs/starlight@0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0)))
+        specifier: ^0.10.0
+        version: 0.10.0(@astrojs/starlight@0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0)))
       starlight-sidebar-topics:
         specifier: ^0.3.0
         version: 0.3.0(@astrojs/starlight@0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0)))
@@ -3566,8 +3566,8 @@ packages:
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
-  starlight-package-managers@0.9.0:
-    resolution: {integrity: sha512-iDChnj8hCUYH2s5hFMnpEiCYHUAuVivh2jvFgFJvUmViEEOdA24ZXrUhQhA/qg2KULCgn17F2cKWf3vhvIcl0w==}
+  starlight-package-managers@0.10.0:
+    resolution: {integrity: sha512-ndliTHXzaCIQ2FFnq5KIH5Uhs9FCACeS3XQMtx/35aSPXzeGsoGxBNreC1zBif4yzGZRCJN3kXBqjUO82WDtcA==}
     engines: {node: '>=18.17.1'}
     peerDependencies:
       '@astrojs/starlight': '>=0.22.0'
@@ -8389,7 +8389,7 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-package-managers@0.9.0(@astrojs/starlight@0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0))):
+  starlight-package-managers@0.10.0(@astrojs/starlight@0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0))):
     dependencies:
       '@astrojs/starlight': 0.31.0(astro@5.2.0(@types/node@22.13.0)(jiti@2.4.2)(rollup@4.34.4)(typescript@5.7.3)(yaml@2.7.0))
 
