@@ -25,6 +25,7 @@ export default defineConfig({
 							{ label: "About Bingo", link: "about" },
 							{ label: "CLI", link: "cli" },
 							{ label: "Configuration", link: "configuration" },
+							{ label: "Execution", link: "execution" },
 							{ label: "FAQs", link: "faqs" },
 						],
 						label: "About",

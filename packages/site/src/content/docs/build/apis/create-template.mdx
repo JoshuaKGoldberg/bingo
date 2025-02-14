@@ -199,7 +199,7 @@ export default createTemplate({
 #### Options for Setup
 
 Templates on their own do are not required to have any particular named options.
-However, in order to be used with [Setup mode](/cli#setup-mode), two options must be present:
+However, in order to be used with [Setup mode](/execution#setup-mode), two options must be present:
 
 - `owner`: a `z.string()` or generally a subset of `boolean | number | string`
 - `repository`: a `z.string()` or generally a subset of `boolean | number | string`
@@ -220,7 +220,7 @@ export default createTemplate({
 });
 ```
 
-Requiring the `owner` and `repository` fields be string-like allows [Setup mode](/cli#setup-mode) to create new repositories on GitHub using those two options as repository locators.
+Requiring the `owner` and `repository` fields be string-like allows [Setup mode](/execution#setup-mode) to create new repositories on GitHub using those two options as repository locators.
 
 ### `prepare`
 

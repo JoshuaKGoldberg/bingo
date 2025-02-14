@@ -67,7 +67,7 @@ export async function runCli(args: string[]) {
 		[
 			chalk.blueBright(`✨ `),
 			chalk.blue("Welcome to "),
-			chalk.bgGreenBright.black("bingo"),
+			chalk.bgGreenBright.black("Bingo"),
 			chalk.blue(": a delightful repository templating engine."),
 			chalk.blueBright(` ✨`),
 		].join(""),
