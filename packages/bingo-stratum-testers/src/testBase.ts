@@ -17,12 +17,12 @@ export async function testBase<OptionsShape extends AnyShape>(
 	base: Base<OptionsShape>,
 	settings: Partial<BaseContextSettings<OptionsShape>> = {},
 ) {
-	if (!base.produce) {
+	if (!base.prepare) {
 		return settings.options;
 	}
 
 	return await awaitLazyProperties(
-		base.produce({
+		base.prepare({
 			options: createFailingObject(
 				"options",
 				"the Base",

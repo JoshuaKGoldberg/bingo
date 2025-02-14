@@ -15,7 +15,7 @@ const baseWithValueHardcoded = createBase({
 	options: {
 		value: z.string(),
 	},
-	produce() {
+	prepare() {
 		return {
 			value: "hardcoded",
 		};
@@ -52,7 +52,7 @@ describe("testBase", () => {
 			options: {
 				value: z.string(),
 			},
-			produce({ options }) {
+			prepare({ options }) {
 				return {
 					value: options.value ?? "default",
 				};
@@ -94,7 +94,7 @@ describe("testBase", () => {
 			options: {
 				value: z.string(),
 			},
-			produce({ take }) {
+			prepare({ take }) {
 				return {
 					value: () => take(inputConstant),
 				};
