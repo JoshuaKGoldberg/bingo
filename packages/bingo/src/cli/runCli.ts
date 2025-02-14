@@ -65,16 +65,16 @@ export async function runCli(args: string[]) {
 
 	prompts.intro(
 		[
-			chalk.greenBright(`✨ `),
-			chalk.bgGreenBright.black(`create`),
-			chalk.greenBright(` ✨`),
+			chalk.blueBright(`✨ `),
+			chalk.blue("Welcome to "),
+			chalk.bgGreenBright.black("bingo"),
+			chalk.blue(": a delightful repository templating engine."),
+			chalk.blueBright(` ✨`),
 		].join(""),
 	);
 
 	prompts.log.message(
 		[
-			`Welcome to ${chalk.bgGreenBright.black("bingo")}: a delightful repository templating engine.`,
-			"",
 			"Learn more about Bingo on:",
 			`  ${chalk.green("https://")}${chalk.green.bold("create.bingo")}`,
 		].join("\n"),
