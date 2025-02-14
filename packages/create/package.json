@@ -1,0 +1,29 @@
+{
+	"name": "create",
+	"version": "0.3.0",
+	"description": "You probably meant `npm create`, not `npx create`. ❌",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/create"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"bin": "./bin/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"dependencies": {
+		"chalk": "^5.4.1"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}
