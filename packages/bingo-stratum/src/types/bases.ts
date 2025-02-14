@@ -20,7 +20,7 @@ export interface Base<OptionsShape extends AnyShape = AnyShape> {
 	createPreset: CreatePreset<OptionsShape>;
 	createStratumTemplate: CreateStratumTemplate<OptionsShape>;
 	options: OptionsShape;
-	produce?: BaseProducer<InferredObject<OptionsShape>>;
+	prepare?: BasePreparer<InferredObject<OptionsShape>>;
 }
 
 export interface BaseContext<Options> {
@@ -30,7 +30,7 @@ export interface BaseContext<Options> {
 
 export interface BaseDefinition<OptionsShape extends AnyShape = AnyShape> {
 	options: OptionsShape;
-	produce?: BaseProducer<InferredObject<OptionsShape>>;
+	prepare?: BasePreparer<InferredObject<OptionsShape>>;
 }
 
 export type BaseOptionsFor<TypeOfBase> = TypeOfBase extends {
@@ -39,7 +39,7 @@ export type BaseOptionsFor<TypeOfBase> = TypeOfBase extends {
 	? InferredObject<OptionsShape>
 	: never;
 
-export type BaseProducer<Options> = (
+export type BasePreparer<Options> = (
 	context: BaseContext<Partial<Options>>,
 ) => LazyOptionalOptions<Partial<Options>>;
 

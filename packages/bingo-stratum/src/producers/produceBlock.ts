@@ -1,10 +1,7 @@
-import { mergeCreations, ProductionMode } from "bingo";
+import { ProductionMode } from "bingo";
 
-import {
-	BlockContextWithAddons,
-	BlockWithAddons,
-	BlockWithoutAddons,
-} from "../types/blocks.js";
+import { mergeBlockCreations } from "../mergers/mergeBlockCreations.js";
+import { BlockWithAddons, BlockWithoutAddons } from "../types/blocks.js";
 import { BlockCreation } from "../types/creations.js";
 
 export type ProduceBlockSettings<
@@ -39,16 +36,15 @@ export function produceBlock<Addons extends object, Options extends object>(
 	block: BlockWithAddons<Addons, Options> | BlockWithoutAddons<Options>,
 	settings: ProduceBlockSettings<Addons, Options>,
 ): Partial<BlockCreation<Options>> {
-	let creation = block.produce(
-		settings as BlockContextWithAddons<Addons, Options>,
-	);
+	let creation = block.produce(settings);
 
 	const augment = settings.mode && block[settings.mode];
 	if (augment) {
-		creation = mergeCreations(
-			creation,
-			augment(settings as BlockContextWithAddons<Addons, Options>),
-		);
+		const augmented = augment({
+			addons: {} as Addons,
+			...settings,
+		});
+		creation = mergeBlockCreations(creation, augmented);
 	}
 
 	return creation;

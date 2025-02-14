@@ -9,10 +9,12 @@ export type * from "./config/types.js";
 export * from "./creators/createInput.js";
 export * from "./creators/createTemplate.js";
 
-// TODO: consider moving to a separate package?
 // Mergers
 export * from "./mergers/applyMerger.js";
 export * from "./mergers/mergeCreations.js";
+
+// Preparation
+export * from "./preparation/prepareOptions.js";
 
 // Producers
 export * from "./producers/produceTemplate.js";

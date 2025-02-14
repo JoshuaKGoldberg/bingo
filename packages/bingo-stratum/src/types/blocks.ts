@@ -1,4 +1,4 @@
-import { AboutBase, AnyOptionalShape, Creation, InferredObject } from "bingo";
+import { AboutBase, AnyOptionalShape, InferredObject } from "bingo";
 
 import { BlockCreation, CreatedBlockAddons } from "./creations.js";
 
@@ -59,11 +59,13 @@ export interface BlockDefinitionBase {
 export type BlockDefinitionProducerWithAddons<
 	Addons extends object,
 	Options extends object,
-> = (context: BlockContextWithAddons<Addons, Options>) => Partial<Creation>;
+> = (
+	context: BlockContextWithAddons<Addons, Options>,
+) => Partial<BlockCreation<Options>>;
 
 export type BlockDefinitionProducerWithoutAddons<Options extends object> = (
 	context: BlockContextWithoutAddons<Options>,
-) => Partial<Creation>;
+) => Partial<BlockCreation<Options>>;
 
 export interface BlockDefinitionWithAddons<
 	AddonsShape extends AnyOptionalShape,
@@ -88,11 +90,13 @@ export interface BlockDefinitionWithoutAddons<Options extends object>
 export type BlockProducerWithAddons<
 	Addons extends object,
 	Options extends object,
-> = (context: BlockContextWithAddons<Addons, Options>) => Partial<Creation>;
+> = (
+	context: BlockContextWithOptionalAddons<Addons, Options>,
+) => Partial<BlockCreation<Options>>;
 
 export type BlockProducerWithoutAddons<Options extends object> = (
 	context: BlockContextWithoutAddons<Options>,
-) => Partial<Creation>;
+) => Partial<BlockCreation<Options>>;
 
 export interface BlockWithAddons<Addons extends object, Options extends object>
 	extends BlockBase {
