@@ -35,7 +35,7 @@
 		"hosted-git-info": "^8.0.2",
 		"import-local-or-npx": "^0.3.0",
 		"octokit": "^4.1.0",
-		"prettier": "3.4.2",
+		"prettier": "3.5.0",
 		"read-pkg": "^9.0.1",
 		"without-undefined-properties": "^0.1.1",
 		"zod": "^3.24.1"
