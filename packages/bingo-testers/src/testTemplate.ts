@@ -17,11 +17,11 @@ export interface TestTemplateProductionSettings<OptionsShape extends AnyShape>
 	options: InferredObject<OptionsShape>;
 }
 
-export async function testTemplate<OptionsShape extends AnyShape>(
+export function testTemplate<OptionsShape extends AnyShape>(
 	template: Template<OptionsShape>,
 	settings: TestTemplateProductionSettings<OptionsShape>,
 ) {
 	const { system } = createMockSystems(settings.system);
 
-	return await produceTemplate(template, { ...settings, ...system });
+	return produceTemplate(template, { ...settings, ...system });
 }
