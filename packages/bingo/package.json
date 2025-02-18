@@ -34,7 +34,7 @@
 		"hash-object": "^5.0.1",
 		"hosted-git-info": "^8.0.2",
 		"import-local-or-npx": "^0.3.0",
-		"prettier": "3.5.0",
+		"prettier": "3.5.1",
 		"read-pkg": "^9.0.1",
 		"slugify": "^1.6.6",
 		"without-undefined-properties": "^0.1.1",
@@ -42,8 +42,8 @@
 	},
 	"devDependencies": {
 		"@types/hosted-git-info": "3.0.5",
-		"@types/node": "22.13.1",
-		"octokit": "^4.1.1"
+		"@types/node": "22.13.4",
+		"octokit": "^4.1.2"
 	},
 	"engines": {
 		"node": ">=18"

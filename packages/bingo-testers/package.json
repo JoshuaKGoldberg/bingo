@@ -25,7 +25,7 @@
 	},
 	"dependencies": {
 		"diff": "^7.0.0",
-		"octokit": "^4.1.1",
+		"octokit": "^4.1.2",
 		"without-undefined-properties": "^0.1.1"
 	},
 	"devDependencies": {
