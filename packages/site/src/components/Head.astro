@@ -6,7 +6,10 @@ export type Props = StarlightRouteData;
 
 const ogImageUrl = new URL(`social.webp`, Astro.site);
 
-const { data } = Astro.props.entry;
+const data = Astro.props.entry?.data ?? {
+	description: "Delightful templates for web repositories.",
+	title: "Bingo",
+};
 ---
 
 <Default {...Astro.props}><slot /></Default>
