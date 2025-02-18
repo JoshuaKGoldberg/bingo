@@ -181,6 +181,7 @@ describe("runModeTransition", () => {
 		});
 
 		expect(actual).toEqual({
+			error,
 			outro: error.message,
 			status: CLIStatus.Error,
 		});
@@ -200,6 +201,7 @@ describe("runModeTransition", () => {
 		});
 
 		expect(actual).toEqual({
+			error,
 			outro: error.message,
 			status: CLIStatus.Error,
 		});
@@ -241,11 +243,13 @@ describe("runModeTransition", () => {
 	});
 
 	it("returns the error when runTemplate resolves with an error", async () => {
+		const error = new Error("Oh no!");
+
 		mockParseTransitionSource.mockReturnValueOnce(source);
 		mockPromptForOptions.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
-		mockRunTemplate.mockRejectedValueOnce(new Error("Oh no!"));
+		mockRunTemplate.mockRejectedValueOnce(error);
 
 		const actual = await runModeTransition({
 			args,
@@ -254,6 +258,7 @@ describe("runModeTransition", () => {
 		});
 
 		expect(actual).toEqual({
+			error,
 			outro: `Leaving changes to the local directory on disk. 👋`,
 			status: CLIStatus.Error,
 		});

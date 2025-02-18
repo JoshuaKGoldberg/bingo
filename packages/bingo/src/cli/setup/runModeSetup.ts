@@ -53,7 +53,8 @@ export async function runModeSetup({
 	const template = await tryImportTemplate(from, yes);
 	if (template instanceof Error) {
 		return {
-			outro: chalk.red(CLIMessage.Exiting),
+			error: template,
+			outro: CLIMessage.Exiting,
 			status: CLIStatus.Error,
 		};
 	}
@@ -124,6 +125,7 @@ export async function runModeSetup({
 	if (creation instanceof Error) {
 		logRerunSuggestion(args, baseOptions.prompted);
 		return {
+			error: creation,
 			outro: `Leaving changes to the local directory on disk. 👋`,
 			status: CLIStatus.Error,
 		};

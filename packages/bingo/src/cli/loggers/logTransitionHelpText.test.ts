@@ -33,6 +33,7 @@ describe("logTransitionHelpText", () => {
 		const actual = await logTransitionHelpText(source);
 
 		expect(actual).toEqual({
+			error: source,
 			outro: CLIMessage.Exiting,
 			status: CLIStatus.Error,
 		});
@@ -41,22 +42,23 @@ describe("logTransitionHelpText", () => {
 
 	it("returns the error when source.load resolves with an error", async () => {
 		const descriptor = "bingo-test-app";
-		const message = "Oh no!";
+		const error = new Error("Oh no!");
 		const source: TransitionSource = {
 			descriptor,
-			load: () => Promise.resolve(new Error(message)),
+			load: () => Promise.resolve(error),
 			type: "template",
 		};
 
 		const actual = await logTransitionHelpText(source);
 
 		expect(actual).toEqual({
+			error,
 			outro: CLIMessage.Exiting,
 			status: CLIStatus.Error,
 		});
 		expect(mockLogHelpText).toHaveBeenCalledWith("transition", source);
 		expect(mockSpinner.stop).toHaveBeenCalledWith(
-			`Could not load ${chalk.blue(descriptor)}: ${chalk.red(message)}`,
+			`Could not load ${chalk.blue(descriptor)}.`,
 			1,
 		);
 	});

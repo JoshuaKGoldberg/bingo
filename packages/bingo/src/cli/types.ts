@@ -1,7 +1,19 @@
-export interface ModeResults {
+import { CLIStatus } from "./status.js";
+
+export type ModeResults = ModeResultsError | ModeResultsNonError;
+
+export interface ModeResultsBase {
 	outro?: string;
-	status: number;
 	suggestions?: string[];
+}
+
+export interface ModeResultsError extends ModeResultsBase {
+	error: Error;
+	status: CLIStatus.Error;
+}
+
+export interface ModeResultsNonError extends ModeResultsBase {
+	status: CLIStatus.Cancelled | CLIStatus.Success;
 }
 
 export type ProductionSettings =

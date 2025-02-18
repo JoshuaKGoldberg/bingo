@@ -41,10 +41,7 @@ describe("tryImportAndInstallIfNecessary", () => {
 			[`Loading ${chalk.blue("../create-my-app")}`],
 		]);
 		expect(mockSpinner.stop.mock.calls).toEqual([
-			[
-				`Could not load ${chalk.blue("../create-my-app")}: ${chalk.red(errorLocal.message)}`,
-				1,
-			],
+			[`Could not load ${chalk.blue("../create-my-app")}.`, 1],
 		]);
 	});
 
@@ -62,10 +59,7 @@ describe("tryImportAndInstallIfNecessary", () => {
 			[`Loading ${chalk.blue("bingo-my-app")}`],
 		]);
 		expect(mockSpinner.stop.mock.calls).toEqual([
-			[
-				`Could not load ${chalk.blue("bingo-my-app")}: ${chalk.red(errorNpx.message)}`,
-				1,
-			],
+			[`Could not load ${chalk.blue("bingo-my-app")}.`, 1],
 		]);
 	});
 

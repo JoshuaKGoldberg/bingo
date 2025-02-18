@@ -73,10 +73,10 @@ describe("logSetupHelpText", () => {
 	});
 
 	it("returns the error when help is false and loading the template is an error", async () => {
-		const message = "Oh no!";
 		const from = "bingo-my-app";
+		const error = new Error("Oh no!");
 
-		mockTryImportTemplate.mockResolvedValueOnce(new Error(message));
+		mockTryImportTemplate.mockResolvedValueOnce(error);
 
 		const actual = await logSetupHelpText(from, {
 			help: false,
@@ -84,7 +84,8 @@ describe("logSetupHelpText", () => {
 		});
 
 		expect(actual).toEqual({
-			outro: chalk.red(CLIMessage.Exiting),
+			error,
+			outro: CLIMessage.Exiting,
 			status: CLIStatus.Error,
 		});
 	});

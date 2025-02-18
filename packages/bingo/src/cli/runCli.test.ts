@@ -4,10 +4,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runCli } from "./runCli.js";
 import { CLIStatus } from "./status.js";
 
+const mockLog = {
+	error: vi.fn(),
+	message: vi.fn(),
+};
+
 vi.mock("@clack/prompts", () => ({
 	intro: vi.fn(),
-	log: {
-		message: vi.fn(),
+	get log() {
+		return mockLog;
 	},
 }));
 
@@ -71,11 +76,11 @@ vi.mock("./readProductionSettings.js", () => ({
 	},
 }));
 
-const mockLog = vi.fn();
+const mockConsoleLog = vi.fn();
 
 describe("readProductionSettings", () => {
 	beforeEach(() => {
-		console.log = mockLog;
+		console.log = mockConsoleLog;
 	});
 
 	it("logs version when --version is provided", async () => {
@@ -83,7 +88,7 @@ describe("readProductionSettings", () => {
 
 		expect(actual).toBe(CLIStatus.Success);
 		expect(mockLogHelpText).not.toHaveBeenCalled();
-		expect(mockLog).toHaveBeenCalledWith(mockPackageData.version);
+		expect(mockConsoleLog).toHaveBeenCalledWith(mockPackageData.version);
 	});
 
 	it("logs an error outro when readProductionSettings resolves with an error", async () => {
@@ -94,8 +99,8 @@ describe("readProductionSettings", () => {
 		const actual = await runCli([]);
 
 		expect(actual).toBe(CLIStatus.Error);
+		expect(mockConsoleLog).not.toHaveBeenCalled();
 		expect(mockLogHelpText).not.toHaveBeenCalled();
-		expect(mockLog).not.toHaveBeenCalled();
 		expect(mockLogOutro).toHaveBeenCalledWith(chalk.red(message));
 	});
 
@@ -176,6 +181,42 @@ describe("readProductionSettings", () => {
 		expect(mockRunModeSetup).not.toHaveBeenCalled();
 	});
 
+	it("logs a success outro when resolved by the mode runner", async () => {
+		const outro = "Goodbye.";
+		const suggestions = ["abc"];
+
+		mockReadProductionSettings.mockResolvedValueOnce({ mode: "setup" });
+		mockRunModeSetup.mockResolvedValueOnce({
+			outro,
+			status: CLIStatus.Success,
+			suggestions,
+		});
+
+		await runCli(["typescript-app"]);
+
+		expect(mockLogOutro).toHaveBeenCalledWith(outro, { suggestions });
+		expect(mockLog.error).not.toHaveBeenCalled();
+	});
+
+	it("logs an error outro when resolved by the mode runner", async () => {
+		const outro = "Goodbye.";
+		const suggestions = ["abc"];
+		const error = new Error("Oh no!");
+
+		mockReadProductionSettings.mockResolvedValueOnce({ mode: "setup" });
+		mockRunModeSetup.mockResolvedValueOnce({
+			error,
+			outro,
+			status: CLIStatus.Error,
+			suggestions,
+		});
+
+		await runCli(["typescript-app"]);
+
+		expect(mockLogOutro).toHaveBeenCalledWith(outro, { suggestions });
+		expect(mockLog.error).toHaveBeenCalledWith("Error: Oh no!");
+	});
+
 	it("logs the outro when resolved by the mode runner", async () => {
 		const outro = "Goodbye.";
 		const suggestions = ["abc"];
@@ -188,7 +229,7 @@ describe("readProductionSettings", () => {
 		expect(mockLogOutro).toHaveBeenCalledWith(outro, { suggestions });
 	});
 
-	it("logs a cancellation outro when one is not resolved by the mode runner", async () => {
+	it("logs a cancellation outro when one is not resolved by the mode runner", async () => {
 		const suggestions = ["abc"];
 
 		mockReadProductionSettings.mockResolvedValueOnce({ mode: "setup" });
