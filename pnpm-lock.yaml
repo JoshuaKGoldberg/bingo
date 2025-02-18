@@ -154,7 +154,7 @@ importers:
         specifier: 22.13.4
         version: 22.13.4
       octokit:
-        specifier: ^4.1.2
+        specifier: 4.1.2
         version: 4.1.2
 
   packages/bingo-fs:
