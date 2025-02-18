@@ -34,7 +34,7 @@ export async function runTemplate<OptionsShape extends AnyShape>(
 		...settings,
 	});
 
-	const creation = await produceTemplate(template, { ...system, ...settings });
+	const creation = produceTemplate(template, { ...system, ...settings });
 
 	await runCreation(creation, { offline, system });
 
