@@ -51,6 +51,7 @@ export async function runModeTransition({
 
 	if (source instanceof Error) {
 		return {
+			error: source,
 			outro: source.message,
 			status: CLIStatus.Error,
 		};
@@ -61,6 +62,7 @@ export async function runModeTransition({
 	const template = await source.load();
 	if (template instanceof Error) {
 		return {
+			error: template,
 			outro: template.message,
 			status: CLIStatus.Error,
 		};
@@ -120,6 +122,7 @@ export async function runModeTransition({
 	if (creation instanceof Error) {
 		logRerunSuggestion(args, baseOptions.prompted);
 		return {
+			error: creation,
 			outro: `Leaving changes to the local directory on disk. 👋`,
 			status: CLIStatus.Error,
 		};

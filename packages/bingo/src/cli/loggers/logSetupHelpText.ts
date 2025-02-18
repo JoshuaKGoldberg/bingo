@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { tryImportTemplate } from "../importers/tryImportTemplate.js";
 import { CLIMessage } from "../messages.js";
 import { CLIStatus } from "../status.js";
+import { ModeResults } from "../types.js";
 import { logHelpText } from "./logHelpText.js";
 import { logSchemasHelpOptions } from "./logSchemasHelpOptions.js";
 
@@ -15,7 +16,7 @@ export interface SetupHelpTextOptions {
 export async function logSetupHelpText(
 	from: string | undefined,
 	{ help, yes }: SetupHelpTextOptions,
-) {
+): Promise<ModeResults> {
 	if (!from) {
 		if (help) {
 			logHelpText("setup");
@@ -44,7 +45,8 @@ export async function logSetupHelpText(
 	const template = await tryImportTemplate(from, yes);
 	if (template instanceof Error) {
 		return {
-			outro: chalk.red(CLIMessage.Exiting),
+			error: template,
+			outro: CLIMessage.Exiting,
 			status: CLIStatus.Error,
 		};
 	}

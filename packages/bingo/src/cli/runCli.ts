@@ -7,6 +7,7 @@ import { packageData } from "../packageData.js";
 import { createClackDisplay } from "./display/createClackDisplay.js";
 import { findPositionalFrom } from "./findPositionalFrom.js";
 import { logOutro } from "./loggers/logOutro.js";
+import { CLIMessage } from "./messages.js";
 import { readProductionSettings } from "./readProductionSettings.js";
 import { runModeSetup } from "./setup/runModeSetup.js";
 import { CLIStatus } from "./status.js";
@@ -95,7 +96,7 @@ export async function runCli(args: string[]) {
 		from: validatedValues.from ?? findPositionalFrom(positionals),
 	};
 
-	const { outro, status, suggestions } =
+	const results =
 		productionSettings.mode === "setup"
 			? await runModeSetup(sharedSettings)
 			: await runModeTransition({
@@ -103,11 +104,14 @@ export async function runCli(args: string[]) {
 					configFile: productionSettings.configFile,
 				});
 
+	if (results.status === CLIStatus.Error) {
+		prompts.log.error(chalk.red(`Error: ${results.error.message}`));
+	}
+
 	logOutro(
-		outro ??
-			chalk.yellow("Operation cancelled. Exiting - maybe another time? 👋"),
-		{ items: display.dumpItems(), suggestions },
+		results.outro ?? chalk.yellow(`Operation cancelled. ${CLIMessage.Exiting}`),
+		{ items: display.dumpItems(), suggestions: results.suggestions },
 	);
 
-	return status;
+	return results.status;
 }

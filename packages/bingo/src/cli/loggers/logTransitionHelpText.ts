@@ -4,13 +4,20 @@ import chalk from "chalk";
 import { CLIMessage } from "../messages.js";
 import { CLIStatus } from "../status.js";
 import { TransitionSource } from "../transition/parseTransitionSource.js";
+import { ModeResults } from "../types.js";
 import { logHelpText } from "./logHelpText.js";
 
-export async function logTransitionHelpText(source: Error | TransitionSource) {
+export async function logTransitionHelpText(
+	source: Error | TransitionSource,
+): Promise<ModeResults> {
 	logHelpText("transition", source);
 
 	if (source instanceof Error) {
-		return { outro: CLIMessage.Exiting, status: CLIStatus.Error };
+		return {
+			error: source,
+			outro: CLIMessage.Exiting,
+			status: CLIStatus.Error,
+		};
 	}
 
 	const spinner = prompts.spinner();
@@ -19,11 +26,12 @@ export async function logTransitionHelpText(source: Error | TransitionSource) {
 	const loaded = await source.load();
 
 	if (loaded instanceof Error) {
-		spinner.stop(
-			`Could not load ${chalk.blue(source.descriptor)}: ${chalk.red(loaded.message)}`,
-			1,
-		);
-		return { outro: CLIMessage.Exiting, status: CLIStatus.Error };
+		spinner.stop(`Could not load ${chalk.blue(source.descriptor)}.`, 1);
+		return {
+			error: loaded,
+			outro: CLIMessage.Exiting,
+			status: CLIStatus.Error,
+		};
 	}
 
 	if (prompts.isCancel(loaded)) {

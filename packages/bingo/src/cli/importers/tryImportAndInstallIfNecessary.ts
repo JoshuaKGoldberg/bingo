@@ -23,10 +23,7 @@ export async function tryImportAndInstallIfNecessary(
 
 	if (imported.kind === "failure") {
 		const template = isLocalPath(from) ? imported.local : imported.npx;
-		spinner.stop(
-			`Could not load ${chalk.blue(from)}: ${chalk.red(template.message)}`,
-			1,
-		);
+		spinner.stop(`Could not load ${chalk.blue(from)}.`, 1);
 		return template;
 	}
 
