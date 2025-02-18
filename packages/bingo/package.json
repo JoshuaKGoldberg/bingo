@@ -43,7 +43,7 @@
 	"devDependencies": {
 		"@types/hosted-git-info": "3.0.5",
 		"@types/node": "22.13.4",
-		"octokit": "^4.1.2"
+		"octokit": "4.1.2"
 	},
 	"engines": {
 		"node": ">=18"
