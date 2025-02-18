@@ -19,8 +19,8 @@ describe("testTemplate", () => {
 			},
 		});
 
-		it("passes options to the block when provided via options", async () => {
-			const actual = await testTemplate(template, {
+		it("passes options to the block when provided via options", () => {
+			const actual = testTemplate(template, {
 				options: { value: "abc" },
 			});
 
