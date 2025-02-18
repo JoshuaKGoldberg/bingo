@@ -1,6 +1,8 @@
 ---
-import type { Props } from "@astrojs/starlight/props";
+import type { StarlightRouteData } from "@astrojs/starlight/route-data";
 import Default from "@astrojs/starlight/components/Head.astro";
+
+export type Props = StarlightRouteData;
 
 const ogImageUrl = new URL(`social.webp`, Astro.site);
 
