@@ -1,0 +1,70 @@
+---
+description: Context objects provided to Stratum Blocks and Presets.
+title: Stratum Contexts
+---
+
+Some Stratum constructs reuse the same contexts as described in [Details > Contexts](/build/details/contexts):
+
+- [Bases](/engines/stratum/concepts/bases) receive an [Options Context](/build/details/contexts#options-contexts)
+- [Templates](/engines/stratum/concepts/templates) receive a [Template Context](/build/details/contexts#template-contexts) with `settings` described in [Stratum Template Configurations](/engines/stratum/details/configurations)
+
+Other Stratum constructs do not reuse Bingo's existing contexts:
+
+- [Blocks](/engines/stratum/concepts/blocks) receive a [Block Context](#block-contexts)
+- [Presets](/engines/stratum/concepts/presets) don't have their own contexts
+
+## Block Contexts
+
+The Context object provided to the `produce` object of [Blocks](/engines/stratum/concepts/blocks).
+
+### `addons`
+
+Any [Block Addons](/engines/stratum/concepts/blocks#addons) that have been provided by other Blocks.
+
+For example, this Gitignore Block defines an `ignores` Addon that other Blocks can use to add to its created `.gitignore` file:
+
+```ts
+import { base } from "./base";
+
+export const blockGitignore = base.createBlock({
+	addons: {
+		ignores: z.array(z.string()).default([]),
+	},
+	produce({ addons }) {
+		return {
+			files: {
+				".gitignore": ["/node_modules", ...addons.ignores].join("\n"),
+			},
+		};
+	},
+});
+```
+
+### `options` {#block-options}
+
+User-provided values as described by the parent [Base](/engines/stratum/concepts/bases).
+
+Bases fill in option values before running Blocks.
+Each Block created by a Base will run with the same set of options.
+
+For example, this Base defines a `repository` option, which the Block then prints as a `package.json` property:
+
+```ts
+import { createBase } from "create";
+
+export const base = createBase({
+	options: {
+		repository: z.string(),
+	},
+});
+
+export const blockPackageJson = createBlock({
+	produce({ options }) {
+		return {
+			files: {
+				"package.json": JSON.stringify({ name: options.repository }),
+			},
+		};
+	},
+});
+```

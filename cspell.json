@@ -5,12 +5,12 @@
 		"*.tsbuildinfo",
 		"CHANGELOG.md",
 		"coverage",
+		"node_modules",
 		"packages/*/dist",
 		"packages/*/lib",
-		"node_modules",
 		"packages/*/tsconfig.tsbuildinfo",
 		"packages/site/src/content",
 		"pnpm-lock.yaml"
 	],
-	"words": ["Rajlich"]
+	"words": ["Rajlich", "rumpl"]
 }

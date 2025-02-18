@@ -1,0 +1,178 @@
+---
+description: "How the engine merges creations from multiple producer functions."
+title: Merging
+---
+
+Template producer functions return [Creation](/build/concepts/creations) objects.
+When a `--mode` is specified, a template may run multiple producer functions.
+The two creations from those producer functions will need to be merged together.
+
+Each type of creation has its own merging logic:
+
+- [`files`](#files)
+- [`requests`](#requests)
+- [`scripts`](#scripts)
+- [`suggestions`](#suggestions)
+
+## Files
+
+[File](/build/concepts/creations#files) objects are recursively merged:
+
+- `false` and `undefined` values are ignored
+- Files are deduplicated if they have the same value, and an error is thrown if they do not
+
+For example, given the following two `files` Creations to be merged:
+
+```ts
+{
+   "LICENSE.txt": "# MIT",
+   src: {
+      "index.ts": `export * from "./types.ts"`,
+   },
+}
+```
+
+```ts
+{
+   "LICENSE.txt": "# MIT",
+   src: {
+      "types.ts": `export type Example = true;`,
+   },
+}
+```
+
+The merged result would be:
+
+```ts
+{
+   "LICENSE.txt": "# MIT",
+   src: {
+      "index.ts": `export * from "./types.ts"`,
+      "types.ts": `export type Example = true;`,
+   },
+}
+```
+
+## Requests
+
+[Requests](/build/concepts/creations#requests) are deduplicated based on their `id`.
+Later-created requests will override any previously created requests with the same `id`.
+
+For example, given the following two `requests` Creations to be merged:
+
+```ts
+[
+	{
+		id: "branch-protection",
+		async send({ octokit }) {
+			console.log("TODO: Set up branch protection");
+		},
+	},
+];
+```
+
+```ts
+[
+	{
+		id: "branch-protection",
+		async send({ octokit }) {
+			await octokit.request(
+				`PUT /repos/{owner}/{repository}/branches/{branch}/protection`,
+				{
+					branch: "main",
+					// ...
+				},
+			);
+		},
+	},
+];
+```
+
+The merged result would be just the latter Creation:
+
+```ts
+[
+	{
+		id: "branch-protection",
+		async send({ octokit }) {
+			await octokit.request(
+				`PUT /repos/{owner}/{repository}/branches/{branch}/protection`,
+				{
+					branch: "main",
+					// ...
+				},
+			);
+		},
+	},
+];
+```
+
+## Scripts
+
+[Scripts](/build/concepts/creations#scripts) are deduplicated based on whether they include a `phase`:
+
+- "Phase" scripts are deduplicated if any's arrays of `commands` are the same as any other
+- "Standalone" scripts provided as `string` are deduplicated and run in parallel after scripts with phases
+
+For example, given the following two `scripts` Creations to be merged:
+
+```ts
+[
+	{
+		commands: ["pnpm install", "pnpm dedupe"],
+		phase: 0,
+	},
+];
+```
+
+```ts
+[
+	`npx set-github-repository-labels --labels "$(cat labels.json)"`,
+	{
+		commands: ["pnpm install"],
+		phase: 0,
+	},
+];
+```
+
+The merged result would be:
+
+```ts
+[
+	{
+		commands: ["pnpm install", "pnpm dedupe"],
+		phase: 0,
+	},
+	`npx set-github-repository-labels --labels "$(cat labels.json)"`,
+];
+```
+
+## Suggestions
+
+[Suggestions](/build/concepts/creations#suggestions) are deduplicated by identity.
+
+For example, given the following two `suggestions` Creations to be merged:
+
+```ts
+[
+	"- set a CODECOV secret to an codecov repository token",
+	"- set a NPM_TOKEN secret to an npm automation token",
+];
+```
+
+```ts
+[
+	"- set an ACCESS_TOKEN secret to a GitHub PAT with repo and workflow permissions",
+	"- set a NPM_TOKEN secret to an npm access token with automation permissions",
+];
+```
+
+The merged result would be:
+
+```ts
+[
+	"- set a CODECOV secret to an codecov repository token",
+	"- set a NPM_TOKEN secret to an npm access token with automation permissions",
+	"- set an ACCESS_TOKEN secret to a GitHub PAT with repo and workflow permissions",
+];
+```

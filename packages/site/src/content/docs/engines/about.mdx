@@ -1,0 +1,28 @@
+---
+description: Builders to help you write larger templates with create.
+prev:
+  label: Building Templates
+  link: /build/about
+# next:
+#   label: Templates
+#   link: /build/concepts/templates
+title: Templating Engines
+---
+
+:::note
+These docs assume you've read [Building Templates](/build/about) first.
+:::
+
+A single `produce()` function generally doesn't scale well beyond small straightforward repositories.
+Templates generally end up using one or more template systems for defining files.
+
+Bingo maintains two first-party templates:
+
+1. **[Handlebars](/engines/handlebars/about)**: allows defining files as [handlebars](https://handlebarsjs.com) templates.
+   Generally recommended for straightforward templates that have more than a half dozen files.
+2. **[Stratum](/engines/stratum/about)**: a rich system to define each feature of a template as an independent "Blocks".
+   Recommended for templates that want to allow rich logic and/or multiple starting presets.
+
+You don't have to use these engines.
+You can always use a single `produce()` function or build your own wrappers around Bingo.
+These templating engines exist as a suggested convenience.

@@ -1,0 +1,65 @@
+---
+description: Bingo creator API to instantiate a new input.
+title: createInput
+---
+
+The `createInput()` API can be used to create [Inputs](/build/concepts/inputs).
+
+It takes in an object containing:
+
+- [`args`](#args) _(optional)_: an object containing [Zod](https://zod.dev) values
+- [`produce`](#produce) _(required)_: a function to run the input's logic
+
+### `args`
+
+Input Definitions may include an `args` object with defining [Zod](https://zod.dev) values as its properties.
+Whenever an Input with args is passed to [`take`](/build/details/contexts#input-take), those args must be provided to it.
+
+For example, this Input defines a required `filePath` string:
+
+```ts
+import { createInput } from "bingo";
+import { z } from "zod";
+
+export const inputFromFile = createInput({
+	args: {
+		filePath: z.string(),
+	},
+	async produce({ args, fs }) {
+		return await fs.readFile(args.filePath);
+	},
+});
+```
+
+Calling this input in a production method would require passing a `filePath` string:
+
+```ts
+import { createInput } from "bingo";
+import { inputFromFile } from "input-from-file";
+
+export const inputFromFileJSON = createInput({
+	args: inputFromFile.args,
+	async produce({ args, take }) {
+		return JSON.parse(await take(inputFromFile, args));
+	},
+});
+```
+
+### `produce`
+
+Input Definitions must include a `produce()` function for their core logic.
+
+- It receives one parameter: an [Input Context](/build/details/contexts#input-contexts)
+- It can return any kind of data.
+
+For example, this Input fetches text from a URL:
+
+```ts
+import { createInput } from "bingo";
+
+export const inputFromExampleURL = createInput({
+	async produce({ fetchers }) {
+		return await (await fetchers.fetch("https://example.com")).text();
+	},
+});
+```

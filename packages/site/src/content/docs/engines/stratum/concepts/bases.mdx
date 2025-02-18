@@ -1,0 +1,64 @@
+---
+description: The "Base" object used to create Blocks and Presets.
+title: Bases
+---
+
+A _Base_ defines an object of option types and default values that will be used to scaffold a repository.
+Bases are used to generate [Blocks](/engines/stratum/concepts/blocks) and [Presets](/engines/stratum/concepts/presets) that rely on user-specified values for those options.
+
+:::tip
+Base properties are a subset of those available in [`createTemplate`](/build/apis/create-template).
+Any properties with the same name will behave similarly during production.
+:::
+
+## Options
+
+Each Base is associated with a set of options represented by [Zod](https://zod.dev) schemas.
+Each property of those options represents a configurable value that can be provided by a user.
+Those options carry through to Blocks and Presets associated with the base.
+
+For example, this minimal Base stores only a `name` string:
+
+```ts
+import { createBase } from "bingo-stratum";
+import { z } from "zod";
+
+export const base = createBase({
+	options: {
+		name: z.string(),
+	},
+});
+```
+
+Blocks and Presets made with that `base` will have access to the `name` option of type `string`.
+
+> `options` on a Base works the same as [`createTemplate` > `options`](/build/apis/create-template#options).
+
+### Disallowed Option Names
+
+The only option name that may not be used is `preset`.
+That option is set automatically per [Templates > Options](/engines/stratum/concepts/templates#options).
+
+## Preparation
+
+Bases can optionally define a `prepare()` function that provides default fallback values for options.
+
+For example, this Base defaults its `value` option to `"default"` if not provided:
+
+```ts
+import { createBase } from "bingo-stratum";
+import { z } from "zod";
+
+export const base = createBase({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+});
+```
+
+> `prepare()` on a Base works the same as [`createTemplate` > `prepare`](/build/apis/create-template#prepare).

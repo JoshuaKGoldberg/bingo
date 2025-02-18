@@ -1,0 +1,208 @@
+---
+description: Bingo API to infer default option values.
+title: prepareOptions
+---
+
+Given a [Template](/build/concepts/templates) <sup><a href="#custom-engine-preparations">\*</a></sup> and any existing options, loads inferred values for any remaining options.
+
+`prepareOptions` takes in up to two argument:
+
+1. _(required)_ A template
+2. _(optional)_ A settings object containing any properties from a [Template Context](/build/details/contexts#template-contexts)
+
+It returns a Promise for the resultant options for the template.
+
+For example, given this template that declares an optional `value` option that defaults to `"default"`, `prepareOptions` can be run to generate its options object:
+
+```ts
+import { createTemplate, prepareOptions } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+
+// { value: "default" }
+await prepareOptions(template);
+```
+
+:::tip
+If the Template does not define a `prepare()`, then `settings.options` will be returned directly.
+:::
+
+## Settings
+
+### `offline`
+
+Whether to hint to the template not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+If provided, [Input Context `fetchers`](/build/details/contexts#input-fetchers) will be hinted not to make any network requests.
+
+For example, this template uses [`inputFromFetch`](https://www.npmjs.com/package/input-from-fetch), which resolves with `undefined` for an option when `offline` is true:
+
+```ts
+import { createTemplate, prepareOptions, take } from "bingo";
+import { inputFromFetch } from "input-from-fetch";
+import { z } from "zod";
+
+const template = createTemplate({
+	options: {
+		fact: z.string().optional(),
+	},
+	prepare({ take }) {
+		return {
+			fact: async () =>
+				await take(inputFromFetch, {
+					resource: "https://catfact.ninja/fact",
+				}),
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+
+// { fact: "Cats can jump up to 7 times their tail length." }
+await prepareOptions(template);
+
+// { fact: undefined }
+await prepareOptions(template, { offline: true });
+```
+
+:::caution
+Inputs that rely on a `fetcher` should by convention return `undefined` if `offline` is specified.
+However, nothing prevents them from manually sending a network request with `fetch()` or other APIs.
+If you are finding your input or template still sends requests offline, file a bug on the template.
+:::
+
+### `options`
+
+Any number of options defined by the template's [`options` schema](/build/apis/create-template#options).
+
+Providing `options` in the settings object prevents any default values defined in `prepare()` from being used.
+
+For example, the following template declares an optional `value` option that defaults to `"default"`.
+Passing in a `value` prevents that default value from being used:
+
+```ts
+import { createTemplate, prepareOptions } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+
+// { value: "override" }
+await prepareOptions(template, {
+	options: {
+		value: "override",
+	},
+});
+```
+
+## Context Overrides
+
+Any properties provided in [Input Contexts](/build/details/contexts#input-contexts) can be overridden in `prepareOptions()`.
+
+This can be useful if you'd like a production's [Inputs](/build/concepts/inputs) to be instrumented and/or run in a virtual environment.
+
+For example, this Block production adds an authorization header to all network requests:
+
+```ts
+import { createTemplate, prepareOptions } from "bingo";
+import { inputFromFetch } from "input-from-fetch";
+import { Octokit } from "octokit";
+import { z } from "zod";
+
+const template = createTemplate({
+	options: {
+		apiKey: z.string(),
+	},
+	prepare() {
+		return {
+			apiKey: async () =>
+				await take(inputFromFetch, {
+					resource: "(API key generator URL)",
+				}),
+		};
+	},
+	produce() {
+		//
+	},
+});
+
+const fetch = async (...args) => {
+	const request = new Request(...args);
+	request.headers.set("Authorization", "Bearer ...");
+	return await fetch(request);
+};
+
+prepareOptions(template, {
+	fetchers: {
+		fetch,
+		octokit: new Octokit({ request: fetch }),
+	},
+});
+```
+
+:::tip
+For testing options preparation in fully isolated environments, see [Packages > `bingo-testers`](/build/packages/bingo-testers).
+For documentation on the system call wrappers, see [Packages > `bingo-systems`](/build/packages/bingo-systems).
+:::
+
+## Custom Engine Preparations
+
+`prepareOptions` can be given any object in place of a template as long as the object contains:
+
+- `options`: an object mapping keys to [Zod](https://zod.dev) schemas
+- `prepare`: a function that returns an object whose properties are default values for those options
+
+For example, the [Stratum engine's Bases](/engines/stratum/concepts/bases) can have options inferred with `prepareOptions`:
+
+```ts
+import { prepareOptions } from "bingo";
+import { createBase } from "bingo-stratum";
+import { z } from "zod";
+
+const base = createBase({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare(options) {
+		return {
+			value: "default",
+		};
+	},
+});
+
+// { value: "default" }
+await prepareBase(base);
+
+// { value: "override" }
+await prepareBase(base, {
+	options: {
+		value: "override",
+	},
+});
+```

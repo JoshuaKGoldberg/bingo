@@ -1,4 +1,4 @@
-import { testInput } from "create-testers";
+import { testInput } from "bingo-testers";
 import { describe, expect, it, vi } from "vitest";
 
 import { inputFromScript } from "./index.js";

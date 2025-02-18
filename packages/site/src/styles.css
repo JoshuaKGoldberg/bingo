@@ -1,19 +1,19 @@
 details details .group-label .large {
 	display: block;
 	font-size: 15px;
-	font-weight: 500;
 	padding-top: 2px;
-}
-details details .group-label .large {
-	display: block;
-	font-size: 15px;
-	font-weight: 600;
 }
 
 details details ul li a {
 	padding-bottom: 3px;
 	padding-top: 3px;
 	font-size: 14px;
+}
+
+details ul li details summary .group-label .large,
+details ul li:has(details) + li > a,
+li:has(+ li > details) > a {
+	font-weight: 500;
 }
 
 .hero {
@@ -31,10 +31,10 @@ h2 + h3 {
 	--sl-color-accent-low: #400d29;
 	--sl-color-accent: #bc0079;
 	--sl-color-accent-high: #f4b2cf;
-	--sl-color-white: #ffffff;
-	--sl-color-gray-1: #faecd0;
-	--sl-color-gray-2: #e2d9a9;
-	--sl-color-gray-3: #a6873e;
+	--sl-color-white: #f6f2db;
+	--sl-color-gray-1: #f4ead6;
+	--sl-color-gray-2: rgb(229, 226, 202);
+	--sl-color-gray-3: #c8b485;
 	--sl-color-gray-4: #705300;
 	--sl-color-gray-5: #483500;
 	--sl-color-gray-6: #362301;

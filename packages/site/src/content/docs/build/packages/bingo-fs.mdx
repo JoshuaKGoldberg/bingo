@@ -1,0 +1,97 @@
+---
+description: The virtual file system used by Bingo. 🗄️
+title: bingo-fs
+---
+
+import { PackageManagers } from "starlight-package-managers";
+
+The virtual file system used by Bingo. 🗄️
+
+<PackageManagers type="add" pkg="bingo-fs" />
+
+The separate `bingo-fs` package includes types and utility functions for the file system used in [Concepts > Creations > `files`](/build/concepts/creations#files).
+
+This file system is a simplified abstraction over the lower-level APIs in Node.js and other platforms.
+APIs and data are optimized for simplicity and ease of use, rather than completeness.
+
+For example, given a structure like:
+
+```plaintext
+/
+└── README.md
+└── src
+    └── index.ts
+```
+
+`bingo-fs` would represent that structure with an object like:
+
+```json
+{
+	"README.md": "...",
+	"src": {
+		"index.ts": "..."
+	}
+}
+```
+
+## Files
+
+Each property in a `files` object may be one of the following:
+
+- `false` or `undefined`: Ignored
+- `object`: A directory, whose properties recursively are file creations
+- `string`: A file to be created
+- `[string, CreatedFileOptions]`: A file to be created with options:
+  - `executable`: Whether to add permissions to make the file executable
+
+For example, this Bingo template produces an executable `.husky/pre-commit` file:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			".husky": {
+				"pre-commit": ["npx lint-staged\n", { executable: true }],
+			},
+		};
+	},
+});
+```
+
+## APIs
+
+### `intakeFromDirectory`
+
+Given a directory path, reads in the directory as to the `bingo-fs` directory structure.
+
+Parameters:
+
+1. `directoryPath: string` _(required)_
+2. `settings: IntakeFromDirectorySettings` _(optional)_:
+   - [`exclude: RegExp`](#intakefromdirectory-exclude)
+
+For example, retrieving all files in a `src/` directory:
+
+```ts
+import { intakeFromDirectory } from "bingo-fs";
+
+// { "index.ts": "..." }
+await intakeFromDirectory("src");
+```
+
+#### `exclude` {#intakefromdirectory-exclude}
+
+An optional regular expression to filter out directory children.
+
+For example, you may want to avoid `.git` and `node_modules` directories:
+
+```ts
+import { intakeFromDirectory } from "bingo-fs";
+
+// Result: { README.md: "...", src: { "index.ts": "..." }, ... }
+await intakeFromDirectory(".", {
+	exclude: /node_modules|^\.git$/,
+});
+```

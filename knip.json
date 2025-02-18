@@ -2,11 +2,11 @@
 	"$schema": "https://unpkg.com/knip@latest/schema.json",
 	"ignoreExportsUsedInFile": { "interface": true, "type": true },
 	"workspaces": {
-		"packages/create": {
+		"packages/bingo": {
 			"entry": ["src/index.ts!"],
 			"project": ["src/**/*.ts!"]
 		},
-		"packages/create-testers": {
+		"packages/bingo-testers": {
 			"entry": ["src/index.ts!"],
 			"project": ["src/**/*.ts!"]
 		},

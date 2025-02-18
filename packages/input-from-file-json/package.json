@@ -4,7 +4,7 @@
 	"description": "create input that reads a file as JSON.",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/create",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
 		"directory": "packages/input-from-file-json"
 	},
 	"license": "MIT",
@@ -24,14 +24,14 @@
 		"build": "tsc"
 	},
 	"dependencies": {
-		"input-from-file": "workspace:^",
-		"zod": "^3.24.1"
+		"input-from-file": "workspace:^"
 	},
 	"devDependencies": {
-		"create-testers": "workspace:^"
+		"bingo-testers": "workspace:^"
 	},
 	"peerDependencies": {
-		"create": "workspace:^"
+		"bingo": "workspace:^",
+		"zod": "^3.24.2"
 	},
 	"engines": {
 		"node": ">=18"

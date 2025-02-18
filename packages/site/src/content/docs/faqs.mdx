@@ -1,29 +1,22 @@
 ---
+description: Frequently asked questions about creating repositories with Bingo.
 title: FAQs
 ---
 
-`create` is early stage.
+Bingo is early stage.
 It runs well but its APIs are still in flux.
 Please try it out and report any issues on GitHub!
 🙏
 
 ## Consumption
 
-### How do I use `create`?
+### How do I use Bingo?
 
-If you want to create or update a repository, see [CLI](./cli) for running the `create` command.
+If you want to create or update a repository, see [CLI](/cli) for running the `bingo` command.
 
-If you want to build your own template, see [Templating Engine > About](./engine/about).
+If you want to build your own template, see [Building Templates](/build/about).
 
-### How do I remove part of a template?
-
-Go ahead and change your repository!
-After you create a repository, you can customize it however you see fit.
-
-If you'd like to keep a repository updated with a template, you can customize your tooling with a [configuration file](./configuration).
-See [Configuration > Blocks](./configuration#blocks) for how to add or remove pieces of tooling.
-
-### What else can `create` do?
+### What else can Bingo do?
 
 Soon, there will be higher-level scaffolding utilities that will allow packages such as `create-typescript-app` to:
 
@@ -35,18 +28,13 @@ See [JoshuaKGoldberg/create-typescript-app#1181 📝 Documentation: Long-term pr
 
 ## Ecosystem Comparisons
 
-`create` is targeting being a fully complete solution for defining _creating_, _migrating_, and/or _updating_ repositories to use flexible templates.
-Those templates are defined in a feature-by-feature ("Block") basis and with configurable "Presets" using `create` APIs.
-`create` templates go beyond just file system copying with network requests, shell commands, and versioned migrations.
+Bingo is targeting being a fully complete solution for:
 
-Other ecosystem tools exist for part of that feature set.
-None target the full feature set of `create`.
+- Repository management: _creating_ repositories with templates and _migrating_ existing repositories to new versions of templates
+- Templates: allowing straightforward templates and scaling to complex multi-faceted ones
 
-In general, `create`'s approach is differentiated from previous projects by:
-
-- Allowing sub-templates that can be swapped individually and add to each other ([Blocks](./concepts/blocks))
-- Built-in support for onboarding existing out-of-template repositories ([migration mode](./cli/#migration-mode))
-- Producing outputs -including files and more- in a generalized format ([Direct Creations](./runtime/creations#direct-creations))
+Bingo templates go beyond just file system copying.
+They also support network requests, shell commands, and versioned migrations.
 
 ### Comparisons Table
 
@@ -70,26 +58,16 @@ They might be wildly inaccurate.
 			<td>In-Memory</td>
 			<td>Template Files</td>
 			<td>Initializing Repositories</td>
-			<td>Managed Migrations</td>
+			<td>Managed Transitions</td>
 			<td>Reusable Components</td>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<th>
-				<code>create</code>
-			</th>
+			<th>Bingo</th>
 			<td>Web</td>
 			<td>Decoupled</td>
-			<td>
-				<a
-					href="https://github.com/JoshuaKGoldberg/bingo/issues/76"
-					target="_blank"
-					title="create/issues/76"
-				>
-					#76
-				</a>
-			</td>
+			<td>✅</td>
 			<td>✅</td>
 			<td>✅</td>
 			<td>✅</td>
@@ -157,7 +135,7 @@ They might be wildly inaccurate.
 		</tr>
 		<tr>
 			<th>
-				<a href="#github-template-repositories">GitHub Template Repositories</a>
+				<a href="#github-template-repositories">GitHub</a>
 			</th>
 			<td>(all)</td>
 			<td>Decoupled</td>
@@ -228,13 +206,13 @@ They might be wildly inaccurate.
 
 ### `create-next-app`, `create-react-app`, `create-typescript-app`, etc
 
-`create` is an engine that allows you to define repository templates.
+Bingo is an engine that allows you to define repository templates.
 It itself is not a repository template; it instead provides APIs that you can use to build your own repository template.
 
-In other words, `create` is a lower-level primitive that can be used to create higher-level `create-*-app` templates.
+In other words, Bingo is a lower-level primitive that can be used to create higher-level `create-*-app` templates.
 
 :::note
-For more history on how `create` came to be, see [JoshuaKGoldberg/create-typescript-app#1181 📝 Documentation: Long-term project vision](https://github.com/JoshuaKGoldberg/create-typescript-app/issues/1181).
+For more history on how Bingo came to be, see [JoshuaKGoldberg/create-typescript-app#1181 📝 Documentation: Long-term project vision](https://github.com/JoshuaKGoldberg/create-typescript-app/issues/1181).
 :::
 
 ### Cookiecutter
@@ -242,50 +220,50 @@ For more history on how `create` came to be, see [JoshuaKGoldberg/create-typescr
 [Cookiecutter](https://github.com/cookiecutter/cookiecutter) is a library and CLI app for generating projects from templates.
 It allows taking in directories written as [Jinja](https://palletsprojects.com/projects/jinja) templates and running pre- and post-generation hooks.
 
-`create` has several key differences from what Cookiecutter supports:
+Bingo has several key differences from what Cookiecutter supports:
 
-- Cookiecutter is a wrapper around a Jinja file templates; `create` allows for full JavaScript logic to generate contents based on provided options
-- Cookiecutter always operates at the scale of one template; `create` provides more granular APIs for areas of features (Blocks and Presets)
-- Cookiecutter supports file changes and execution hooks; `create` additionally supports network calls and arbitrary shell scripts as outputs
+- Cookiecutter is a wrapper around a Jinja file templates; Bingo allows for full JavaScript logic to generate contents based on provided options
+- Cookiecutter always operates at the scale of one template; Bingo's Stratum engine provides more granular APIs for areas of features (Blocks and Presets)
+- Cookiecutter supports file changes and execution hooks; Bingo additionally supports network calls and arbitrary shell scripts as outputs
 
 Cookiecutter is also written in Python and is installed using tools in the Python ecosystem.
-`create` is written in TypeScript and is set up to work in the web ecosystem.
+Bingo is written in TypeScript and is set up to work in the web ecosystem.
 
 ### copier
 
 [Copier](https://copier.readthedocs.io/en/latest) is a library and CLI app for generating projects from templates.
 It takes in a local path or Git URL and dynamically replaces values in text files.
 
-`create` has several key additions on top of what Copier supports:
+Bingo has several key additions on top of what Copier supports:
 
-- Copier is a wrapper around a straightforward file templates; `create` allows for dynamic logic for generating contents based on provided options
-- Copier only supports file templates; `create` allows for sending network requests and running shell scripts
-- Copier always operates at the scale of one template; `create` provides more granular APIs for areas of features (Blocks and Presets)
+- Copier is a wrapper around a straightforward file templates; Bingo allows for dynamic logic for generating contents based on provided options
+- Copier only supports file templates; Bingo allows for sending network requests and running shell scripts
+- Copier always operates at the scale of one template; Bingo's Stratum engine provides more granular APIs for areas of features (Blocks and Presets)
 
 Copier is also written in Python and is installed using tools in the Python ecosystem.
-`create` is written in TypeScript and is set up to work in the web ecosystem.
+Bingo is written in TypeScript and is set up to work in the web ecosystem.
 
 ### degit
 
 [degit](https://github.com/Rich-Harris/degit) is a tool that makes copies Git of repositories.
 It allows for straightforward initialization of files, along with support for post-creation actions.
 
-`create` has several key additions on top of what degit supports:
+Bingo has several key additions on top of what degit supports:
 
-- degit is a wrapper around a straightforward `git clone`; `create` allows for dynamic logic for generating contents based on provided options
-- degit only supports limited post-clone actions; `create` allows for sending network requests and running shell scripts
-- degit always operates at the scale of a full repository; `create` provides more granular APIs for areas of features (Blocks and Presets)
+- degit is a wrapper around a straightforward `git clone`; Bingo allows for dynamic logic for generating contents based on provided options
+- degit only supports limited post-clone actions; Bingo allows for sending network requests and running shell scripts
+- degit always operates at the scale of a full repository; Bingo's Stratum engine provides more granular APIs for areas of features (Blocks and Presets)
 
 ### GitHub Template Repositories
 
 [GitHub Template Repositories](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository) are a GitHub feature allowing making a new repository as a clone of another.
 Created repositories appear on github.com with a _generated from ..._ notice.
 
-`create` will include treating sources as templates, and additionally adds features:
+Bingo will include treating sources as templates, and additionally adds features:
 
-- Template Repositories are a wrapper around a straightforward `git clone`; `create` allows for changing generated file contents based on provided options
-- Template Repositories don't support post-clone actions; `create` allows for sending network requests and running shell scripts
-- Template Repositories always operate at the scale of a full repository; `create` provides more granular APIs for areas of features (Blocks and Presets)
+- Template Repositories are a wrapper around a straightforward `git clone`; Bingo allows for changing generated file contents based on provided options
+- Template Repositories don't support post-clone actions; Bingo allows for sending network requests and running shell scripts
+- Template Repositories always operate at the scale of a full repository; Bingo's Stratum engine provides more granular APIs for areas of features (Blocks and Presets)
 
 ### Hygen
 
@@ -293,73 +271,69 @@ Created repositories appear on github.com with a _generated from ..._ notice.
 It encourages building your own generators that include templates built with the [EJS](https://ejs.co) embedded JavaScript templating engine.
 Hygen templates can have conditional rendering, embedded JavaScript, and injected shell scripts.
 
-`create` takes a different architectural approach than Hygen:
+Bingo takes a different architectural approach than Hygen:
 
-- Hygen templates are imperative descriptions of files and frontmatter; `create` groups areas into blocks
-- Hygen templates heavily build on EJS and do not have type-safe options; `create` has options explicitly defined with Zod schemas
-- `create` Blocks describe their own outputs and additions to other Blocks, allowing them to be individually toggled
-- Hygen prioritizes granular individual templates; `create` priotizes full repository templates
+- Hygen templates are imperative descriptions of files and frontmatter; Bingo's Stratum engine supports grouping areas into blocks
+- Hygen templates heavily build on EJS and do not have type-safe options; Bingo has options explicitly defined with Zod schemas
+- Bingo Blocks describe their own outputs and additions to other Blocks, allowing them to be individually toggled
+- Hygen prioritizes granular individual templates; Bingo priotizes full repository templates
 
 ### Plop
 
 [Plop](https://github.com/plopjs/plop) is web ecosystem tool for defining repository templates.
-Like `create`, it allows defining templates for generated files.
+Like Bingo, it allows defining templates for generated files.
 
-`create` has several key differences from Plop:
+Bingo has several key differences from Plop:
 
-- Plop is built around an imperative "actions" API for adding files, as opposed to `create`'s managing of outputs
+- Plop is built around an imperative "actions" API for adding files, as opposed to Bingo's managing of outputs
 - Plop only supports file creation, not other actions such as setting repository GitHub systems
-- Plop is built on the popular Inquirer.js and Handlebars libraries, rather than `create`'s more type-safe Zod schema options
+- Plop is built on the popular Inquirer.js and Handlebars libraries, rather than Bingo's more type-safe Zod schema options
 
-In other words, `create` is a more broadly scoped project for full repository generation, whereas Plop is more finely targeted to applying Handlebars templates.
+In other words, Bingo is a more broadly scoped project for full repository generation, whereas Plop is more finely targeted to applying Handlebars templates.
 
 ### projen
 
 [projen](https://github.com/projen/projen) is web ecosystem tool for defining repository templates.
-It is similar to `create` in that it is a flexible underlying engine that allows developers define and manage project configurations through code.
+It is similar to Bingo in that it is a flexible underlying engine that allows developers define and manage project configurations through code.
 
-`create` has several large differences from projen:
+Bingo has several large differences from projen:
 
-- `create` is a generalized, tooling-agnostic _generator engine_ that can also keep repositories updated over time
+- Bingo is a generalized, tooling-agnostic _generator engine_ that can also keep repositories updated over time
 - projen generally targets tighter integration and management with created projects, including being used in its package scripts
 
 <details>
-<summary>More details on <code>create</code> differing from projen</summary>
+<summary>More details on Bingo differing from projen</summary>
 
 - _Ecosystem targets:_
-  - `create` only includes packages in JavaScript/TypeScript; it only targets support for the web ecosystem.
+  - Bingo only includes packages in JavaScript/TypeScript; it only targets support for the web ecosystem.
   - projen includes packages in Go, Java, JavaScript/TypeScript, and Python; it can be generally used for those ecosystems.
 - _Integration with generated repositories:_
-  - `create` does not add any tooling to generated repositories; it prioritizes inferring options from existing repositories on demand.
+  - Bingo does not add any tooling to generated repositories; it prioritizes inferring options from existing repositories on demand.
   - projen is used in generated repositories and integrates with the repository's tasks.
 - _Integration with ecosystem tooling:_
-  - `create` does not hardcode types of tasks or the tools used for them.
+  - Bingo does not hardcode types of tasks or the tools used for them.
   - projen bundles its own understanding of ecosystem tools such as package managers and linters, and provides APIs for projects to choose from its preferred tools.
 - _Low-level code design principles:_
-  - `create` uses lean functions.
+  - Bingo uses lean functions.
     Output file structures are defined with raw objects and strings.
   - projen leans into classes in its architecture.
     It heavily uses [jsii](https://github.com/aws/jsii) and defines output files with classes.
 
-</details>
+See [JoshuaKGoldberg/create-typescript-app#1181 📝 Documentation: Long-term project vision#issuecomment-2428303689](https://github.com/JoshuaKGoldberg/create-typescript-app/issues/1181#issuecomment-2428303689)
 
-:::note
-For more details on how `create` compares to Projen, see [JoshuaKGoldberg/create-typescript-app#1181 📝 Documentation: Long-term project vision#issuecomment-2428303689](https://github.com/JoshuaKGoldberg/create-typescript-app/issues/1181#issuecomment-2428303689)
-:::
+</details>
 
 ### Yeoman
 
-[Yeoman](https://yeoman.io) is a much older tool in the web ecosystem for templating.
+[Yeoman](https://yeoman.io) is an older tool in the web ecosystem for templating.
 Its architecture and APIs generally work with older, now-outdated JavaScript practices:
 
 - Project generators must extend `yeoman-generator`'s Generator and define methods that are dynamically discovered and called at runtime
-- System interactions such as installing dependencies and writing files are done by imperatively calling Yeoman APIs, as opposed to producing outputs that are managed by `create`
+- System interactions such as installing dependencies and writing files are done by imperatively calling Yeoman APIs, as opposed to producing outputs that are managed by Bingo
 - Persistent options are provided in a raw `.yo-rc.json` JSON file rather than type-safe schema definitions
-
-Yeoman has not been actively maintained in several years.
 
 ## Template Development
 
-[Templating Engine](../engine/about) covers how to develop templates for `create`.
+[Building Templates](/build/about) covers how to develop templates for Bingo.
 
-See [Templating Engine > FAQs](../engine/faqs) for FAQs on template development.
+See [Building Templates > FAQs](/build/faqs) for FAQs on template development.

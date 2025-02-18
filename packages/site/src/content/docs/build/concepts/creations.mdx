@@ -1,0 +1,258 @@
+---
+description: "The pieces of a repository as described by templates."
+title: Creations
+---
+
+A _Creation_ is what's returned by a template's `produce()` function.
+It may contain any of the following properties:
+
+- ["Direct" creations](#direct-creations) that always cause changes to the repository:
+  - [`files`](#files): Files to create or modify on disk
+  - [`requests`](#requests): Network requests to send after files are created
+  - [`scripts`](#scripts): Terminal commands to run after files are created
+- ["Indirect" creations](#indirect-creations) to hint to the Bingo CLI:
+  - [`suggestions`](#suggestions): Printed tips for the next steps the user should take
+
+For example, this template both creates a Prettier config and runs Prettier:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			files: {
+				".prettierrc.json": `{ useTabs: true }`,
+			},
+			scripts: ["npx prettier . --write"],
+		};
+	},
+});
+```
+
+## Direct Creations
+
+These Creation properties always cause changes to the output repository.
+
+### `files`
+
+Files to create or modify on disk.
+
+This is the primary, most common output from templates.
+Each object under `files` describes a folder of files.
+Properties whose values are strings are written as files on disk.
+Properties whose values are objects represent a directory.
+
+For example, this template generates a `.github/CODE_OF_CONDUCT.md` file:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			files: {
+				".github": {
+					"CODE_OF_CONDUCT.md": `# Contributor Covenant Code of Conduct \n ...`,
+				},
+			},
+		};
+	},
+});
+```
+
+That would instruct the Bingo engine to create a `.github/` directory if it doesn't exist yet, then create a `.github/CODE_OF_CONDUCT.md` file.
+
+See [Packages > `bingo-fs` > Files](/build/packages/bingo-fs#files) for more information on the `files` format.
+
+### `requests`
+
+Network requests to send after files are created.
+
+This can be useful when repository settings or other APIs are necessary to align the created repository to what templates have produced.
+
+Each request may be specified as an object with:
+
+- `id` (`string`): Unique ID to know how to deduplicate previous creations during [merging](/build/details/merging#requests)
+- `send` (function): Asynchronous method that sends the request, which receives an object parameter containing:
+  - `fetch`: Equivalent to the global `fetch`
+  - `octokit`: [GitHub Octokit](https://github.com/octokit/octokit.js?tab=readme-ov-file#octokit-api-client) that uses the `fetch` internally
+
+For example, this template a GitHub repository's default branch to `main`:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce({ options }) {
+		return {
+			requests: [
+				{
+					id: "default-branch",
+					async send({ octokit }) {
+						await octokit.rest.repos.update({
+							default_branch: "main",
+							owner: options.owner,
+							repo: options.repository,
+						});
+					},
+				},
+			],
+		};
+	},
+});
+```
+
+### `scripts`
+
+Terminal commands to run after files are created.
+
+This can be useful when shell scripts are necessary to apply changes to the repository to align the created repository to what templates have produced.
+
+Each script may be specified as either a string or an object with:
+
+- `commands` (`string[]`): Shell scripts to run within the phase, in order
+- `phase` (`number`) _(optional)_: What order, relative to any other command groups, to run in
+- `silent` (`boolean`) _(optional)_: Whether to skip logging errors if the script fails
+
+Commands provided as strings are assumed to not be order-dependent.
+They are run all at the same time.
+
+For example, this template runs pnpm package installation:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			scripts: "pnpm install",
+		};
+	},
+});
+```
+
+#### `phase` {#scripts-phase}
+
+Adding a `phase` to a script indicates when it should run relative to other scripts.
+
+Scripts with `phase` start in ascending order of their `phase`.
+Each script with the same `phase` will start running its commands at the same time.
+
+For example, this template runs pnpm package installation and duplication in series within a first phase, then Prettier formatting in a subsequent phase after dependencies are done resolving:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			scripts: [
+				{
+					commands: ["pnpm install", "pnpm dedupe"],
+					phase: 0,
+				},
+				{
+					commands: ["pnpx prettier . --write"],
+					phase: 1,
+				},
+			],
+		};
+	},
+});
+```
+
+Those phase-dependent scripts together would run the following commands in order:
+
+1. `pnpm install`
+2. `pnpm dedupe`
+3. `pnpm format --write`
+
+If multiple command groups specify the same `phase`, then they will start executing their scripts at the same time.
+The next phase will not be started until all scripts in that phase complete.
+
+For example, given the following production of scripts:
+
+```ts
+[
+	{ commands: ["a", "b"], phase: 0 },
+	{ commands: ["c", "d"], phase: 1 },
+	{ commands: ["e", "f"], phase: 1 },
+	{ commands: ["g"], phase: 2 },
+];
+```
+
+Those commands would be run in the following order:
+
+1. `a`
+2. `b`
+3. `c` and `e`
+   - `d` _(after `c` completes)_
+   - `f` _(after `e` completes)_
+4. `g` _(after `d` and `f` complete)_
+
+#### `silent` {#scripts-silent}
+
+Scripts may optionally include a `silent: true` option to prevent an error being logged to the console if they fail.
+
+Silent scripts are particularly useful for migration scripts that clean up existing files.
+Some native commands throw an error if a file doesn't yet exist, which might not be a problem for common deletions.
+
+For example, this template a `.github/CONTRIBUTING.md` and deletes a root-level `CONTRIBUTING.md` during transition if it exists:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			files: {
+				".github": {
+					"CONTRIBUTING.md": "...",
+				},
+			},
+		};
+	},
+	transition() {
+		return {
+			scripts: [
+				{
+					commands: ["rm CONTRIBUTING.md"],
+					silent: true,
+				},
+			],
+		};
+	},
+});
+```
+
+## Indirect Creations
+
+These Creation properties produce information purely for the Bingo CLI, not for the new repository.
+
+### `suggestions`
+
+Tips for next steps the running user should take.
+
+Some templates require additional setup that users will have to take action on.
+These will be logged to users after running `npx bingo`.
+
+For example, this template directs the user to create an automation token:
+
+```ts
+import { base } from "./base";
+
+export default createTemplate({
+	produce() {
+		return {
+			suggestions: [
+				"Set an NPM_TOKEN secret to an npm access token with automation permissions",
+			],
+		};
+	},
+});
+```
+
+:::tip
+These should be used only if a setup step can't be automated with a [`request`](#requests) or [`script`](#scripts).
+:::

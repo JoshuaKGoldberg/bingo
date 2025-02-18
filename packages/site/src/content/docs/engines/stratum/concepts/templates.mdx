@@ -1,0 +1,68 @@
+---
+description: Groups of presets that a user can choose between.
+title: Templates
+---
+
+_Templates_ are generated in the Stratum engine by grouping together [Presets](/engines/stratum/concepts/presets).
+
+Templates are the highest layer in Stratum.
+Stratum-generated Templates can be used as general Bingo templates: under the hood, they are created with the same [`createTemplate` API](/build/apis/create-template) as any other template.
+
+For example, this Template groups several levels of tooling from a `create-typescript-app`-like generator:
+
+```ts
+import { createTemplate } from "create";
+
+import { presetCommon } from "./presetCommon";
+import { presetEverything } from "./presetEverything";
+import { presetMinimal } from "./presetMinimal";
+
+export const template = createTemplate({
+	about: {
+		name: "TypeScript App",
+	},
+	presets: [
+		{ label: "Minimal", preset: presetMinimal },
+		{ label: "Common", preset: presetCommon },
+		{ label: "Everything", preset: presetEverything },
+	],
+	suggested: presetCommon,
+});
+```
+
+Commands like the [`bingo` CLI](/cli) can then work with that Template to prompt the user for choosing a Preset:
+
+```plaintext
+$ npx bingo typescript-app@beta
+
+┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+│
+│  Learn more about Bingo on:
+│    https://create.bingo
+│
+│  Running with mode --initialize for a new repository using the template:
+│    create-typescript-app
+```
+
+:::note
+The Presets used in a Template don't need to all be from the same shared [Base](/engines/stratum/concepts/bases).
+This allows more comprehensive Presets to come with a larger set of required Options.
+:::
+
+## Options
+
+Stratum Templates source their `options` from their [Base](/engines/stratum/concepts/bases).
+Options declared on a Template's Base are what may be set in a configuration's `options`.
+
+The only added option is `preset`, which is a required string option.
+It is a union of the lowercased labels provided under `presets`.
+
+For example, given the earlier `template` with three Presets, the `preset` option would be type `"common" | "everything" | "minimal"`:
+
+```ts title="bingo.config.js"
+import { template } from "create-typescript-app";
+
+export default createConfig(template, {
+	options: { preset: "everything" },
+});
+```

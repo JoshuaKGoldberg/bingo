@@ -1,11 +1,8 @@
-import { createInput } from "create";
+import { createInput } from "bingo";
 import { inputFromFile } from "input-from-file";
-import { z } from "zod";
 
 export const inputFromFileJSON = createInput({
-	args: {
-		filePath: z.string(),
-	},
+	args: inputFromFile.args,
 	async produce({ args, take }) {
 		const text = await take(inputFromFile, args);
 

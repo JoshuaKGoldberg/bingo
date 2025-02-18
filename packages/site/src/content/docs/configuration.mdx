@@ -1,192 +1,88 @@
 ---
-description: "Configuring create from a config file."
+description: "Configuring Bingo from a config file."
 title: Configuration
 ---
 
-Running the [Migration mode](./cli#migration-mode) in an existing repository will re-run `create` on that repository.
+Most options for Bingo templates can be specified on the [`bingo` CLI](/cli).
+However, for describing complex options and/or keeping them persist over time, you may want to create a configuration file named `bingo.config.js`.
+Bingo configuration files are useful if you:
 
-You can store persistent customizations to the repository's template in a configuration file named `create.config.js`.
-It should `export default` a call to a `createConfig()` function that takes in a template and which preset to use.
+- Have rich customizations to the template that should be applied to the repository
+- Keep your repository updating to the latest template versions using [Execution > Transition Mode](/execution#transition-mode)
 
-For example, keeping a repository up-to-date with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app)'s _everything_ preset:
+Bingo provides a `createConfig()` function that takes in a template and returns a configuration object.
+`bingo.config.js` configuration files should `export default` that object.
 
-```ts title="create.config.js"
-import { createConfig } from "create";
-import { template } from "create-typescript-app";
+For example, this configuration keeps a repository up-to-date with [`create-example`](https://github.com/JoshuaKGoldberg/create-example):
 
-export default createConfig(template, { preset: "everything" });
+```ts title="bingo.config.js"
+import { createConfig } from "bingo";
+import { template } from "bingo-example";
+
+export default createConfig(template);
 ```
 
-Running `npx create` in a repository with that `create.config.js` would be the equivalent of running `npx create typescript-app@beta --preset everything`.
+Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo example`.
 
 ## `createConfig`
 
 The exported `createConfig` function takes in up to two arguments:
 
-1. _(required)_ A preset imported from a package
-2. _(optional)_ An object containing any customizations to be applied to the preset
+1. A template imported from a package.
+   This is always required.
+2. An object containing any `options` and/or `settings` to be passed to the preset.
 
-### `addons`
+:::tip
+See the documentation for your specific template for additional `options` and `settings`.
+:::
 
-Any [Addons](./engine/concepts/blocks#addons) to be passed to the [Blocks](./engines/concepts/blocks) that come with the Preset.
-These will be [merged](./engine/runtime/merging) in with Addons provided by other Blocks.
+### `options`
 
-For example, this configuration file adds the word `"arethetypeswrong"` to a CSpell Block's Addons:
+Any type-safe options the template has declared.
 
-```ts title="create.config.js"
-import { createConfig } from "create";
+For example, this configuration keeps a repository up-to-date with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app), which requires a `preset` option to be specified:
+
+```ts title="bingo.config.js"
+import { createConfig } from "bingo";
+import { template } from "create-typescript-app";
+
+export default createConfig(template, {
+	options: {
+		preset: "everything",
+	},
+});
+```
+
+Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo typescript-app@beta --preset everything`.
+
+:::note
+See the documentation of your Template for what `options` are available.
+:::
+
+### `settings`
+
+Any custom settings specified by the template.
+
+For example, this configuration customizes the preset list of blocks in [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app)'s _Everything_ `preset`:
+
+```ts title="bingo.config.js"
+import { createConfig } from "bingo";
 import { blockCSpell, template } from "create-typescript-app";
 
 export default createConfig(template, {
-	addons: [
-		blockCSpell({
-			words: ["arethetypeswrong"],
-		}),
-	],
-	preset: "everything",
-});
-```
-
-Running `npx create` in a repository with that configuration file would merge in that `words` to the Addons provided to its CSpell Block.
-
-### `blocks`
-
-Any customizations to the [Blocks](./engines/concepts/blocks) provided as part of the Preset.
-
-#### `add`
-
-Any Blocks to add to what the Preset provides.
-
-For example, this configuration file adds in an "arethetypeswrong" Block alongside existing Blocks provided by `create-typescript-app`:
-
-```ts title="create.config.js"
-import { createConfig } from "create";
-import { blockAreTheTypesWrong, template } from "create-typescript-app";
-
-export default createConfig(template, {
-	blocks: {
-		add: [blockAreTheTypesWrong],
+	options: {
+		preset: "everything",
 	},
-	preset: "everything",
-});
-```
-
-Running `npx create` in a repository with that configuration file would add in the created outputs from `blockAreTheTypesWrong`.
-
-#### `exclude`
-
-Any Blocks to exclude from what the Preset provides.
-
-For example, this configuration file omits the default _"This package was templated with..."_ notice that comes with `create-typescript-app`:
-
-```ts title="create.config.js"
-import { createConfig } from "create";
-import { blockTemplatedBy, template } from "create-typescript-app";
-
-export default createConfig(template, {
-	blocks: {
-		exclude: [blockTemplatedBy],
-	},
-	preset: "everything",
-});
-```
-
-Running `npx create` in a repository with that configuration file would not include that Block, and so its generated README.md would not include the notice.
-
-## Custom Blocks
-
-Configurations can use Blocks beyond those included in Template Presets.
-Some Templates provide Blocks that can be opted into using [`blocks` > `add`](#add).
-
-Templates that export their Base also allow configurations to create and include their own, custom Blocks.
-See [Templating Engine](/engine/about) for documentation on creating Blocks.
-
-For example, this custom Block adds a [Wallaby configuration file](https://wallabyjs.com/docs/config):
-
-```ts
-// blockWallabyConfig.js
-import { base, blockPackageJson } from "create-typescript-app";
-
-export const blockWallabyConfig = base.createBlock({
-	about: {
-		name: "Wallaby Config",
-	},
-	produce() {
-		return {
-			files: {
-				"wallaby.js": `module.exports = function () {
-	return {
-		reportConsoleErrorAsError: true,
-	};
-};`,
-			},
-		};
+	settings: {
+		blocks: {
+			remove: [blockCSpell],
+		},
 	},
 });
 ```
 
-```ts
-// create.config.js
-import { createConfig } from "create";
-import { template } from "create-typescript-app";
+Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo typescript-app@beta --preset everything`, except all CSpell-related files and scripts would be skipped.
 
-import { blockWallabyConfig } from "./blockWallabyConfig.js";
-
-export default createConfig(template, {
-	blocks: {
-		add: [blockWallabyConfig],
-	},
-	preset: "everything",
-});
-```
-
-### Custom Blocks and Addons
-
-Custom Blocks can provide Addons to any other Blocks, including those provided by the package.
-This allows your repositories to blend in seamlessly with the features provided by your Template.
-
-For example, to add an [`@arethetypeswrong/cli`](https://www.npmjs.com/package/@arethetypeswrong/cli) lint task to the `package.json` file, a repository using the `create-typescript-app` Template could create and use a custom Block:
-
-```ts
-// blockLintAreTheTypesWrong.js
-import { base, blockPackageJson } from "create-typescript-app";
-
-export const blockLintAreTheTypesWrong = base.createBlock({
-	about: {
-		name: "Lint Are The Types Wrong",
-	},
-	produce() {
-		return {
-			addons: [
-				blockPackageJson({
-					properties: {
-						devDependencies: {
-							"@arethetypeswrong/cli": "0.17.3",
-						},
-						scripts: {
-							"lint:arethetypeswrong": "attw --pack .",
-						},
-					},
-				}),
-			],
-		};
-	},
-});
-```
-
-```ts
-// create.config.js
-import { createConfig } from "create";
-import { template } from "create-typescript-app";
-
-import { blockLintAreTheTypesWrong } from "./blockLintAreTheTypesWrong.js";
-
-export default createConfig(template, {
-	blocks: {
-		add: [blockLintAreTheTypesWrong],
-	},
-	preset: "everything",
-});
-```
-
-See the documentation of your Template for what Blocks are available and with what Addons.
+:::note
+See the documentation of your Template for what `settings` are available.
+:::

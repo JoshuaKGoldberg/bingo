@@ -3,7 +3,7 @@
 		"allowImportingTsExtensions": false,
 		"baseUrl": ".",
 		"composite": true,
-		"noEmit": false,
+		"noEmit": true,
 		"paths": {
 			"~/*": ["src/*"]
 		},

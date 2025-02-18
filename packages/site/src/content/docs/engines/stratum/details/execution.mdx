@@ -1,0 +1,20 @@
+---
+description: How Stratum Presets generate productions from their Blocks.
+title: Stratum Execution
+---
+
+Stratum [Templates](/engines/stratum/concepts/templates) don't have their own explicit `produce()` function.
+They instead automatically produce all the [Blocks](/engines/stratum/concepts/blocks) defined by their Preset.
+
+Stratum continuosly re-runs Blocks until no new Addons are provided.
+The algorithm is roughly...
+
+1. Create a queue of Blocks to be run, starting with all defined in the Preset
+   1. This also factors in any modifications per [Configurations > `settings`](/engines/stratum/details/configurations#settings)
+2. For each Block in the queue:
+   1. Get the Creation from the Block, passing any current known Addons
+   2. If a [Mode](/build/concepts/modes) is specified, additionally generate the approprate Block Creations
+   3. Store that Block's Creation
+   4. If the Block specified new addons for any defined Blocks:
+      1. Add those Blocks to the queue of Blocks to re-run
+3. Merge all Block Creations together

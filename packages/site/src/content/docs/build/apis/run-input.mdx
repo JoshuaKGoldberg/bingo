@@ -1,0 +1,84 @@
+---
+description: Bingo API to run an input.
+title: runInput
+---
+
+Given an [Input](/build/concepts/inputs), runs its `produce()` with any provided args.
+
+`runInput` takes in up to two arguments:
+
+1. `input` _(required)_: an Input
+2. `context` _(optional)_: any properties from an [Input Context](/build/details/contexts#input-contexts)
+
+`runInput` returns the result of the Input's [`produce()`](/build/apis/create-input#produce).
+
+For example, this Input production reads data from an existing `data.json` file on disk:
+
+```ts
+import { createInput, runInput } from "bingo";
+
+const inputDataJson = createInput({
+	async produce({ fs }) {
+		return await JSON.parse(await fs.readFile("data.json"));
+	},
+});
+
+// Type: string
+await runInput(inputDataJson);
+```
+
+### `args`
+
+Any args to provide to [`produce()`](/build/apis/create-input#produce), as defined by the input's [`args` schema](/build/apis/create-input#args).
+
+For example, this Input production reads data from a JSON file on disk by path:
+
+```ts
+import { Template } from "bingo";
+import { z } from "zod";
+
+const inputJsonFile = createInput({
+	args: {
+		path: z.string(),
+	},
+	async produce({ args, fs }) {
+		return await JSON.parse(await fs.readFile(args.path));
+	},
+});
+
+await runInput(inputJsonFile, {
+	args: "data.json",
+});
+```
+
+### `offline`
+
+Whether to hint to the input not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+
+For example, this input returns `undefined` instead of fetching a cat fact when `offline` is enabled:
+
+```ts
+import { createInput, runInput } from "bingo";
+import { z } from "zod";
+
+export const inputCatFact = createInput({
+	async produce({ fetchers, offline }) {
+		if (offline) {
+			return undefined;
+		}
+
+		const response = await fetchers.fetch("https://catfact.ninja/fact");
+		const data = (await response.json()) as { fact: string };
+
+		return data.fact;
+	},
+});
+
+// "Cats can jump up to 7 times their tail length."
+await runInput(inputCatFact);
+
+// undefined
+await runInput(inputCatFact, { offline: true });
+```

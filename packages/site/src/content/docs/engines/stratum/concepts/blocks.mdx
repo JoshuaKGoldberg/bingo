@@ -1,0 +1,190 @@
+---
+description: A granular piece of repository tooling for a template.
+title: Blocks
+---
+
+A _Block_ defines the logic to create a portion of a repository.
+Each Block is associated with a parent [Base](/engines/stratum/concepts/bases).
+Blocks can then be listed in [Presets](/engines/stratum/concepts/presets) associated with the same Base.
+
+Blocks can be individually added and removed by users when customizing their repository.
+
+:::tip
+Block properties are a subset of those available in [`createTemplate`](/build/apis/create-template).
+Any properties with the same name will behave similarly during production.
+:::
+
+## Production
+
+Blocks define their logic for created repository portions in a `produce()` function.
+`produce()` returns a [Creation](/build/concepts/creations) describing any produced output.
+
+When `create` scaffolds a repository from a Preset, it merges together the produced outputs from its listed Blocks.
+
+For example, this Block describes creating a `.nvmrc` file:
+
+```ts
+import { base } from "./base";
+
+export const blockNvmrc = base.createBlock({
+	produce() {
+		return {
+			files: {
+				".nvmrc": "20.12.2",
+			},
+		};
+	},
+});
+```
+
+That `blockNvmrc` can then be listed in a [Preset](/engines/stratum/concepts/presets)'s `blocks` array:
+
+```ts
+import { base } from "./base";
+import { blockNvmrc } from "./blockNvmrc";
+
+export const presetVersioned = base.createPreset({
+	blocks: [
+		blockNvmrc,
+		// ...
+	],
+});
+```
+
+That `presetVersioned` would then produce an `.nvmrc` file with text content `20.12.2` when run.
+
+```yml title=".nvmrc"
+20.12.2
+```
+
+## Options
+
+Each Block runs with the options defined by its parent [Base](/engines/stratum/concepts/bases).
+
+For example, a Base with a `name` option could create a Block that generates part of a `README.md` file:
+
+```ts
+import { base } from "./base";
+
+export const blockREADME = base.createBlock({
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.name}`,
+			},
+		};
+	},
+});
+```
+
+If `create` is run with `--name My Repository`, a `README.md` would be generated with that as its heading:
+
+```md title="README.md"
+# My Repository
+```
+
+## Addons
+
+Blocks can define additional optional data called _"Addons"_ that they can be receive from other Blocks.
+Blocks define Addons as the properties for a [Zod](https://zod.dev) object schema and then receive them in their context.
+
+For example, this Block takes in a string array under a `names` Addon, to be printed in a `names.txt` file:
+
+```ts
+import { z } from "zod";
+
+import { base } from "./base";
+
+export const blockNames = base.createBlock({
+	addons: {
+		names: z.array(z.string()).default([]),
+	},
+	async produce({ addons }) {
+		return {
+			files: {
+				"names.txt": addons.names.join("\n"),
+			},
+		};
+	},
+});
+```
+
+Other Blocks may produce Addons to be given to any other Blocks.
+These Addons will be merged together when a Preset containing the Blocks is run.
+
+For example, the following Names Block receives composed Addons from the FruitNames Block:
+
+```ts
+import { z } from "zod";
+
+import { base } from "./base";
+
+export const blockNames = base.createBlock({
+	addons: {
+		names: z.array(z.string()).default([]),
+	},
+	async produce({ addons }) {
+		return {
+			files: {
+				"names.txt": addons.names.join("\n"),
+			},
+		};
+	},
+});
+
+export const blockFruitNames = base.createBlock({
+	async produce() {
+		return {
+			addons: [
+				blockNames({
+					names: ["apple", "banana", "cherry"],
+				}),
+			],
+		};
+	},
+});
+```
+
+A Preset containing both Blocks would then produce a `names.txt` file with those three names as lines in its text:
+
+```plaintext
+// names.txt
+apple
+banana
+cherry
+```
+
+### Merging
+
+At runtime, the `create` engine will often need to re-run Blocks continuously as they receive Addons from other Blocks.
+Blocks will be re-run whenever other Blocks signal new Addon data to them that they haven't yet seen.
+This allows Blocks to not need any explicit indication of what order to run in.
+
+Addons are merged by concatenating arrays and removing duplicate elements.
+Duplicates are detected by [`hash-object`](https://www.npmjs.com/package/hash-object) object hashing.
+
+For example, given the following two Addons to be merged:
+
+```ts
+[
+	{ name: "First", steps: ["a", "b"] },
+	{ name: "Second", steps: ["c", "d"] },
+];
+```
+
+```ts
+[
+	{ name: "Second", steps: ["c", "d"] },
+	{ name: "Third", steps: ["e", "f"] },
+],
+```
+
+The merged result would be:
+
+```ts
+[
+	{ name: "First", steps: ["a", "b"] },
+	{ name: "Second", steps: ["c", "d"] },
+	{ name: "Third", steps: ["e", "f"] },
+];
+```

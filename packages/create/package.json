@@ -1,10 +1,10 @@
 {
 	"name": "create",
 	"version": "0.3.0",
-	"description": "Composable, testable, type-safe templates. 💝",
+	"description": "You probably meant `npm create`, not `npx create`. ❌",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/create",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
 		"directory": "packages/create"
 	},
 	"license": "MIT",
@@ -13,7 +13,6 @@
 		"email": "npm@joshuakgoldberg.com"
 	},
 	"type": "module",
-	"main": "./lib/index.js",
 	"bin": "./bin/index.js",
 	"files": [
 		"lib/",
@@ -21,28 +20,8 @@
 		"LICENSE.md",
 		"README.md"
 	],
-	"scripts": {
-		"build": "tsc"
-	},
 	"dependencies": {
-		"@clack/prompts": "^0.10.0",
-		"cached-factory": "^0.1.0",
-		"chalk": "^5.4.1",
-		"create-fs": "workspace:^",
-		"execa": "^9.5.2",
-		"get-github-auth-token": "^0.1.1",
-		"hash-object": "^5.0.1",
-		"hosted-git-info": "^8.0.2",
-		"import-local-or-npx": "^0.3.0",
-		"octokit": "^4.1.0",
-		"prettier": "3.5.0",
-		"read-pkg": "^9.0.1",
-		"without-undefined-properties": "^0.1.1",
-		"zod": "^3.24.1"
-	},
-	"devDependencies": {
-		"@types/hosted-git-info": "3.0.5",
-		"@types/node": "22.13.0"
+		"chalk": "^5.4.1"
 	},
 	"engines": {
 		"node": ">=18"

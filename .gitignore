@@ -1,4 +1,5 @@
 *.tsbuildinfo
+*.tsbuildinfo
 coverage/
 lib/
 node_modules/

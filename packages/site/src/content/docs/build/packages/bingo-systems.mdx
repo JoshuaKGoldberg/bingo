@@ -1,0 +1,251 @@
+---
+description: File, network, and shell wrapper APIs used by Bingo. 🧰
+title: bingo-systems
+---
+
+import { PackageManagers } from "starlight-package-managers";
+
+File, network, and shell wrapper APIs used by Bingo. 🧰
+
+<PackageManagers type="add" pkg="bingo-systems" />
+
+The `bingo-systems` package contains functions and types for the shared wrapper APIs used by Bingo templates.
+These wrappers are made available to templates via [Input Contexts](/build/details/contexts#input-contexts).
+
+## `BingoSystem`
+
+The `BingoSystem` interface describes the shared object used by many Bingo APIs.
+
+```ts
+import { SystemFetchers, WritingFileSystem, SystemRunner } from "bingo-systems";
+
+export interface BingoSystem {
+	fetchers: SystemFetchers;
+	fs: WritingFileSystem;
+	runner: SystemRunner;
+}
+```
+
+The properties of `BingoSystem` describe three areas of native APIs:
+
+- [`fetchers`](#fetchers): sending network requests
+- [`fs`](#files): interacting with directories and files on disk
+- [`runner`](#runner): executing shell commands
+
+## Fetchers
+
+Wrappers around sending network requests with [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+```ts
+import { Octokit } from "octokit";
+
+export interface SystemFetchers {
+	fetch: typeof fetch;
+	octokit: Octokit;
+}
+```
+
+The `octokit` property is also available as a convenience for sending GitHub API requests.
+This is typically used to populate repository settings via the API.
+
+### `createSystemFetchers`
+
+Creates a new `SystemFetchers` instance.
+
+```ts
+import { createSystemFetchers } from "bingo-systems";
+
+const fetchers = createSystemFetchers();
+
+await fetchers.fetch("...");
+```
+
+Takes in an optional object parameter with up to two properties:
+
+- `auth` (`string`): a GitHub auth token to pass to the `octokit`
+- `fetch`: a function to use in place of the global [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+  - This is used both for the `fetch` property and in the `octokit`
+
+#### `auth` {#createsystemfetchers-auth}
+
+A GitHub auth token to pass to the `octokit`.
+
+If not provided, the `octokit` will run as an anonymous user without authentication.
+
+For example, this authenticates with the running user's auth token if possible via [`get-github-auth-token`](https://www.npmjs.com/package/get-github-auth-token):
+
+```ts
+import { createSystemFetchers } from "bingo-systems";
+import { getGitHubAuthToken } from "get-github-auth-token";
+
+const auth = await getGitHubAuthToken();
+
+createSystemFetchers({
+	auth: auth.succeeded ? auth.token : undefined,
+});
+```
+
+:::tip
+See [`createSystemFetchersWithAuth`](#createsystemfetcherswithauth) for a wrapper function that looks up the running user's GitHub auth token if possible.
+:::
+
+#### `fetch` {#createsystemfetchers-fetch}
+
+A function to use in place of the global [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+This can be useful if you'd like network requests to be instrumented and/or run in a virtual environment.
+
+For example, this adds logging to all network requests, including those in the `octokit`:
+
+```ts
+import { createSystemFetchers } from "bingo-systems";
+
+createSystemFetchers({
+	fetch: (...args) => {
+		const request = new Request(...args);
+		request.headers.set("Authorization", "Bearer ...");
+		return await fetch(request);
+	},
+});
+```
+
+### `createSystemFetchersOffline`
+
+A version of [`createSystemFetchers`] that throws errors inside network requests.
+It takes no parameters.
+
+```ts
+import { createSystemFetchersOffline } from "bingo-systems";
+
+const fetchers = createSystemFetchersOffline();
+
+// Error: Offline specified. This request should be caught by its Input.
+await fetchers.fetch("...");
+```
+
+Bingo uses this function when the [`--offline` flag](/cli#--offline) is enabled.
+
+### `createSystemFetchersWithAuth`
+
+An asynchronous version of [`createSystemFetchers`](#createsystemfetchers) that retrieves the running user's GitHub auth token, if possible.
+
+```ts
+import { createSystemFetchersWithAuth } from "bingo-systems";
+
+const fetchers = createSystemFetchersWithAuth();
+
+await fetchers.fetch("...");
+```
+
+`createSystemFetchersWithAuth` takes in the same optional parameter properties as [`createSystemFetchers`](#createsystemfetchers), except for `auth`.
+
+:::tip
+See [`get-github-auth-token`](https://npmjs.com/package/get-github-auth-token) for details on how to specify the GitHub auth token.
+It can read the auth token if the user has logged in with the [`gh` CLI](https://cli.github.com).
+:::
+
+## Files
+
+Wrappers around accessing directories and files with [`node:fs`](https://nodejs.org/api/fs.html).
+
+### `ReadingFileSystem`
+
+_Reading_ file systems are provided to [Input Contexts](/build/details/contexts#input-contexts).
+These file systems expose simplified views of the underlying directories and files that are tailored to working with [`bingo-fs`](/build/packages/bingo-fs).
+
+```ts
+export type ReadDirectory = (filePath: string) => Promise<string[]>;
+
+export type ReadFile = (filePath: string) => Promise<string>;
+
+export interface ReadingFileSystem {
+	readDirectory: ReadDirectory;
+	readFile: ReadFile;
+}
+```
+
+#### `createReadingFileSystem`
+
+Creates a new `ReadingFileSystem` instance.
+Internally, it calls to [`node:fs`](https://nodejs.org/api/fs.html) to read directories and files.
+
+```ts
+import { createReadingFileSystem } from "bingo-systems";
+
+const files = createReadingFileSystem();
+
+await files.readDirectory("src");
+await files.readFile("src/index.js");
+```
+
+### `WritingFileSystem`
+
+_Writing_ file systems are provided to [`runTemplate`](/build/apis/run-template).
+These expose a superset of the _reading_ APIs by adding in methods to write to the file system.
+
+```ts
+export interface WritingFileSystem extends ReadingFileSystem {
+	writeDirectory: WriteDirectory;
+	writeFile: WriteFile;
+}
+```
+
+#### `createWritingFileSystem`
+
+Creates a new `WritingFileSystem` instance.
+Internally, it calls to [`node:fs`](https://nodejs.org/api/fs.html) to read and write directories and files.
+
+```ts
+import { createWritingFileSystem } from "bingo-systems";
+
+const files = createWritingFileSystem();
+
+await files.writeDirectory("src");
+await files.readFile("src/index.js", `console.log("Hello, world!");`);
+```
+
+## Runner
+
+Wrapper around executing shell commands with [`execa`](https://github.com/sindresorhus/execa).
+
+```ts
+import { ExecaError, Result } from "execa";
+
+export type SystemRunner = (command: string) => Promise<ExecaError | Result>;
+```
+
+### `createSystemRunner`
+
+Creates a new `SystemRunner` function.
+Internally it calls to `execa` with [`reject: false`](https://github.com/sindresorhus/execa/blob/main/docs/errors.md#preventing-exceptions) to return an error instead of rejecting.
+
+```ts
+import { createSystemRunner } from "bingo-systems";
+
+const runner = createSystemRunner();
+
+await runner("git branch -D master");
+```
+
+`createSystemRunner` takes a single parameter:
+
+- `directory` _(`string`)_: the current working directory to execute from (by default, `"."`)
+
+`createSystemRunner` returns either:
+
+- [`ExecaError`](https://github.com/sindresorhus/execa/blob/main/docs/api.md#execaerror): if the command failed to execute
+- [`Result`](https://github.com/sindresorhus/execa/blob/main/docs/api.md#result): if the command succeeded
+
+```ts
+import { createSystemRunner } from "bingo-systems";
+
+const runner = createSystemRunner();
+
+const result = await runner("git tag -l");
+
+if (result.failed) {
+	console.error(result.stderr);
+} else {
+	console.log(result.stdout);
+}
+```

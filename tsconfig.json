@@ -3,6 +3,7 @@
 		"allowJs": true,
 		"composite": false,
 		"declaration": false,
+		"declarationMap": false,
 		"noEmit": true
 	},
 	"extends": "./tsconfig.base.json",

@@ -1,71 +1,22 @@
 ---
-description: "Running create on your command line."
+description: "Running Bingo on your command line."
 title: CLI
 ---
 
 import { PackageManagers } from "starlight-package-managers";
 
-The `create` CLI is what you run to generate a new repository or migrate an existing one.
-It will interactively prompt you for any options it needs to run that can't be inferred from disk.
+The `bingo` CLI is what you run to set up a new repository or transition an existing one.
+It will interactively prompt you for any required options that can't be inferred from disk.
 
-<PackageManagers type="dlx" pkg="create" args="typescript-app@beta" />
-
-## Modes
-
-The `create` CLI will automatically detect which [`--mode`](#-m----mode) it is being run in:
-
-- [Initialization](#initialization-mode): Creating a new repository from a template
-- [Migration](#migration-mode): Updating an existing repositories to a new version of a template
-
-### Initialization Mode
-
-Creates a new repository from a template.
-This mode will be used by default if the current directory is empty.
-
-For example, to generate a new repository using [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
-
-<PackageManagers type="dlx" pkg="create" args="typescript-app@beta" />
-
-```plaintext
-┌  ✨ create ✨
-│
-│  Welcome to create: a delightful repository templating engine.
-│
-│  Learn more about create on:
-│    https://create.bingo
-│
-│  Running with mode --initialize for a new repository using the template:
-│    create-typescript-app
-```
-
-### Migration Mode
-
-Updates an existing repository to a new version of a template.
-This mode will be used by default if the current directory is a Git repository and/or contains a [`create.config.*` configuration file](./configuration).
-
-For example, to update an existing repository to the latest [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
-
-<PackageManagers type="dlx" pkg="create" args="typescript-app@beta" />
-
-```plaintext
-┌  ✨ create ✨
-│
-│  Welcome to create: a delightful repository templating engine.
-│
-│  Learn more about create on:
-│    https://create.bingo
-│
-│  Running with mode --migrate for an existing repository using the template:
-│    create-typescript-app
-```
+<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta" />
 
 ## Flags
 
-The first argument passed to `create` can be a shorthand `--from`](#-f----from) for an npm package default-exporting a [Template](./concepts/templates).
+The first argument passed to Bingo can be a shorthand [`--from`](#--from) for an npm package default-exporting a template.
 A shorthand name excludes the `create-` prefix to an npm package name that starts with `create-`.
 
 :::tip
-The `create` CLI is a general runner to pull in information from templates.
+The Bingo CLI is a general runner to pull in information from templates.
 See the documentation for your specific template for additional flags.
 :::
 
@@ -84,7 +35,7 @@ For example, creating a new repository in a subdirectory:
 
 <PackageManagers
 	type="dlx"
-	pkg="create"
+	pkg="bingo"
 	args="typescript-app@beta --directory my-fancy-project"
 />
 
@@ -98,13 +49,13 @@ This can be either:
 
 - A full npm package name, such as `create-typescript-app`
   - Use this if you'd like to specify a package name that doesn't begin with `create-`
-- A relative path to import from: such as `npx create --from ./path/to/repository`
+- A relative path to import from: such as `npx bingo --from ./path/to/repository`
 
 For example, using an org-scoped package:
 
 <PackageManagers
 	type="dlx"
-	pkg="create"
+	pkg="bingo"
 	args="--from @joshuakgoldberg/my-fancy-template"
 />
 
@@ -114,22 +65,22 @@ For example, using an org-scoped package:
 
 Prints help text.
 
-<PackageManagers type="dlx" pkg="create" args="--help" />
+<PackageManagers type="dlx" pkg="bingo" args="--help" />
 
 ### `--mode`
 
 > Type: `string`
 
-Which [mode](#modes) to run in.
+Which [Execution Mode](/execution) to run in.
 
-If not provided, it will be inferred based on whether `create` is being run in an existing repository.
+If not provided, it will be inferred based on whether Bingo is being run in an existing repository.
 
 For example, specifying creating a new repository with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
 <PackageManagers
 	type="dlx"
-	pkg="create"
-	args="typescript-app@beta --mode initialize"
+	pkg="bingo"
+	args="typescript-app@beta --mode setup"
 />
 
 ### `--offline`
@@ -138,42 +89,26 @@ For example, specifying creating a new repository with [`create-typescript-app`]
 
 Whether to run in an "offline" mode that skips network requests.
 
-If provided, templates will be told not to make any network requests.
+If provided, templates will be hinted to not make any network requests.
 That often means they will install from offline caches, skip creating a repository on GitHub, and skip sending GitHub API requests.
 The repository will roughly be a local-only creation.
 
 For example, specifying creating a new repository offline with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="create" args="typescript-app@beta --offline" />
+<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta --offline" />
 
 :::caution
-`--offline` doesn't prevent templates from running scripts that may make network requests.
-If you are finding your template still sends requests offline, file a bug on the template.
+`--offline` doesn't prevent templates from accidentally running scripts that make network requests.
+If you are finding your template still sends requests with `--offline`, file a bug on the template.
 :::
-
-### `--preset`
-
-> Type: `string`
-
-Which [Preset](./engine/concepts/presets) to use from the template.
-
-If not provided, `create` will prompt the user to select one.
-
-For example, specifying the _common_ preset for [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
-
-<PackageManagers
-	type="dlx"
-	pkg="create"
-	args="typescript-app@beta --preset common"
-/>
 
 ### `--version`
 
 > Type: `boolean`
 
-Prints the `create` package version.
+Prints the Bingo package version.
 
-<PackageManagers type="dlx" pkg="create" args="--version" />
+<PackageManagers type="dlx" pkg="bingo" args="--version" />
 
 ## Template Options
 
@@ -183,20 +118,10 @@ For example, if a template defines a `title` option, `--title` will be type `str
 
 <PackageManagers
 	type="dlx"
-	pkg="create"
+	pkg="bingo"
 	args="typescript-app@beta --title 'My New App'"
 />
 
-Any required options that are not provided will be prompted for by the `create` CLI.
+Any required options that are not provided will be prompted for by the Bingo CLI.
 
 See the documentation for your specific template for additional flags.
-
-### Block Exclusions
-
-Individual [Blocks](./engine/concepts/blocks) from a template may be excluded with `--exclude-*` flags, where `*` is the `kebab-case` name of the Block.
-
-For example, if a Block is named `Vitest`, its exclusion flag would be `--exclude-vitest`:
-
-```ts
-npx create typescript-app@beta --exclude-vitest
-```

@@ -1,0 +1,183 @@
+---
+description: Frequently asked questions about building templates with Bingo.
+title: FAQs
+---
+
+## Engines
+
+### What should I do if my template has many files and/or options?
+
+> Or: how do I scale the template's `produce()` function?
+
+It depends on how many files and/or options your template includes.
+In increasing order of scale:
+
+1. If your template produces fewer than ~10 files, consider keeping them all inline in `produce()`
+2. Up to around ~20 files, consider splitting helper functions out for `produce()`'s readabability
+3. After ~20 files, consider onboarding to one of the [Templating Engines](/engines/about):
+   1. If there are many files but not many options, consider the [Handlebars engine](/engines/handlebars/about)
+   2. If there are many files and many options, consider the [Stratum engine](/engines/stratum/about)
+
+If you're writing your first template, it's recommended to go through that list in order.
+Start small and learn Bingo on its own before moving up to a more rich templating engine.
+
+## Options
+
+### Why are options defined as an object with Zod schemas as properties, not a Zod object schema itself?
+
+> Or: why not allow non-object types for options schemas, such as the following `z.union()`?
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	about: { name: "My Template" },
+	options: z.union([
+		z.object({ a: z.string(), b: z.number() }),
+		z.object({ c: z.number(), d: z.string() }),
+	]),
+	produce({ options }) {
+		// ...
+	},
+});
+```
+
+Template options are converted to CLI flags before templates are run.
+Having the Bingo CLI map from complex conditional Zod types to CLI flags is a difficult task.
+Soon, Bingo-specific tooling will be able to describe full documentation websites that will also need to parse CLI flags.
+
+Conditional CLI flags are also more confusing for users.
+Having to understand union types or other concepts to know which flags are available adds cognitive burden to using a template.
+
+Instead of describing a schema as a complex type itself, consider moving the complex type to a property of the options object:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	about: { name: "My Template" },
+	options: {
+		letters: z.union([
+			z.object({ a: z.string(), b: z.number() }),
+			z.object({ c: z.number(), d: z.string() }),
+		]),
+	},
+	produce({ options }) {
+		// ...
+	},
+});
+```
+
+If you have a use case for root-level flags that shouldn't be made into an options object property, please [file a feature request issue on Bingo](https://github.com/JoshuaKGoldberg/bingo/issues/new?template=03-feature.yml).
+
+### Why do templates define a separate `prepare()`, not Zod methods like `refine` or `transform`?
+
+Bingo intentionally does not use any Zod features beyond creating and describing schemas.
+This is for two reasons:
+
+- Bases often need data to be shared between multiple -even many- different Options.
+  Loading implementations become much cleaner when all data loaders can be declared once in a `prepare()` function,
+  wrapped in a caching [`lazyValue`](https://github.com/sindresorhus/lazy-value), then used as needed across any number of Options.
+- Long-term, the engine should not be locked into any one schema engine.
+  Adopting Zod-specific features will make it harder to swap between other implementers of [standard-schema](https://github.com/standard-schema/standard-schema) in the future if needed.
+
+See the [`create-example` Base `prepare()` implementation](https://github.com/JoshuaKGoldberg/create-example/blob/c6714eeb02a5106eb5e4e4694f1e8b590444030d/src/base.ts#L138) (TODO: FIX LINK once it exists 😄) for an example of values used across Options.
+
+### Why is the template `prepare()` function synchronous?
+
+> Or: why must options defaults be provided as asynchronous functions, rather than having `prepare()` itself `await` for their values?
+
+Option values might be provided by the user.
+When an option is provided via an explicit CLI flag or in a producer API, its default logic shouldn't be awaited.
+
+If a user provides explicit values for all options then the `prepare()` function should take as little time as possible: i.e. it should be synchronous.
+
+### Why should we use `take` and Inputs in `prepare()`?
+
+> Or: why not directly call to `fetch()`, `fs.readFile`, and other external resource APIs in [`createTemplate` > `prepare()`](/build/apis/create-template#asynchronous-defaults)?
+
+You can certainly use those APIs in your `prepare()` functions.
+However, mocking out resources during unit testing is much harder if you do.
+
+[`bingo-testers`](/build/packages/bingo-testers) functions allow injecting mock versions of [context properties](/build/details/contexts).
+They will also throw an error if you accidentally call to a context property without providing a mock function for it.
+This can prevent accidental file writes, network calls, and script commands when running unit tests.
+
+See [Packages > `bingo-systems`](/build/packages/bingo-systems) for documentation on the system call wrappers.
+
+### Why is the `prepareOptions()` API not a part of `produceTemplate()` or `runTemplate()`?
+
+Not every caller of [`produceTemplate()`](/build/apis/produce-template) or [`runTemplate()`](/build/apis/run-template) may want to asynchronously load in options.
+Some callers might have separately loaded in all required options, and not want to allow any to run their defaults logic.
+
+## Productions
+
+### Can `produce()`, `setup()`, or `transition()` run asynchronously?
+
+> Or: why are these methods synchronous?
+
+Any information that you would want to read asynchronously should be taken in as options.
+Options allow defining important intake information with well-typed Zod schemas and `prepare()` logic to efficiently infer default values.
+
+If you have a use case for information that should be asynchronously loaded but cannot be an option, please [file a feature request issue on Bingo](https://github.com/JoshuaKGoldberg/bingo/issues/new?template=03-feature.yml).
+
+### How should I make all file creations formatted consistently?
+
+> Or: is there a way to run a formatter such as [Prettier](https://prettier.io) on all created files?
+
+The recommended approach is to have a [`scripts` creation](/build/concepts/creations#scripts) run the formatter in the same way the created repository will.
+If you want your files to be formatted consistently, chances are your users will as well.
+
+This template sets up Prettier and includes a script creation to run it after creating files:
+
+```ts
+import { format } from "@prettier/sync";
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	about: { name: "My Template" },
+	produce() {
+		return {
+			files: {
+				"README.md": `# Hello, world!`,
+				"index.js": `console.log("Hello, world!");`,
+				"package.json": JSON.stringify({
+					devDependencies: {
+						prettier: "3",
+					},
+					scripts: {
+						format: "prettier .",
+					},
+				}),
+			},
+			scripts: ["npm run format -- --write"],
+		};
+	},
+});
+```
+
+If you don't want to configure a formatter for users, you can instead use a synchronous API from the formatter on all created files.
+This template uses [`@prettier/sync`](https://npmjs.com/package/@prettier/sync) to format a few files:
+
+```ts
+import { format } from "@prettier/sync";
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	about: { name: "My Template" },
+	produce() {
+		return {
+			files: {
+				"README.md": format(`# Hello, world!`, { parser: "md" }),
+				"index.js": format(`console.log("Hello, world!");`, { parser: "js" }),
+				"package.json": format(
+					JSON.stringify({
+						// ...
+					}),
+					{ parser: "json" },
+				),
+			},
+		};
+	},
+});
+```

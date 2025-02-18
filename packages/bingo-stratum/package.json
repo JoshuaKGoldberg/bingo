@@ -1,0 +1,45 @@
+{
+	"name": "bingo-stratum",
+	"version": "0.2.0",
+	"description": "Highly composable, customizable templating engine for Bingo. 🏭",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/bingo-stratum"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"main": "./lib/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"hash-object": "^5.0.1",
+		"octokit": "^4.1.2",
+		"slugify": "^1.6.6",
+		"without-undefined-properties": "^0.1.1"
+	},
+	"devDependencies": {
+		"@types/node": "22.13.4",
+		"bingo": "workspace:^"
+	},
+	"peerDependencies": {
+		"bingo": "workspace:^",
+		"bingo-fs": "workspace:^",
+		"bingo-systems": "workspace:^",
+		"zod": "^3.24.2"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

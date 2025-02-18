@@ -1,0 +1,42 @@
+---
+description: "How template options can be defaulted using system resources."
+title: Inputs
+---
+
+An _Input_ is how template options can use external resources such as the file system.
+Each input defines:
+
+- Any number of arguments that it takes in
+- A production method that reads from system resources
+
+Inputs are created using [APIs > `createInput()`](/build/apis/create-input).
+
+For example, this Input defines a required `path` string to read from a file on disk:
+
+```ts
+import { createInput } from "bingo";
+import { z } from "zod";
+
+export const inputFromFile = createInput({
+	args: {
+		path: z.string(),
+	},
+	async produce({ args, fs }) {
+		return await fs.readFile(args.path);
+	},
+});
+```
+
+Using `take` and Inputs to access external resources allows for straightforward mocking of those resources during unit tests.
+See [Templating FAQs > Why should we use `take` and Inputs in `prepare()`?](/build/faqs#why-should-we-use-take-and-inputs-in-prepare).
+
+## Provided Inputs
+
+Bingo manages a small set of commonly useful Inputs:
+
+- [`input-from-fetch`](https://www.npmjs.com/package/input-from-fetch): Sends a network request
+- [`input-from-file`](https://www.npmjs.com/package/input-from-file): Reads a file's contents as text
+- [`input-from-file-json`](https://www.npmjs.com/package/input-from-file-json): Parse's a file's text contexts with `JSON.parse`
+- [`input-from-script`](https://www.npmjs.com/package/input-from-script): Runs a script command
+
+See those individual packages for their documentation.

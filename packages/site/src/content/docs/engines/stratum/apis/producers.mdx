@@ -1,0 +1,300 @@
+---
+description: Stratum APIs to produce individual Blocks and Presets.
+title: Stratum Producer APIs
+---
+
+Stratum generally reuses existing Bingo producer APIs when possible:
+
+- [Base](/engines/stratum/concepts/bases) options can be prepared using the same API as Templates: [`prepareOptions` > Custom Engine Preparations](/build/apis/prepare-options#custom-engine-preparations).
+- [Templates](/engines/stratum/concepts/templates) are standard Bingo templates, and so can be provided to [`produceTemplate`](/build/apis/produce-template) and [`runTemplate`](/build/apis/run-template).
+
+The `bingo-stratum` package provides additional producer APIs for other layers:
+
+- [`produceBlock`](#produceblock): runs a [Block](/engines/stratum/concepts/blocks) production
+- [`producePreset`](#producepreset): runs a [Preset](/engines/stratum/concepts/presets) production
+
+Each Stratum production API allows up to two parameters:
+
+1. The construct to be produced
+2. An object with properties from the corresponding [Stratum Context](/engines/stratum/details/contexts)
+
+:::note
+Stratum production APIs only generate creations in memory.
+For APIs to apply those creations, see [Runners](/engines/stratum/apis/runners).
+:::
+
+## `produceBlock`
+
+Given a [Block](/engines/stratum/concepts/blocks), creates a [Creation](/build/concepts/creations) output by running its [`produce()`](/engines/stratum/apis/create-base#createblock-produce).
+
+`produceBlock` allows up to two parameters:
+
+1. `block` _(required)_: a Block
+2. `context` _(required)_: any properties from a [Block Context](/engines/stratum/details/contexts#block-contexts)
+
+For example, given this Block that produces the start of a README.md file, `produceBlock` can run its `produce()` with any provided options:
+
+```ts
+import { Base, createBlock } from "bingo-stratum";
+
+declare const base: Base<{ title: string }>;
+
+const blockReadme = base.createBlock({
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+
+// { files: { "README.md": `# My App` }}
+produceBlock(blockReadme, { options: { title: "My App" } });
+```
+
+### `addons` {#produceblock-addons}
+
+Any number of [Addons](/engines/stratum/apis/create-base/#createblock-addons) defined by the Block.
+
+For example, given this Block with a `prefix` Addon and a `name` Option, both can be specified in `produceBlock`:
+
+```ts
+import { Base, createBlock } from "bingo-stratum";
+
+declare const base: Base<{ name: string }>;
+
+const blockPrefixedReadme = base.createBlock({
+	addons: {
+		prefix: z.string().default("My"),
+	},
+	produce({ addons, options }) {
+		return {
+			files: {
+				"README.md": `# ${addons.prefix} ${options.title}`,
+			},
+		};
+	},
+});
+
+// { files: { "README.md": `# The App` }}
+produceBlock(blockPrefixedReadme, {
+	addons: {
+		prefix: "The",
+	},
+	options: {
+		name: "App",
+	},
+});
+```
+
+### `offline` {#produceblock-offline}
+
+Whether to hint to the Block not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+If provided, [Input Context fetchers](/build/details/contexts#input-fetchers) will be hinted not to make any network requests.
+
+For example, this Base is told to run offline:
+
+```ts
+import { produceBlock } from "bingo";
+
+import { base } from "./base";
+
+const blockInstallDependencies = base.createBlock({
+	produce({ offline }) {
+		return {
+			scripts: [offline ? "pnpm install --offline" : "pnpm install"],
+		};
+	},
+});
+
+// { scripts: ["pnpm install"] }
+produceBlock(blockInstallDependencies);
+
+// { scripts: ["pnpm install --offline"] }
+produceBlock(blockInstallDependencies, { offline: true });
+```
+
+### `options` {#produceblock-options}
+
+Any number of options defined by the Block's [Base](/engines/stratum/concepts/bases).
+
+For example, this Block is run with one `repository` option:
+
+```ts
+import { createBase } from "bingo-stratum";
+import { z } from "zod";
+
+const base = createBase({
+	options: {
+		repository: z.string(),
+	},
+});
+
+const blockPackageJson = createBlock({
+	produce() {
+		return {
+			files: {
+				"package.json": JSON.stringify({ name: options.repository }),
+			},
+		};
+	},
+});
+
+// { files: { "package.json": `{repository":"my-app"}` } }
+produceBlock(block, {
+	options: {
+		repository: "my-app",
+	},
+});
+```
+
+## `producePreset`
+
+Given a [Preset](/engines/stratum/concepts/presets) and the name of one of its [Presets](/engines/stratum/concepts/presets), creates a [Creation](/build/concepts/creations) output by running each of its Blocks [`produce()`](/engines/stratum/concepts/blocks#production).
+
+`producePreset` allows up to two parameters:
+
+1. `preset` _(required)_: a Preset
+2. `context` _(optional)_: any of the following properties
+
+`producePreset` returns the Preset's [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations).
+
+For example, given this Preset that includes the `blockReadme` from [`produceBlock`](#produceblock), `producePreset` can run its `produce()` with any provided options:
+
+```ts
+import { producePreset } from "bingo";
+
+import { base } from "./base";
+import { blockReadme } from "./blockReadme";
+
+const preset = base.createPreset({
+	name: "Example",
+	blocks: [blockReadme],
+});
+
+// { files: { "README.md": `# My App` } }
+producePreset(preset, {
+	options: { title: "My App" },
+});
+```
+
+### `addons` {#preset-addons}
+
+Any [Addons](/engines/stratum/apis/create-base#createblock-addons) to pass to the Preset's Blocks.
+
+For example, this production adds a `"generated"` Addon to a Prettier Block:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+import { blockPrettier } from "./blockPrettier";
+
+declare const preset: Preset;
+
+producePreset(preset, {
+	addons: [blockPrettier({ ignores: ["generated"] })],
+	options: {
+		name: "My Production",
+	},
+	preset: "example",
+});
+```
+
+### `blocks` {#preset-blocks}
+
+Any Blocks to `add` and/or `remove`.
+
+For example, this production swaps in a Jest Block instead of a Vitest Block:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+import { blockJest } from "./blockJest";
+import { blockVitest } from "./blockVitest";
+
+declare const preset: Preset;
+
+producePreset(preset, {
+	blocks: {
+		add: [blockJest],
+		exclude: [blockVitest],
+	},
+	options: {
+		name: "My Production",
+	},
+	preset: "example",
+});
+```
+
+See [Configurations > `blocks`](/engines/stratum/details/configurations#blocks) for how this is used.
+
+### `offline` {#preset-offline}
+
+Whether to hint to the Template not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+If provided, [Input Context fetchers](/build/details/contexts#input-fetchers) will be hinted not to make any network requests.
+
+For example, this Template is told to run offline:
+
+```ts
+import { Template from "bingo";
+import { z } from "zod";
+
+declare const preset: Preset;
+
+producePreset(preset, {
+	offline: true,
+	options: {},
+	preset: "example"
+});
+```
+
+:::caution
+`offline` doesn't prevent Presets from making network requests outside of the Input fetchers.
+If you are finding your Preset still sends requests offline, file a bug on the Preset.
+:::
+
+### `options` {#preset-options}
+
+Any options defined by the Preset's [Base](/engines/stratum/concepts/bases).
+
+This must include all required options from the Base.
+It may also include any other optional Options.
+
+For example, this Preset is run with a `name` option:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+declare const preset: Preset<{ name: z.ZodString }>;
+
+producePreset(preset, {
+	options: {
+		name: "My Production",
+	},
+	preset: "example",
+});
+```
+
+#### Adding Base Options
+
+Although Presets are associated with [Bases](/engines/stratum/concepts/bases), running `producePreset` does not automatically infer default option values.
+If you want to include the inferred options from a Preset's Base you'll have to call the [`prepareOptions`](/build/apis/prepare-options) API first yourself.
+
+For example, this directly passes produced Options from a Base to a Preset:
+
+```ts
+import { base } from "./base";
+import { preset } from "./preset";
+
+const options = await prepareBase(base);
+
+producePreset(preset, { options });
+```

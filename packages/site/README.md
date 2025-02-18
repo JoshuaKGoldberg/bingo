@@ -1,8 +1,8 @@
-# `create` Site 💝
+# Bingo Site 💝
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
 
-A website for `create` and its associated packages.
+A website for Bingo and its associated packages.
 
 ## Running the site locally
 

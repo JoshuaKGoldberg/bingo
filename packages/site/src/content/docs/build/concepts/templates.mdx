@@ -1,0 +1,74 @@
+---
+description: "How Bingo templates define their options and producer functions."
+title: Templates
+---
+
+A _Template_ is a description of how to setup or transition a repository given a set of options.
+
+Each Bingo template defines:
+
+1. The options it takes in, defined as Zod schemas
+2. A "producer" function that takes in those options and outputs a description of a repository
+
+:::tip
+Bingo templates are conventionally stored in packages whose names start with `create-`.
+See [JoshuaKGoldberg/create-example](https://github.com/JoshuaKGoldberg/create-example) for an example starter repository template.
+:::
+
+## Defining Templates
+
+Bingo templates are defined with the [`createTemplate`](/build/apis/create-template) function exported by the Bingo npm package.
+It takes in an object with properties for those options and producer function.
+It returns a [`Creation`](/build/concepts/creations) object.
+
+The following example template takes in a `repository` option and produces a `README.md` file with a heading:
+
+```ts title="example-template.js"
+import { createTemplate } from "bingo";
+import { z } from "zod";
+
+export default createTemplate({
+	options: {
+		title: z.string(),
+	},
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+```
+
+If someone were to run `npx bingo ./example-template.js`, it would know to ask for a `title`:
+
+```plaintext title="npx bingo ./example-template.js"
+┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+│
+│  Learn more about Bingo on:
+│    https://create.bingo
+│
+│  Running with mode --setup for a new repository using the template:
+│    ./example-template.js
+|
+| What will the title be? (--title)
+```
+
+If someone were to run `npx bingo ./example-template.js --title "Hello World"`, a `README.md` file would be created with that title as a heading:
+
+```md title="README.md"
+# Hello World
+```
+
+## Templating Engines
+
+A single `produce()` function generally doesn't scale well beyond small straightforward repositories.
+Templates generally end up using one or more template systems for defining files.
+
+1. [Handlebars](/engines/handlebars/about): allows defining files as [handlebars](https://handlebarsjs.com) templates.
+   Generally recommended for straightforward templates that have more than a half dozen files.
+2. [Stratum](/engines/stratum/about): a rich system to define each feature of a template as an independent "Blocks".
+   Recommended for templates that want to allow rich logic and/or multiple starting presets.
+
+See [Templating Engines](/engines/about) for more information.

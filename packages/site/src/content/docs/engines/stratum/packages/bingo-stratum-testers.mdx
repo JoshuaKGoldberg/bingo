@@ -1,0 +1,153 @@
+---
+description: Test utilities for Stratum Blocks and Presets. 🧑‍🔧
+title: bingo-stratum-testers
+---
+
+import { PackageManagers } from "starlight-package-managers";
+
+Test utilities for Stratum Blocks and Presets. 🧑‍🔧
+
+<PackageManagers type="add" pkg="bingo-stratum-testers" dev />
+
+The separate `bingo-stratum-testers` package includes testing utilities that run [Blocks](/engines/stratum/concepts/blocks) and [Presets](/engines/stratum/concepts/presets) in fully virtualized environments.
+This is intended for use in unit tests that should mock out all [Stratum Contexts](/engines/stratum/details/contexts).
+
+:::tip
+`bingo-stratum-testers` is test-framework-agnostic.
+You can use it with any typical testing framework, including [Jest](https://jestjs.io) and [Vitest](https://vitest.dev).
+:::
+
+Stratum generally reuses existing Bingo tester APIs when possible:
+
+- [Base](/engines/stratum/concepts/bases) options can be prepared using the same API as Templates: [`bingo-testers` > `testOptions`](/build/packages/bingo-testers#testoptions).
+- [Templates](/engines/stratum/concepts/templates) are standard Bingo templates, and so can be provided to [`bingo-testers` > `testTemplate`](/build/packages/bingo-testers#testtemplate).
+
+Other Stratum constructs behave differently:
+
+- [Blocks](/engines/stratum/concepts/blocks): may be tested directly with [`testBlock`](#testblock)
+- [Presets](/engines/stratum/concepts/presets): do not have a corresponding API, as they can be tested by passing the `preset` option to a Template that includes them
+
+## `testBlock`
+
+For [Blocks](/engines/stratum/concepts/blocks), a `testBlocks` function is exported that is analogous to [`produceBlock`](/engines/stratum/apis/producers#produceblock).
+It takes in similar arguments:
+
+1. `block` _(required)_: a [Block](/engines/stratum/concepts/blocks)
+2. `settings` _(optional)_: any properties from a [Block Context](/engines/stratum/details/contexts#block-contexts)
+
+For example, this test asserts that an nvmrc Block creates an `.nvmrc` file with content `"20.12.2"`:
+
+```ts
+import { testBlock } from "create-testers";
+import { describe, expect, it } from "vitest";
+
+import { blockNvmrc } from "./blockNvmrc";
+
+describe("blockNvmrc", () => {
+	it("returns an .nvmrc", async () => {
+		const actual = await testBlock(blockNvmrc);
+
+		expect(actual).toEqual({
+			files: { ".nvmrc": "20.12.2" },
+		});
+	});
+});
+```
+
+As with [`produceBlock`](/engines/stratum/apis/producers#produceblock), `testBlock` returns the Block's [Creation](/build/concepts/creations).
+Both [Direct Creations](/build/concepts/creations#direct-creations) and [Indirect Creations](/build/concepts/creations#indirect-creations) will be present.
+
+`settings` and all its properties are optional.
+However, some properties will cause `testBlock` to throw an error if they're not provided and the Block attempts to use them:
+
+- [`options`](#testblock-options): each property throws an error if accessed at all
+
+### `addons` {#testblock-addons}
+
+[Block Addons](/engines/stratum/concepts/blocks#addons) may be provided under `addons`.
+
+For example, this test asserts that a Prettier block adds a `useTabs` arg to its output `".prettierrc.json"`:
+
+```ts
+import { testBlock } from "create-testers";
+import { describe, expect, expect, it } from "vitest";
+import { z } from "zod";
+
+import { base } from "./base";
+
+const blockPrettier = base.createBlock({
+	addons: {
+		useTabs: z.boolean(),
+	},
+	produce({ addons }) {
+		return {
+			files: {
+				".prettierrc.json": JSON.stringify({
+					$schema: "http://json.schemastore.org/prettierrc",
+					useTabs: addons.useTabs,
+				}),
+			},
+		};
+	},
+});
+
+describe("blockPrettier", () => {
+	it("creates a .prettierrc.json when provided options", async () => {
+		const actual = await testBlock(blockPrettier, {
+			addons: {
+				config: {
+					useTabs: true,
+				},
+			},
+		});
+
+		expect(actual).toEqual({
+			files: {
+				".prettierrc.json": JSON.stringify({
+					$schema: "http://json.schemastore.org/prettierrc",
+					useTabs: true,
+				}),
+			},
+		});
+	});
+});
+```
+
+### `options` {#testblock-options}
+
+[Base Options](/engines/stratum/concepts/bases#options) may be provided under `options`.
+
+For example, this test asserts that a README.md uses the `title` defined under `options`:
+
+```ts
+import { testBlock } from "create-testers";
+import { describe, expect, it } from "vitest";
+
+import { base } from "./base";
+
+const blockReadme = base.createBlock({
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+
+describe("blockDocs", () => {
+	it("uses options.name for the README.md title", async () => {
+		const actual = await testBlock(blockReadme, {
+			options: {
+				title: "My Project",
+			},
+		});
+
+		expect(actual).toEqual({
+			files: {
+				"README.md": `# My Project`,
+			},
+		});
+	});
+});
+```

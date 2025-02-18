@@ -1,0 +1,35 @@
+---
+description: Groups of presets that a user can choose between.
+title: Stratum FAQs
+---
+
+## Where does the name _"Stratum"_ come from?
+
+_"Stratum"_ refers to a layer or level in a structured system, such as geological strata or organizational layers.
+That's thematically tied to how the engine works:
+
+- [Bases](/engines/stratum/concepts/bases) form the underlying base layer upon which other layers are built
+- [Blocks](/engines/stratum/concepts/blocks) make available individual pieces of structure
+- [Presets](/engines/stratum/concepts/presets) group together structures into usable layers of tooling
+
+It also looks and sounds sophisticated.
+_"Stratum"_.
+
+## Why can't we define Addons for Blocks in Presets?
+
+In other words, you might be wondering why the API doesn't allow something like this:
+
+```js
+export const presetExample = base.createPreset({
+	blocks: [
+		myBlock({
+			someArg: "...",
+		}),
+	],
+});
+```
+
+This is because Blocks shouldn't need to be configured.
+Users should be able to turn them off and on at will without any configuration.
+
+Passing Addons to a Block in a Preset means users will have no way to override or remove those Addons.

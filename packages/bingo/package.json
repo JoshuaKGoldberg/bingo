@@ -1,0 +1,51 @@
+{
+	"name": "bingo",
+	"version": "0.3.0",
+	"description": "Delightful templates for web repositories. 💝",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/bingo"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"main": "./lib/index.js",
+	"bin": "./bin/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"@clack/prompts": "^0.10.0",
+		"bingo-fs": "workspace:^",
+		"bingo-systems": "workspace:^",
+		"cached-factory": "^0.1.0",
+		"chalk": "^5.4.1",
+		"get-github-auth-token": "^0.1.1",
+		"hash-object": "^5.0.1",
+		"hosted-git-info": "^8.0.2",
+		"import-local-or-npx": "^0.3.0",
+		"prettier": "3.5.1",
+		"read-pkg": "^9.0.1",
+		"slugify": "^1.6.6",
+		"without-undefined-properties": "^0.1.1",
+		"zod": "^3.24.2"
+	},
+	"devDependencies": {
+		"@types/hosted-git-info": "3.0.5",
+		"@types/node": "22.13.4",
+		"octokit": "^4.1.2"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

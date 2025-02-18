@@ -1,0 +1,160 @@
+---
+description: Bingo API to produce and apply Creation output by running a template's production function(s).
+title: runTemplate
+---
+
+:::note
+Runner APIs both generate creations and apply them, including writing files.
+For the API to only create those objects in memory, see [`produceTemplate`](/build/apis/produce-template).
+:::
+
+Given a [Template](/build/concepts/templates) and any settings, generates and applies [Creation](/build/concepts/creations) output by running the template's production function(s).
+
+`produceTemplate` takes in up to two arguments:
+
+1. A template
+2. A settings object, only required if the template includes required options.
+   It may contain properties from a [Template Context](/build/details/contexts#template-contexts):
+   - `options`: any options matching the template's [`options` schema](/build/apis/create-template#options)
+
+It applies those creations, then returns an object with:
+
+- `creation`: the resultant [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations)
+- `options`: the full merged options that production ran with
+
+For example, given this template that creates a README.md file, `runTemplate` would write that file to disk:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# Hello, World!`,
+			},
+		};
+	},
+});
+
+// { creation: { files: { "README.md": "# Hello, World!" } } }
+await writeTemplate(template);
+```
+
+:::note
+`runTemplate()` will not run a template's [`prepare()`](/build/apis/create-template#prepare) method to infer option defaults.
+Use the asynchronous [`prepareOptions`](/build/apis/prepare-options) API to generate options that can be passed as [settings `options`](#options).
+:::
+
+## Settings
+
+### `options`
+
+Any number of options defined by the template's [`options` schema](/build/apis/create-template#options).
+
+This must include all required options from the schema.
+It may also include any other optional options.
+
+For example, this Template is run with a `title` option:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	options: {
+		title: z.string(),
+	},
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+
+// {
+//   creation: { files: { "README.md": "# My App" } },
+//   options: { title: "My App" },
+// }
+await runTemplate(template, { options: { title: "My App" } });
+```
+
+### `mode`
+
+Which [mode](/build/concepts/modes) to run in, as either `"setup"` or `"transition"`.
+
+If provided, the corresponding [`setup()`](/build/apis/create-template#setup) or [`transition()`](/build/apis/create-template#transition) will be called before [`produce()`](/build/apis/create-template#produce).
+Creations from the production methods will be merged per [Details > Merging](/build/details/merging).
+
+For example, this template creates a starter `index.js` file on setup:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	setup() {
+		return {
+			files: {
+				"index.js": "console.log('Hello, world!');"
+			}
+		}
+	}
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# My App`,
+			},
+		};
+	},
+});
+
+// {
+//   creation: {
+//     files: {
+//       "README.md": "# My App",
+//     }
+//   },
+// }
+await runTemplate(template);
+
+// {
+//   creation: {
+//     files: {
+//       "index.js": "console.log('Hello, world!');",
+//       "README.md": "# My App",
+//     }
+//   },
+// }
+await runTemplate(template, { mode: "setup" });
+```
+
+### `offline`
+
+Whether to hint to the template not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+
+For example, this template adds an `--offline` flag to its installation script if `offline` is true:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+import { z } from "zod";
+
+const template = createTemplate({
+	produce({ offline }) {
+		return {
+			scripts: [offline ? "pnpm install --offline" : "pnpm install"],
+		};
+	},
+});
+
+// { scripts: ["pnpm install"] }
+await runTemplate(template);
+
+// { scripts: ["pnpm install --offline"] }
+await runTemplate(template, { offline: true });
+```

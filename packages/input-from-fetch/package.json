@@ -1,0 +1,38 @@
+{
+	"name": "input-from-fetch",
+	"version": "0.2.0",
+	"description": "create input that runs a network request.",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/input-from-fetch"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"main": "./lib/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"zod": "^3.24.2"
+	},
+	"devDependencies": {
+		"bingo-testers": "workspace:^"
+	},
+	"peerDependencies": {
+		"bingo": "workspace:^"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

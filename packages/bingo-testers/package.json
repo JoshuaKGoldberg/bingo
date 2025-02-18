@@ -1,0 +1,43 @@
+{
+	"name": "bingo-testers",
+	"version": "0.3.0",
+	"description": "Test utilities for composable, testable, type-safe templates. ⚗️",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/bingo-testers"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"main": "./lib/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"diff": "^7.0.0",
+		"octokit": "^4.1.2",
+		"without-undefined-properties": "^0.1.1"
+	},
+	"devDependencies": {
+		"@types/diff": "7.0.1",
+		"zod": "3.24.2"
+	},
+	"peerDependencies": {
+		"bingo": "workspace:^",
+		"bingo-fs": "workspace:^",
+		"bingo-systems": "workspace:^"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

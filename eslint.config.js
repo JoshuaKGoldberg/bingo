@@ -21,8 +21,11 @@ export default tseslint.config(
 			"coverage",
 			"lib",
 			"node_modules",
+			"packages/*/dist",
 			"packages/*/lib",
 			"packages/*/tsconfig.tsbuildinfo",
+			"packages/*/src/**/*.d.ts",
+			"packages/*/src/**/*.js",
 			"packages/site/.astro",
 			"packages/site/src/content",
 			"packages/site/src/env.d.ts",
@@ -74,12 +77,7 @@ export default tseslint.config(
 			...tseslint.configs.stylisticTypeChecked,
 		],
 		files: ["**/*.js", "**/*.ts"],
-		ignores: [
-			"**/*.md/*",
-			// TODO: I don't know why these aren't getting included properly...
-			"packages/*/bin/*.js",
-			"packages/*/*.config.*",
-		],
+		ignores: ["**/*.md/*", "packages/*/bin/*.js", "packages/*/*.config.*"],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,

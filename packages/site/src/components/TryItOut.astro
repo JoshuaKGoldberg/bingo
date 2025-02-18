@@ -1,11 +1,24 @@
 ---
+import { LinkButton } from "@astrojs/starlight/components";
 import { PackageManagers } from "starlight-package-managers";
 ---
 
 <div class="try-it-out">
 	<h2>Try it out today with:</h2>
 
-	<PackageManagers type="dlx" pkg="create" args="typescript-app@beta" />
+	<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta" />
+
+	<p>
+		Frustrated setting up an endless list of tooling configuration files?
+		<br />
+		Tired of dependencies breaking changes in your repositories?
+		<br />
+		<br />
+		Let Bingo manage it all for you.
+		<br />
+		<br />
+		<LinkButton href="/about">Get started</LinkButton>
+	</p>
 </div>
 
 <style>
@@ -18,7 +31,12 @@ import { PackageManagers } from "starlight-package-managers";
 		padding-top: 4rem;
 	}
 
-	h2 {
+	h2,
+	p {
 		text-align: center;
+	}
+
+	p {
+		font-size: var(--sl-text-xl);
 	}
 </style>

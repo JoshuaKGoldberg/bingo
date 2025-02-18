@@ -1,0 +1,69 @@
+---
+description: The expanded set of creations that can be produced by Stratum Blocks.
+title: Stratum Block Creations
+---
+
+Recap: [Bingo creations](/build/concepts/creations) may specify two areas of repositories:
+
+- ["Direct" creations](/build/concepts/creations#direct-creations): that always cause changes to the repository
+- ["Indirect" creations](/build/concepts/creations#indirect-creations): to hint to the Bingo CLI
+
+[Block Productions](/engines/stratum/concepts/blocks) may produce any properties from standard Bingo creations.
+They may also produce a new `addons` property to signal inputs to other Blocks.
+
+### `addons`
+
+Any [Block Addons](/engines/stratum/concepts/blocks#addons) to signal should be factored into the created repository.
+
+For example, given the following `blockGitignore` with an `ignores` Addon, a `blockTypeScript` could signal to ignore the `/lib` directory:
+
+```ts
+import { z } from "zod";
+
+import { base } from "./base";
+
+export const blockGitignore = base.createBlock({
+	addons: {
+		ignores: z.array(z.string()).default([]),
+	},
+	produce({ addons }) {
+		return {
+			files: {
+				".gitignore": [...addons.ignores, "/node_modules"].join("\n"),
+			},
+		};
+	},
+});
+
+export const blockTypeScript = base.createBlock({
+	produce() {
+		return {
+			addons: [
+				blockGitignore({
+					ignores: ["/lib"],
+				}),
+			],
+			files: {
+				"tsconfig.json": JSON.stringify({
+					compilerOptions: {
+						outDir: "lib",
+						strict: true,
+					},
+				}),
+			},
+		};
+	},
+});
+```
+
+Producing a template with those two Blocks would result in a `.gitignore` with two ignored directories:
+
+```plaintext title=".gitignore"
+/lib
+/node_modules
+```
+
+See also:
+
+- [Concepts > Blocks > Merging](/engines/stratum/concepts/blocks#addons) for how Addons are merged together
+- [Details > Execution](/engines/stratum/details/execution) for how Stratum templates execute their Blocks

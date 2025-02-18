@@ -1,0 +1,43 @@
+---
+description: "The two runtime execution modes create may run in."
+title: Modes
+---
+
+The Bingo engine can optionally be told to run in one the following "modes":
+
+- `"setup"`: Indicating the production is being used to create a new repository
+- `"transition"`: Indicating the production is migrating an existing repository
+
+Running the `bingo` CLI will always infer one of the modes.
+The [`produceTemplate`](/build/apis/produce-template) and [`runTemplate`](/build/apis/run-template) may optionally specify a mode.
+
+## Setup
+
+This mode creates a new repository on GitHub.
+
+As the production is run, the Bingo engine will add in additional creations from the template's [`setup()` function](/build/apis/create-template#transition), if it exists.
+Those creations typically includes example starter files or one-time API registrations.
+
+When running Bingo in setup mode, it will:
+
+1. Create a new repository on GitHub
+   - If the template defines an [`about.repository`](/build/apis/create-template#about), the repository will include a _generated from_ notice pointing to that template repository
+2. Run the template's producer function
+3. Add that new repository as the `origin` remote
+4. Apply the template's creations to the repository
+5. Force-push a single commit with the new repository contents to that origin
+
+## Transition
+
+This mode migrates an existing repository onto the provided template.
+
+As the production is run, the Bingo engine will add in additional creations from the template's [`transition()` function](/build/apis/create-template#transition), if it exists.
+Those creations typically includes scripts that delete files from known no-longer-used pieces of tooling.
+
+When running Bingo on the CLI in transition mode, it will:
+
+1. Check if the repository is freshly cloned from the template's [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+   - If it is, remove all local files and Git history
+2. Run the template's producer function
+   - If this was a fresh template repository clone, create and push an initial commit
+3. Apply the template's creations to the repository

@@ -5,6 +5,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: ./.github/actions/prepare
+      - run: pnpm run -r prebuild
       - run: pnpm build
   lint:
     name: Lint
@@ -12,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: ./.github/actions/prepare
+      - run: pnpm run -r prebuild
       - run: pnpm build
       - run: pnpm lint
   lint_knip:
@@ -55,6 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: ./.github/actions/prepare
+      - run: pnpm run -r prebuild
       - run: pnpm run build
       - run: pnpm run test --coverage
       - env:

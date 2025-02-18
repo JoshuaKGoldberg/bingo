@@ -1,0 +1,289 @@
+---
+description: "Options and shared helpers made available to inputs and templates."
+title: Contexts
+---
+
+_Context_ objects are provided to methods of [Inputs](/build/concepts/templates) and [Templates](/build/concepts/templates).
+Each contains shared helper functions and information.
+
+- Inputs receive an [Input Context](#input-contexts)
+- Options receive an [Options Context](#options-contexts)
+- Template receive an [Template Context](#template-contexts)
+
+## Input Contexts
+
+This context object is provided to [`runInput`](/build/apis/run-input).
+
+### `args` {#input-args}
+
+Any manually provided values as described by the [Input's `args`](/build/apis/create-input#args).
+
+For example, this input takes in an `roundTo` number that defaults to `1000`:
+
+```ts
+import { createInput } from "bingo";
+import { z } from "zod";
+
+export const inputCurrentTime = createInput({
+	args: {
+		roundTo: z.boolean().default(1000),
+	},
+	produce({ args }) {
+		return Math.floor(+new Date() * args.roundTo) / args.roundTo;
+	},
+});
+```
+
+### `fetchers` {#input-fetchers}
+
+An object to make network calls, containing:
+
+- `fetch`: An equivalent to the global `fetch` function
+- `octokit`: [GitHub Octokit](https://github.com/octokit/octokit.js?tab=readme-ov-file#octokit-api-client) that uses the `fetch` internally
+
+For example, this input retrieves a random Cat fact:
+
+```ts
+import { createInput } from "bingo";
+
+export const inputCatFact = createInput({
+	async produce({ fetchers }) {
+		const response = await fetchers.fetch("https://catfact.ninja/fact");
+		const data = (await response.json()) as { fact: string };
+
+		return data.fact;
+	},
+});
+```
+
+### `fs` {#input-fs}
+
+A virtual wrapper around the file system.
+
+For now, the `fs` object contains a single property:
+
+- `readFile`: Given a file path, returns a Promise for its contents as a `string`
+
+For example, this input reads the contents of a file from disk as a string:
+
+```ts
+import { createInput } from "bingo";
+import { z } from "zod";
+
+export const inputFromFile = createInput({
+	args: {
+		fileName: z.string(),
+	},
+	async produce({ args, fs }) {
+		return (await fs.readFile(args.fileName)).toString();
+	},
+});
+```
+
+### `offline` {#input-offline}
+
+Whether to hint to the input not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+If provided, [Input Context `fetchers`](/build/details/contexts#input-fetchers) will be hinted not to make any network requests.
+
+For example, this input resolves with `undefined` instead of sending a request when `offline` is true:
+
+```ts
+import { createInput } from "bingo";
+
+export const inputFromFetch = createInput({
+	args: {
+		resource: z.string(),
+	},
+	async produce({ fetchers, offline }) {
+		return offline ? undefined : await fetchers.fetch(args.resource);
+	},
+});
+```
+
+### `runner` {#input-runner}
+
+An `execa` shell script to run commands.
+
+This is useful for data that's easiest to pull from the CLI.
+
+For example, this input retrieves the current Git user's email:
+
+```ts
+import { createInput } from "bingo";
+
+export const inputGitUserEmail = createInput({
+	async produce({ runner }) {
+		return (await runner("git config user.email")).stdout;
+	},
+});
+```
+
+### `take` {#input-take}
+
+Produces another [Input](/build/concepts/inputs) using the current context.
+
+`take` takes in:
+
+- `input` _(required)_: another input to produce
+- `args` _(optional)_: any arguments for the input
+
+It returns the result of calling the `input` with the `args`.
+
+For example, this input uses `take` to read in data from a file from another input:
+
+```ts
+import { createInput } from "bingo";
+import { inputFromFile } from "input-from-file";
+
+export const inputFromFileJSON = createInput({
+	args: {
+		filePath: z.string(),
+	},
+	async produce({ args, take }) {
+		const text = await take(inputFromFile, args);
+
+		if (text instanceof Error) {
+			return text;
+		}
+
+		try {
+			return JSON.parse(text) as unknown;
+		} catch (error) {
+			return error as SyntaxError;
+		}
+	},
+});
+```
+
+The `take` function is provided to Inputs and Options so that they can run another Input with the same context they're running in.
+Other properties from the current context will be forwarded to the provided input.
+
+## Options Contexts
+
+This context object is provided to:
+
+- [`prepareOptions`](/build/apis/prepare-options)
+
+### `offline` {#options-offline}
+
+Whether to hint to the template not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+If provided, [Input Context `fetchers`](/build/details/contexts#input-fetchers) will be hinted not to make any network requests.
+
+### `options` {#options-options}
+
+Any manually provided values as described by the [template's `options`](/build/apis/create-template#options).
+
+[Template `prepare()` functions](/build/apis/create-template#prepare) are designed to fill in any options not manually provided by the user.
+Options that are manually provided are available under the context's `options`.
+This can be useful when default values for some options are dependent on other options.
+
+For example, this template defaults an `name` option to a kebab-case version of its `title` option:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		name: z.string().optional(),
+		title: z.string(),
+	},
+	prepare({ options }) {
+		return {
+			name: options.title.toLowerCase().replaceAll(" ", "-"),
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+### `take` {#options-take}
+
+Produces an [Input](/build/concepts/inputs) using the current context.
+
+`take` takes in:
+
+- `input` _(required)_: another input to produce
+- `args` _(optional)_: any arguments for the input
+
+It returns the result of calling the `input` with the `args`.
+
+For example, this template uses `take` to default an option to the contents of a file:
+
+```ts
+import { createTemplate } from "bingo";
+import { inputFromFile } from "input-from-file";
+
+export default createTemplate({
+	options: {
+		nvm: z.string(),
+	},
+	prepare({ take }) {
+		return {
+			nvm: async () => await take(inputFromFile, { filePath: ".nvmrc" }),
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+The `take` function is provided to Inputs and Options so that they can run an Input with the same context they're running in.
+Other properties from the current context will be forwarded to the provided input.
+
+## Template Contexts
+
+This context object is provided to:
+
+- [`produceTemplate`](/build/apis/produce-template)
+- [`runTemplate`](/build/apis/run-template)
+
+### `offline` {#template-offline}
+
+Whether to hint to the template not to make network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+
+For example, this template adds an `--offline` flag to its installation script if `offline` is true:
+
+```ts
+import { createTemplate, produceTemplate, take } from "bingo";
+import { z } from "zod";
+
+export default createTemplate({
+	produce({ offline }) {
+		return {
+			scripts: [offline ? "pnpm install --offline" : "pnpm install"],
+		};
+	},
+});
+```
+
+### `options` {#template-options}
+
+Values for options as described by the [template's `options`](/build/apis/create-template#options).
+
+For example, this template uses its `title` option to create a `README.md`:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		title: z.string(),
+	},
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+```

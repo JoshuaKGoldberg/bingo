@@ -1,0 +1,39 @@
+{
+	"name": "bingo-stratum-testers",
+	"version": "0.3.0",
+	"description": "Test utilities for Stratum Blocks and Presets. 🧑‍🔧",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"directory": "packages/bingo-stratum-testers"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Josh Goldberg ✨",
+		"email": "npm@joshuakgoldberg.com"
+	},
+	"type": "module",
+	"main": "./lib/index.js",
+	"files": [
+		"lib/",
+		"package.json",
+		"LICENSE.md",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"devDependencies": {
+		"zod": "3.24.2"
+	},
+	"peerDependencies": {
+		"bingo": "workspace:^",
+		"bingo-fs": "workspace:^",
+		"bingo-stratum": "workspace:^",
+		"bingo-systems": "workspace:^",
+		"bingo-testers": "workspace:^"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

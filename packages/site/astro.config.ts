@@ -1,6 +1,7 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
+import starlightLinksValidator from "starlight-links-validator";
 import starlightSidebarTopics from "starlight-sidebar-topics";
 
 export default defineConfig({
@@ -16,69 +17,185 @@ export default defineConfig({
 				src: "src/assets/favicon.png",
 			},
 			plugins: [
+				starlightLinksValidator(),
 				starlightSidebarTopics([
 					{
 						icon: "open-book",
 						items: [
-							{ label: "About", link: "about" },
+							{ label: "About Bingo", link: "about" },
 							{ label: "CLI", link: "cli" },
 							{ label: "Configuration", link: "configuration" },
+							{ label: "Execution", link: "execution" },
 							{ label: "FAQs", link: "faqs" },
-							{ label: "Glossary", link: "glossary" },
 						],
-						label: "Get Started",
+						label: "About",
 						link: "/about",
 					},
 					{
-						icon: "information",
+						icon: "pen",
 						items: [
-							{ label: "About", link: "engine/about" },
+							{ label: "About", link: "build/about" },
 							{
 								items: [
-									{ label: "Bases", link: "engine/concepts/bases" },
-									{ label: "Blocks", link: "engine/concepts/blocks" },
-									{ label: "Presets", link: "engine/concepts/presets" },
-									{ label: "Templates", link: "engine/concepts/templates" },
+									{ label: "Creations", link: "build/concepts/creations" },
+									{ label: "Inputs", link: "build/concepts/inputs" },
+									{ label: "Modes", link: "build/concepts/modes" },
+									{ label: "Templates", link: "build/concepts/templates" },
 								],
 								label: "Concepts",
 							},
 							{
 								items: [
-									{ label: "Contexts", link: "engine/runtime/contexts" },
-									{ label: "Creations", link: "engine/runtime/creations" },
-									{ label: "Execution", link: "engine/runtime/execution" },
-									{ label: "Inputs", link: "engine/runtime/inputs" },
-									{ label: "Merging", link: "engine/runtime/merging" },
+									{ label: "Contexts", link: "build/details/contexts" },
+									{ label: "Merging", link: "build/details/merging" },
 								],
-								label: "Runtime",
+								label: "Details",
 							},
 							{
 								items: [
-									{ label: "Creators", link: "engine/apis/creators" },
-									{ label: "Producers", link: "engine/apis/producers" },
-									{ label: "Runners", link: "engine/apis/runners" },
+									{
+										label: "createInput",
+										link: "build/apis/create-input",
+									},
+									{
+										label: "createTemplate",
+										link: "build/apis/create-template",
+									},
+									{
+										label: "prepareOptions",
+										link: "build/apis/prepare-options",
+									},
+									{
+										label: "produceTemplate",
+										link: "build/apis/produce-template",
+									},
+									{
+										label: "runInput",
+										link: "build/apis/run-input",
+									},
+									{
+										label: "runTemplate",
+										link: "build/apis/run-template",
+									},
 								],
 								label: "APIs",
 							},
 							{
 								items: [
-									{ label: "create-fs", link: "engine/packages/create-fs" },
+									{ label: "bingo", link: "build/packages/bingo" },
+									{ label: "bingo-fs", link: "build/packages/bingo-fs" },
 									{
-										label: "create-testers",
-										link: "engine/packages/create-testers",
+										label: "bingo-systems",
+										link: "build/packages/bingo-systems",
+									},
+									{
+										label: "bingo-testers",
+										link: "build/packages/bingo-testers",
 									},
 								],
 								label: "Packages",
 							},
-							{ label: "Templating FAQs", link: "engine/templating-faqs" },
+							{ label: "FAQs", link: "build/faqs" },
 						],
-						label: "Templating Engine",
-						link: "/engine/about",
+						label: "Building Templates",
+						link: "/build/about",
+					},
+					{
+						icon: "setting",
+						items: [
+							{ label: "About", link: "engines/about" },
+							{ label: "Handlebars", link: "engines/handlebars/about" },
+							{
+								collapsed: true,
+								items: [
+									{ label: "About", link: "engines/stratum/about" },
+									{
+										items: [
+											{
+												label: "Bases",
+												link: "engines/stratum/concepts/bases",
+											},
+											{
+												label: "Blocks",
+												link: "engines/stratum/concepts/blocks",
+											},
+											{
+												label: "Presets",
+												link: "engines/stratum/concepts/presets",
+											},
+											{
+												label: "Templates",
+												link: "engines/stratum/concepts/templates",
+											},
+										],
+										label: "Concepts",
+									},
+									{
+										items: [
+											{
+												label: "Block Creations",
+												link: "engines/stratum/details/block-creations",
+											},
+											{
+												label: "Configurations",
+												link: "engines/stratum/details/configurations",
+											},
+											{
+												label: "Contexts",
+												link: "engines/stratum/details/contexts",
+											},
+											{
+												label: "Execution",
+												link: "engines/stratum/details/execution",
+											},
+										],
+										label: "Details",
+									},
+									{
+										items: [
+											{
+												label: "createBase",
+												link: "engines/stratum/apis/create-base",
+											},
+											{
+												label: "Producers",
+												link: "engines/stratum/apis/producers",
+											},
+											{
+												label: "Runners",
+												link: "engines/stratum/apis/runners",
+											},
+										],
+										label: "APIs",
+									},
+									{
+										items: [
+											{
+												label: "bingo-stratum",
+												link: "engines/stratum/packages/bingo-stratum",
+											},
+											{
+												label: "bingo-stratum-testers",
+												link: "engines/stratum/packages/bingo-stratum-testers",
+											},
+										],
+										label: "Packages",
+									},
+									{ label: "FAQs", link: "engines/stratum/faqs" },
+								],
+								label: "Stratum",
+							},
+						],
+						label: "Templating Engines",
+						link: "/engines/about",
 					},
 				]),
 			],
 			social: {
 				github: "https://github.com/JoshuaKGoldberg/bingo",
+			},
+			tableOfContents: {
+				maxHeadingLevel: 4,
 			},
 			title: "Bingo",
 		}),

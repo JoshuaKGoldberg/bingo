@@ -10,7 +10,7 @@ export default defineConfig({
 				"**/*.astro",
 				"**/vitest.*.ts",
 				"packages/*/src/index.ts",
-				"packages/create-fs/src/create*FileSystem.ts",
+				"packages/bingo-fs/src/create*FileSystem.ts",
 				"packages/site/astro.config.ts",
 				"packages/site/src/content",
 			],

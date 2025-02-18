@@ -1,0 +1,25 @@
+---
+description: Highly composable, customizable templating engine for Bingo.
+title: Stratum Templating Engine
+---
+
+:::note
+The Stratum engine is tailored for rich templates with many options and customizable pieces of tooling.
+If you're building your first template, consider starting first with [Building Templates](/build/about), then progressing to [Handlebars](/engines/handlebars/about).
+:::
+
+Bingo's "Stratum" templating engine allows creating highly composable, customizable templates.
+It has templates define each area of tooling as a granular "block" that can be mix-and-matched with other blocks.
+
+When using the Stratum engine, you build your template in four layers:
+
+- **[Bases](/engines/stratum/concepts/bases)**: Option types and default values that will be used to scaffold a repository
+- **[Blocks](/engines/stratum/concepts/blocks)**: Generators for individual portions of a repository
+- **[Presets](/engines/stratum/concepts/presets)**: Groups of Blocks that form a repository starter
+- **[Templates](/engines/stratum/concepts/templates)**: Grouping Presets along with Blocks
+
+Those layers allow you to define the inputs to your repository template, the individual pieces of the repository to be generated, and any preset configurations users can choose to start from.
+
+:::tip
+See [JoshuaKGoldberg/create-example-stratum](https://github.com/JoshuaKGoldberg/create-example-stratum) for an example of a repository template built with the Stratum templating engine.
+:::

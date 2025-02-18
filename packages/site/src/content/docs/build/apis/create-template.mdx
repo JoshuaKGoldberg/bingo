@@ -1,0 +1,373 @@
+---
+description: Bingo creator API to instantiate a new template.
+title: createTemplate
+---
+
+`createTemplate()` takes in a _Template Definition_ and returns a _Template_.
+
+A template definition must contain:
+
+- [`produce`](#produce): a synchronous function that generates the list of creations to place in a repository
+
+A template definition may optionally contain:
+
+- [`about`](#about): documentation metadata about the template
+- [`options`](#options): an object with Zod schemas for any options the template takes in
+- [`prepare`](#prepare): creates functions to lazily load default options values
+- [`setup`](#setup): additional production function for initializing a new repository with the template
+- [`transition`](#transition): additional production function for migrating an existing repository to the template
+
+## `produce`
+
+A synchronous function that receives up two two parameters:
+
+1. `context`: a [Template Context](/build/details/contexts#template-contexts)
+2. `settings`: any additional template-specific properties
+
+`produce()` returns a [`Creation`](/build/concepts/creations).
+
+The `produce()` function of a template is run when a new repository is being setup with the template or an existing repository is being transitioned to the template.
+
+For example, this template defines a [`files` Creation](/build/concepts/creations#files) for a `knip.json`:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	produce() {
+		return {
+			files: {
+				"knip.json": JSON.stringify({
+					$schema: "https://unpkg.com/knip@latest/schema.json",
+				}),
+			},
+		};
+	},
+});
+```
+
+See [Creations](/build/concepts/creations) for what can be produced.
+
+### `context`
+
+A [Template Context](/build/details/contexts#template-contexts) used to inform the production.
+
+For example, this template defines a `title` option used in its `README.md` file creation:
+
+```ts
+import { createTemplate } from "bingo";
+import { z } from "zod";
+
+export default createTemplate({
+	options: {
+		title: z.string(),
+	},
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# ${options.title}`,
+			},
+		};
+	},
+});
+```
+
+### `settings`
+
+Any additional template-specific properties.
+
+These must be manually provided by users, such as through a [configuration file](/configuration#settings)
+
+```ts title="myTemplate.ts"
+import { createTemplate } from "bingo";
+import { z } from "zod";
+
+export interface MyTemplateSettings {
+	getDocumentation: () => string;
+}
+
+export const myTemplate = createTemplate({
+	options: {
+		title: z.string(),
+	},
+	produce({ options }, settings: MySettings) {
+		return {
+			files: {
+				"README.md": [
+					`# ${options.title}`,
+					"",
+					settings.getDocumentation(),
+					"",
+				].join("\n"),
+			},
+		};
+	},
+});
+```
+
+```ts title="bingo.config.ts"
+import { createConfig } from "bingo";
+import { myTemplate } from "./myTemplate.ts";
+
+export default createConfig(template, {
+	getDocumentation: () => "Hello, world!",
+	options: { title: "My App" },
+});
+```
+
+Settings are typically used by [Templating Engines](/engines/about) to provide rich values to template producers.
+For example, the [Stratum engine](/engines/stratum/about) uses them to allow passing in custom pieces of tooling.
+
+:::note
+Template settings should only be used for values that cannot be serialized into options as Zod schemas.
+Prefer [`options`](#options) when possible so that values can have defaults set by [`prepare()`](#prepare).
+:::
+
+## Optional Properties
+
+### `about`
+
+Metadata about the template that can be used by tooling to describe it.
+
+This is an object containing any of:
+
+- `description`: a sentence describing what the template does
+- `name`: what to refer to the template as
+- `repository`: the `owner` and `repository` of a [GitHub Template Repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository)
+
+For example, this template describes itself as a solution for TypeScript repositories generated from [`JoshuaKGoldberg/create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	about: {
+		description:
+			"One-stop shop for the latest and greatest TypeScript tooling.",
+		name: "Create TypeScript App",
+		repository: {
+			owner: "JoshuaKGoldberg",
+			repository: "create-typescript-app",
+		},
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Repositories generated from that template would indicate _generated from [JoshuaKGoldberg/create-typescript-app](https://github.com/JoshuaKGoldberg/create-typescript-app)_ under their name on the GitHub website.
+
+### `options`
+
+The [Zod](https://zod.dev) values for options that will be made available to the template's producer methods.
+
+For example, this template defines a required `name` string and optional `value` number:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		name: z.string(),
+		value: z.number().optional(),
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Options defined in a template may use the Zod `.default()` property to indicate suggested defaults.
+These will show up as placeholder values in the Bingo CLI if the property isn't provided explicitly or inferred by [`prepare()`](#prepare).
+
+For example, this template defines a required `description` string that suggests a happy text message:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		description: z.string().default("A lovely repository! Hooray! 🙌"),
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+#### Options for Setup
+
+Templates on their own do are not required to have any particular named options.
+However, in order to be used with [Setup mode](/execution#setup-mode), two options must be present:
+
+- `owner`: a `z.string()` or generally a subset of `boolean | number | string`
+- `repository`: a `z.string()` or generally a subset of `boolean | number | string`
+
+For example, this template that defines `owner` and `repository` as strings:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Requiring the `owner` and `repository` fields be string-like allows [Setup mode](/execution#setup-mode) to create new repositories on GitHub using those two options as repository locators.
+
+### `prepare`
+
+Creates lazily loaded default values for options.
+Receives an [Options Context](/build/details/contexts#options-contexts) and returns a [`Creation`](/build/concepts/creations).
+
+Templates can optionally define a `prepare()` function that provides fallback values for options.
+Those values will be used if the user doesn't provide explicit values during creation.
+
+For example, this template defaults its `value` option to `"default"` if not provided:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Running that template without an explicit `--value` would be equivalent to running with `--value "default"`.
+
+#### Asynchronous Defaults
+
+`prepare()` itself is a synchronous function, but option properties can be asynchronous functions.
+Any function provided for an option property will be called and awaited if the option is not explicitly provided.
+This allows potentially slow accesses of asynchronous defaults to only be run and waited for if they're not explicitly provided.
+
+Asynchronous defaults are often used for external resources such as the file system, network requests, or shell commands.
+The [`take` function](/build/details/contexts#options-take) can be used with [Inputs](/build/concepts/inputs) to access those external resources.
+
+For example, this template defaults a `--author` option to the result of running `npm whoami` with [`input-from-script`](https://www.npmjs.com/package/input-from-script):
+
+```ts
+import { createTemplate } from "bingo";
+import { inputFromScript } from "input-from-script";
+
+export default createTemplate({
+	options: {
+		author: z.string(),
+	},
+	prepare({ take }) {
+		return {
+			author: async () =>
+				await take(inputFromScript, { command: "npm whoami" }),
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+:::tip
+Using `take` and Inputs to access external resources allows for straightforward mocking of those resources during unit tests.
+See [Templating FAQs > Why should we use `take` and Inputs in `prepare()`?](/build/faqs#why-should-we-use-take-and-inputs-in-prepare).
+:::
+
+If an asynchronously loaded resource is used for multiple options, you'll likely want to cache it.
+The [`lazy-value`](https://www.npmjs.com/package/lazy-value) package's [`lazyValue` function](https://github.com/sindresorhus/lazy-value?tab=readme-ov-file#usage) is a handy way to cache that work.
+
+For example, the following template defaults its `--author` and `--owner` options to executing `npm whoami` and/or `gh api user -q . login`.
+Both shell commands are cached and run no more than once each:
+
+```ts
+import { createTemplate } from "bingo";
+import lazyValue from "lazy-value";
+
+export default createTemplate({
+	options: {
+		author: z.string(),
+		owner: z.string(),
+	},
+	prepare({ runner }) {
+		const npm = lazyValue(
+			async () => await take(inputFromScript, { command: "npm whoami" }),
+		);
+		const github = lazyValue(
+			async () =>
+				await take(inputFromScript, { command: "gh api user -q .login" }),
+		);
+
+		return {
+			author: async () => (await npm()) ?? (await github())?.toLowerCase(),
+			owner: async () => (await github()) ?? (await npm()),
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+:::note
+Soon, these option defaults will be streamlined to need less syntax.
+See [create#190 🚀 Feature: More succinct option defaults with Inputs](https://github.com/JoshuaKGoldberg/bingo/issues/190).
+:::
+
+### `setup`
+
+Additional production function for initializing a new repository with the template.
+
+For example, this template creates a starter `index.js` file when first run:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	setup({ addons }) {
+		return {
+			files: {
+				"index.js": `console.log("Hello, world!");`,
+			},
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+### `transition`
+
+Additional production function for migrating an existing repository to the template.
+
+For example, this template deletes any already-existing test config files when run on an existing repository:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	setup({ addons }) {
+		return {
+			commands: ["rm .mocha* jest.config.* vitest.config.*"],
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```

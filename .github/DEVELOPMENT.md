@@ -3,8 +3,8 @@
 After [forking the repo from GitHub](https://help.github.com/articles/fork-a-repo) and [installing pnpm](https://pnpm.io/installation):
 
 ```shell
-git clone https://github.com/ < your-name-here > /create
-cd create
+git clone https://github.com/(your-name-here)/bingo
+cd bingo
 pnpm install
 ```
 
@@ -28,7 +28,7 @@ pnpm build --watch
 Alternately, you can build an individual package from within its folder:
 
 ```shell
-cd packages/create
+cd packages/bingo
 pnpm build
 ```
 
