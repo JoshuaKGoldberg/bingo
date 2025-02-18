@@ -1,4 +1,4 @@
-<h1 align="center">bingo-fs</h1>
+<h1 align="center">bingo-systems</h1>
 
 <p align="center">File, network, and shell wrapper APIs used by <a href="https://create.bingo">Bingo</a>. 🧰</p>
 

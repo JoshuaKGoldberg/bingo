@@ -1,6 +1,6 @@
 {
 	"name": "create",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"description": "You probably meant `npm create`, not `npx create`. ❌",
 	"repository": {
 		"type": "git",
@@ -14,12 +14,6 @@
 	},
 	"type": "module",
 	"bin": "./bin/index.js",
-	"files": [
-		"lib/",
-		"package.json",
-		"LICENSE.md",
-		"README.md"
-	],
 	"dependencies": {
 		"chalk": "^5.4.1"
 	},
