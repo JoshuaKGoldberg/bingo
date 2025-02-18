@@ -1,4 +1,5 @@
 import starlight from "@astrojs/starlight";
+import { konamiEmojiBlast } from "@konami-emoji-blast/astro";
 import { defineConfig } from "astro/config";
 import { remarkHeadingId } from "remark-custom-heading-id";
 import starlightLinksValidator from "starlight-links-validator";
@@ -6,6 +7,7 @@ import starlightSidebarTopics from "starlight-sidebar-topics";
 
 export default defineConfig({
 	integrations: [
+		konamiEmojiBlast(),
 		starlight({
 			components: {
 				Footer: "src/components/Footer.astro",
