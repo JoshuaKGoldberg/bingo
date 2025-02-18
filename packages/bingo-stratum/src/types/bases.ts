@@ -2,8 +2,7 @@ import {
 	AnyOptionalShape,
 	AnyShape,
 	InferredObject,
-	LazyOptionalOptions,
-	TakeInput,
+	TemplatePrepare,
 } from "bingo";
 
 import {
@@ -20,17 +19,12 @@ export interface Base<OptionsShape extends AnyShape = AnyShape> {
 	createPreset: CreatePreset<OptionsShape>;
 	createStratumTemplate: CreateStratumTemplate<OptionsShape>;
 	options: OptionsShape;
-	prepare?: BasePreparer<InferredObject<OptionsShape>>;
-}
-
-export interface BaseContext<Options> {
-	options: Options;
-	take: TakeInput;
+	prepare?: TemplatePrepare<InferredObject<OptionsShape>>;
 }
 
 export interface BaseDefinition<OptionsShape extends AnyShape = AnyShape> {
 	options: OptionsShape;
-	prepare?: BasePreparer<InferredObject<OptionsShape>>;
+	prepare?: TemplatePrepare<InferredObject<OptionsShape>>;
 }
 
 export type BaseOptionsFor<TypeOfBase> = TypeOfBase extends {
@@ -38,10 +32,6 @@ export type BaseOptionsFor<TypeOfBase> = TypeOfBase extends {
 }
 	? InferredObject<OptionsShape>
 	: never;
-
-export type BasePreparer<Options> = (
-	context: BaseContext<Partial<Options>>,
-) => LazyOptionalOptions<Partial<Options>>;
 
 export interface CreateBlock<Options extends object> {
 	<AddonsShape extends AnyOptionalShape>(
