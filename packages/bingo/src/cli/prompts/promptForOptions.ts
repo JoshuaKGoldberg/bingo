@@ -34,6 +34,7 @@ export async function promptForOptions<
 	template: Template<OptionsShape>,
 	{ existing, offline, system }: PromptForOptionsSettings<OptionsShape>,
 ): Promise<PromptedOptions<InferredObject<OptionsShape>>> {
+	console.log("start promptForOptions");
 	type Options = InferredObject<OptionsShape>;
 
 	const { directory } = system;

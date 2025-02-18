@@ -23,8 +23,10 @@ export async function prepareOptions<OptionsShape extends AnyShape>(
 	base: HasOptionsAndPrepare<OptionsShape>,
 	settings: PrepareOptionsSettings<OptionsShape> = {},
 ): Promise<Partial<InferredObject<OptionsShape>>> {
+	console.log({ base });
 	const { existing = {} } = settings;
 	if (!base.prepare) {
+		console.log("no prepare", { existing });
 		return existing;
 	}
 

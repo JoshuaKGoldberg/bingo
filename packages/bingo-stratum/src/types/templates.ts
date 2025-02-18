@@ -15,6 +15,7 @@ export interface StratumTemplate<OptionsShape extends AnyShape = AnyShape> {
 	about?: TemplateAbout;
 	base: Base<OptionsShape>;
 	options: OptionsShape & StratumTemplateOptionsShape;
+	prepare?: TemplatePrepare<InferredObject<OptionsShape>>;
 	presets: Preset<OptionsShape>[];
 	produce: StratumTemplateProduce<InferredObject<OptionsShape>>;
 }

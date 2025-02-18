@@ -85,6 +85,7 @@ export function createBase<OptionsShape extends AnyShape>(
 				...base.options,
 				preset: z.string(),
 			},
+			prepare: base.prepare,
 			produce(context) {
 				return produceStratumTemplate(template, context);
 			},

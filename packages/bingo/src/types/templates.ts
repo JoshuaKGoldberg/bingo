@@ -1,6 +1,7 @@
 import { AnyShape, InferredObject } from "../options.js";
 import { AboutBase } from "./about.js";
 import { Creation } from "./creations.js";
+import { TakeInput } from "./inputs.js";
 import { LazyOptionalOptions } from "./options.js";
 
 export interface RepositoryLocator {
@@ -31,8 +32,13 @@ export interface TemplateDefinition<OptionsShape extends AnyShape = AnyShape> {
 }
 
 export type TemplatePrepare<Options extends object> = (
-	context: TemplateContext<Partial<Options>>,
+	context: TemplatePrepareContext<Partial<Options>>,
 ) => LazyOptionalOptions<Partial<Options>>;
+
+export interface TemplatePrepareContext<Options extends object>
+	extends TemplateContext<Options> {
+	take: TakeInput;
+}
 
 export type TemplateProduce<Options extends object> = (
 	context: TemplateContext<Options>,
