@@ -6,9 +6,9 @@ import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
+import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
-import { logTransitionHelpText } from "../loggers/logTransitionHelpText.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForOptions } from "../prompts/promptForOptions.js";
 import { CLIStatus } from "../status.js";
@@ -39,7 +39,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 }: RunModeTransitionSettings<OptionsShape>): Promise<ModeResults> {
 	const transitionType = configFile ? "config file" : "template";
 	if (help) {
-		return logTransitionHelpText(from);
+		return logHelpText("transition", from, template);
 	}
 
 	logStartText("transition", from, transitionType, offline);

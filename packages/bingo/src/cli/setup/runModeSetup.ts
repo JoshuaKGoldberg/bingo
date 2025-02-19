@@ -9,8 +9,8 @@ import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
+import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
-import { logSetupHelpText } from "../loggers/logSetupHelpText.js";
 import { logStartText } from "../loggers/logStartText.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForDirectory } from "../prompts/promptForDirectory.js";
@@ -45,7 +45,7 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 	template,
 }: RunModeSetupSettings<OptionsShape>): Promise<ModeResults> {
 	if (help) {
-		return logSetupHelpText(from, template);
+		return logHelpText("setup", from, template);
 	}
 
 	logStartText("setup", from, "template", offline);

@@ -1,9 +1,21 @@
 import * as prompts from "@clack/prompts";
 import chalk from "chalk";
 
+import { AnyShape } from "../../options.js";
+import { Template } from "../../types/templates.js";
+import { CLIMessage } from "../messages.js";
+import { CLIStatus } from "../status.js";
+import { ModeResults } from "../types.js";
 import { logHelpOptions } from "./logHelpOptions.js";
+import { logSchemasHelpOptions } from "./logSchemasHelpOptions.js";
 
-export function logHelpText(mode: string, packageName: string) {
+export function logHelpText<OptionsShape extends AnyShape = AnyShape>(
+	mode: string,
+	from: string,
+	template: Template<OptionsShape>,
+): ModeResults {
+	const packageName = template.about?.name ?? from;
+
 	prompts.log.info(
 		[
 			"Running ",
@@ -14,7 +26,7 @@ export function logHelpText(mode: string, packageName: string) {
 		].join(""),
 	);
 
-	logHelpOptions("Common Template", packageName, [
+	logHelpOptions("Bingo template", from, [
 		{
 			examples: ["--directory my-fancy-project"],
 			flag: "--directory",
@@ -46,4 +58,11 @@ export function logHelpText(mode: string, packageName: string) {
 			type: "boolean",
 		},
 	]);
+
+	logSchemasHelpOptions(packageName, template.options);
+
+	return {
+		outro: CLIMessage.Ok,
+		status: CLIStatus.Success,
+	};
 }

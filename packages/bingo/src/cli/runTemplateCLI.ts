@@ -1,3 +1,4 @@
+import * as prompts from "@clack/prompts";
 import { getCallId } from "call-id";
 import path from "node:path";
 import { readPackageUp } from "read-package-up";
@@ -33,6 +34,12 @@ export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
 	}
 
 	return await runInsideClackDisplay(templatePackageData, async (display) => {
+		if (template.about?.repository) {
+			prompts.log.info(
+				`Learn more on:\n  https://github.com/${template.about.repository.owner}/${template.about.repository.repository}`,
+			);
+		}
+
 		return await runCLI({
 			args,
 			display,

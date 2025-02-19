@@ -15,24 +15,24 @@ export function logHelpOptions(
 	packageName: string,
 	options: HelpOption[],
 ) {
-	prompts.log.message(
-		[
-			`${chalk.bgGreenBright.black(category)} options:`,
-			"",
-			...options.map((option) => {
-				const text = option.text ? chalk.blue(option.text) : "";
-				return [
-					`  ${formatFlag(option.flag, option.type)}${chalk.blue(text)}`,
-					option.examples?.length &&
-						`\n${option.examples
-							.map((example) =>
-								chalk.blue(`      npx ${packageName} ${example}\n`),
-							)
-							.join("")}`,
-				]
-					.filter(Boolean)
-					.join("");
-			}),
-		].join("\n"),
-	);
+	const message = [
+		`${chalk.bgGreenBright.black(category)} options:`,
+		"",
+		...options.map((option) => {
+			const text = option.text ? chalk.blue(option.text) : "";
+			return [
+				`  ${formatFlag(option.flag, option.type)}${chalk.blue(text)}`,
+				option.examples?.length &&
+					`\n${option.examples
+						.map((example) =>
+							chalk.blue(`      npx ${packageName} ${example}\n`),
+						)
+						.join("")}`,
+			]
+				.filter(Boolean)
+				.join("");
+		}),
+	].join("\n");
+
+	prompts.log.message(message.slice(0, message.lastIndexOf("\n")));
 }
