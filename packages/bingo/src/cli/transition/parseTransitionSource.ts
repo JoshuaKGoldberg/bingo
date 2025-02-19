@@ -9,7 +9,6 @@ export interface RequestedTransitionSource {
 	configFile?: string;
 	directory: string;
 	from?: string;
-	yes?: boolean;
 }
 
 export interface TransitionSource {
@@ -22,7 +21,6 @@ export function parseTransitionSource({
 	configFile,
 	directory,
 	from,
-	yes,
 }: RequestedTransitionSource): Error | TransitionSource {
 	if (configFile && from) {
 		return new Error(
@@ -42,12 +40,12 @@ export function parseTransitionSource({
 	if (from) {
 		return {
 			descriptor: from,
-			load: async () => await tryImportTemplate(from, yes),
+			load: async () => await tryImportTemplate(from),
 			type: "template",
 		};
 	}
 
 	return new Error(
-		`Existing repository detected. To transition an existing repository, either create a bingo.config file or provide the name or path of a template.`,
+		`Existing repository detected. To transition an existing repository, either create a create-example.config file or provide the name or path of a template.`,
 	);
 }

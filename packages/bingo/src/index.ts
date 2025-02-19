@@ -1,5 +1,6 @@
 // CLI
-export * from "./cli/runCli.js";
+export * from "./cli/runBingoCLI.js";
+export * from "./cli/runTemplateCLI.js";
 
 // Config
 export * from "./config/createConfig.js";

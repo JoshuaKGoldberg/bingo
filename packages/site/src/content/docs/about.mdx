@@ -6,9 +6,9 @@ title: About Bingo
 import { PackageManagers } from "starlight-package-managers";
 
 Bingo is a tool for delightful web repository templates.
-Pass the name of a template to the `bingo` CLI command, and it'll walk you through making a new repository from that template:
+Templates built with Bingo provide friendly CLIs that walk you through making a new repository:
 
-<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
 
 With Bingo templates, you can have fully-formed, wonderful dev tooling in your repositories -- without setting all those tools up from scratch yourself.
 
@@ -16,12 +16,12 @@ With Bingo templates, you can have fully-formed, wonderful dev tooling in your r
 
 ## What?
 
-Bingo provides tooling for:
+The Bingo project provides rich scaffolding for building flexible repository templates that describe the files and settings for projects.
+
+Tooling is oriented around two execution modes:
 
 - **Setup**: Creating new repositories from templates with a single CLI command
 - **Transition**: Updating existing repositories to the newest versions of their template
-
-The Bingo project also provides rich scaffolding for building flexible repository templates that describe the files and settings for projects.
 
 > ⚙️ See **[Building Templates](/build/about)** to learn how to write your own templates.
 
@@ -34,11 +34,10 @@ Keeping up to date with the latest and greatest in web development tooling can b
 
 Bingo helps with both of those problems.
 
-Bingo brings you great tooling from templates like [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app) without needing to configure it all from scratch yourself.
+Bingo enables templates like [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app) to give you great tooling without needing to configure it all from scratch yourself.
 Templates can define files, initialization commands, and even GitHub repository settings to set via the API.
 
 Bingo additionally includes great support for updating your repositories as templates change.
-Existing template options are inferred from your existing repository.
-Rich persistent customizations can be defined in a configuration file.
+Default options are inferred from your existing repository and/or an optional configuration file.
 
 Put together, Bingo is a comprehensive solution for keeping repositories on the latest and greatest in web development tooling.

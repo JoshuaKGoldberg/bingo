@@ -83,7 +83,7 @@ export function createBase<OptionsShape extends AnyShape>(
 			base,
 			options: {
 				...base.options,
-				preset: z.string(),
+				preset: z.string().describe("Which starting set of tooling to use."),
 			},
 			prepare: base.prepare,
 			produce(context) {

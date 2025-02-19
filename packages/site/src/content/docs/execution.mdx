@@ -5,7 +5,7 @@ title: Execution
 
 import { PackageManagers } from "starlight-package-managers";
 
-The [`bingo` CLI](/cli) will automatically detect which execution mode it is being run in:
+[Template CLIs](/cli) will automatically detect which execution mode it is being run in:
 
 - [Setup](#setup-mode): Creating a new repository from a template
 - [Transition](#transition-mode): Updating an existing repository to a new version of a template
@@ -17,7 +17,7 @@ See [`--mode`](/cli#--mode) for a CLI flag to explicitly tell Bingo a mode to ru
 Creates a new repository from a template.
 This mode will be used by default if the current directory is empty.
 
-When running Bingo in setup mode, it will:
+When running a Bingo template in setup mode, it will:
 
 1. Create a new repository on GitHub
    - If the template defines an [`about.repository`](/build/apis/create-template#about), the repository will include a _generated from_ notice pointing to that template repository
@@ -28,32 +28,30 @@ When running Bingo in setup mode, it will:
 
 For example, to generate a new repository using [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
 
 ```plaintext
-┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+┌  ✨ create-typescript-app@2.0.0 ✨
 │
-│  Learn more about Bingo on:
-│    https://create.bingo
+│  Learn more on: https://github.com/JoshuaKGoldberg/create-typescript-app
 │
-│  Running with mode --setup for a new repository using the template:
-│    create-typescript-app
+│  Running with mode --setup for a new repository.
 ```
 
 You can force running in setup mode in a non-empty directory with `--mode setup`:
 
 <PackageManagers
+	args="--mode setup"
+	pkg="create-typescript-app@beta"
 	type="dlx"
-	pkg="bingo"
-	args="typescript-app@beta --mode setup"
 />
 
 ## Transition Mode
 
 Updates an existing repository to a new version of a template.
-This mode will be used by default if the current directory is a Git repository and/or contains a [`bingo.config.*` configuration file](/configuration).
+This mode will be used by default if the current directory is a Git repository and/or contains a [`create-example.config.*` configuration file](/configuration).
 
-When running Bingo in transition mode, it will:
+When running a Bingo template in transition mode, it will:
 
 1. Check if the repository is freshly cloned from the template's [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
    - If it is, remove all local files and Git history
@@ -63,24 +61,22 @@ When running Bingo in transition mode, it will:
 
 For example, to update an existing repository to the latest [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="bingo" args="typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
 
 ```plaintext
-┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+┌  ✨ create-typescript-app@2.0.0 ✨
 │
-│  Learn more about Bingo on:
-│    https://create.bingo
+│  Learn more on: https://github.com/JoshuaKGoldberg/create-typescript-app
 │
-│  Running with mode --transition for an existing repository using the template:
-│    create-typescript-app
+│  Running with mode --transition for an existing repository.
 ```
 
 You can force running in transition mode in a non-Git directory with `--mode transition`:
 
 <PackageManagers
+	args="--mode transition"
+	pkg="create-typescript-app@beta"
 	type="dlx"
-	pkg="bingo"
-	args="typescript-app@beta --mode transition"
 />
 
 Transition mode can be used even if the repository wasn't built with the template being transitioned to.

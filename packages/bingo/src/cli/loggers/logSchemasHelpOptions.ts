@@ -2,9 +2,10 @@ import { AnyShape } from "../../options.js";
 import { getSchemaTypeName } from "../../utils/getSchemaTypeName.js";
 import { logHelpOptions } from "./logHelpOptions.js";
 
-export function logSchemasHelpOptions(from: string, schemas: AnyShape) {
+export function logSchemasHelpOptions(packageName: string, schemas: AnyShape) {
 	logHelpOptions(
-		from,
+		packageName,
+		packageName,
 		Object.entries(schemas)
 			.map(([flag, schema]) => ({
 				flag,

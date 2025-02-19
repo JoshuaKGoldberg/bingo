@@ -39,21 +39,21 @@ describe("parseTransitionSource", () => {
 
 		expect(actual).toEqual(
 			new Error(
-				"Existing repository detected. To transition an existing repository, either create a bingo.config file or provide the name or path of a template.",
+				"Existing repository detected. To transition an existing repository, either create a create-example.config file or provide the name or path of a template.",
 			),
 		);
 	});
 
 	it("returns a CLI error when configFile and from are both defined", () => {
 		const actual = parseTransitionSource({
-			configFile: "bingo.config.js",
+			configFile: "create-example.config.js",
 			directory: ".",
 			from: "my-app",
 		});
 
 		expect(actual).toEqual(
 			new Error(
-				"--mode transition cannot combine an existing config file (bingo.config.js) with an explicit --from (my-app).",
+				"--mode transition cannot combine an existing config file (create-example.config.js) with an explicit --from (my-app).",
 			),
 		);
 	});
@@ -66,12 +66,12 @@ describe("parseTransitionSource", () => {
 		mockTryImportConfig.mockResolvedValueOnce({ template });
 
 		const actual = parseTransitionSource({
-			configFile: "bingo.config.js",
+			configFile: "create-example.config.js",
 			directory: ".",
 		});
 
 		expect(actual).toEqual({
-			descriptor: "bingo.config.js",
+			descriptor: "create-example.config.js",
 			load: expect.any(Function),
 			type: "config file",
 		});

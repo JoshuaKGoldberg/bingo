@@ -11,7 +11,7 @@ describe("tryImportWithPredicate", () => {
 		const error = new Error("Oh no!");
 		const actual = await tryImportWithPredicate(
 			vi.fn().mockResolvedValueOnce(error),
-			"bingo.config.js",
+			"create-example.config.js",
 			isString,
 			"string",
 		);
@@ -22,26 +22,30 @@ describe("tryImportWithPredicate", () => {
 	it("returns an error when the imported value does not have a default export", async () => {
 		const actual = await tryImportWithPredicate(
 			vi.fn().mockResolvedValueOnce({}),
-			"bingo.config.js",
+			"create-example.config.js",
 			isString,
 			"string",
 		);
 
 		expect(actual).toEqual(
-			new Error(`bingo.config.js should have a default exported string.`),
+			new Error(
+				`create-example.config.js should have a default exported string.`,
+			),
 		);
 	});
 
 	it("returns an error when the imported value's default export does not match the predicate", async () => {
 		const actual = await tryImportWithPredicate(
 			vi.fn().mockResolvedValueOnce({ default: false }),
-			"bingo.config.js",
+			"create-example.config.js",
 			isString,
 			"string",
 		);
 
 		expect(actual).toEqual(
-			new Error(`The default export of bingo.config.js should be a string.`),
+			new Error(
+				`The default export of create-example.config.js should be a string.`,
+			),
 		);
 	});
 
@@ -49,7 +53,7 @@ describe("tryImportWithPredicate", () => {
 		const value = "abc";
 		const actual = await tryImportWithPredicate(
 			vi.fn().mockResolvedValueOnce({ default: value }),
-			"bingo.config.js",
+			"create-example.config.js",
 			isString,
 			"string",
 		);

@@ -66,7 +66,7 @@ describe("readProductionSettings", () => {
 	});
 
 	it("returns the config file and mode: transition when a config file is found without a mode", async () => {
-		const configFile = "bingo.config.ts";
+		const configFile = "create-example.config.ts";
 		mockReaddir.mockResolvedValueOnce([configFile]);
 
 		const actual = await readProductionSettings();
@@ -75,7 +75,7 @@ describe("readProductionSettings", () => {
 	});
 
 	it("returns the config file relative to the directory when a config file is found with a directory", async () => {
-		const configFile = "bingo.config.ts";
+		const configFile = "create-example.config.ts";
 		mockReaddir.mockResolvedValueOnce([configFile]);
 
 		const actual = await readProductionSettings({ directory: "path/to" });

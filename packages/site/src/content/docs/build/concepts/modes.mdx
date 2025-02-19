@@ -8,7 +8,7 @@ The Bingo engine can optionally be told to run in one the following "modes":
 - `"setup"`: Indicating the production is being used to create a new repository
 - `"transition"`: Indicating the production is migrating an existing repository
 
-Running the `bingo` CLI will always infer one of the modes.
+Running the Bingo CLI will always infer one of the modes.
 The [`produceTemplate`](/build/apis/produce-template) and [`runTemplate`](/build/apis/run-template) may optionally specify a mode.
 
 ## Setup
@@ -18,7 +18,7 @@ This mode creates a new repository on GitHub.
 As the production is run, the Bingo engine will add in additional creations from the template's [`setup()` function](/build/apis/create-template#transition), if it exists.
 Those creations typically includes example starter files or one-time API registrations.
 
-When running Bingo in setup mode, it will:
+When running a Bingo template in setup mode, it will:
 
 1. Create a new repository on GitHub
    - If the template defines an [`about.repository`](/build/apis/create-template#about), the repository will include a _generated from_ notice pointing to that template repository

@@ -37,6 +37,7 @@ export default defineConfig({
 						icon: "pen",
 						items: [
 							{ label: "About", link: "build/about" },
+							{ label: "CLI", link: "build/cli" },
 							{
 								items: [
 									{ label: "Creations", link: "build/concepts/creations" },
@@ -78,6 +79,10 @@ export default defineConfig({
 									{
 										label: "runTemplate",
 										link: "build/apis/run-template",
+									},
+									{
+										label: "runTemplateCLI",
+										link: "build/apis/run-template-cli",
 									},
 								],
 								label: "APIs",

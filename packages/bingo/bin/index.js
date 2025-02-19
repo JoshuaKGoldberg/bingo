@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import { runCli } from "../lib/cli/runCli.js";
+import { runBingoCli } from "../lib/index.js";
 
-process.exitCode = await runCli(process.argv.slice(2));
+process.exitCode = await runBingoCli(process.argv.slice(2));

@@ -10,7 +10,11 @@ export interface HelpOption {
 	type: string;
 }
 
-export function logHelpOptions(category: string, options: HelpOption[]) {
+export function logHelpOptions(
+	category: string,
+	packageName: string,
+	options: HelpOption[],
+) {
 	prompts.log.message(
 		[
 			`${chalk.bgGreenBright.black(category)} options:`,
@@ -21,7 +25,9 @@ export function logHelpOptions(category: string, options: HelpOption[]) {
 					`  ${formatFlag(option.flag, option.type)}${chalk.blue(text)}`,
 					option.examples?.length &&
 						`\n${option.examples
-							.map((example) => chalk.blue(`      npx bingo ${example}\n`))
+							.map((example) =>
+								chalk.blue(`      npx ${packageName} ${example}\n`),
+							)
 							.join("")}`,
 				]
 					.filter(Boolean)
