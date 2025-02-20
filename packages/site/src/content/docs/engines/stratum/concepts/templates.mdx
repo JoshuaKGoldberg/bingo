@@ -30,24 +30,20 @@ export const template = createTemplate({
 });
 ```
 
-Commands like the [`bingo` CLI](/cli) can then work with that Template to prompt the user for choosing a Preset:
+The preset labels are turned into a `--preset` option.
+Runners like [Template CLIs](/cli) will know to prompt for a preset if not provided:
 
 ```plaintext
-$ npx bingo typescript-app@beta
+$ npx create-typescript-app@beta
 
-┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+┌  ✨ create-typescript-app@2.0.0 ✨
 │
-│  Learn more about Bingo on:
-│    https://create.bingo
+│  Learn more on: https://github.com/JoshuaKGoldberg/create-typescript-app
 │
-│  Running with mode --initialize for a new repository using the template:
-│    create-typescript-app
+│  Running with mode --initialize for a new repository.
+│
+│  What will the --preset be?
 ```
-
-:::note
-The Presets used in a Template don't need to all be from the same shared [Base](/engines/stratum/concepts/bases).
-This allows more comprehensive Presets to come with a larger set of required Options.
-:::
 
 ## Options
 
@@ -59,7 +55,7 @@ It is a union of the lowercased labels provided under `presets`.
 
 For example, given the earlier `template` with three Presets, the `preset` option would be type `"common" | "everything" | "minimal"`:
 
-```ts title="bingo.config.js"
+```ts title="create-example.config.js"
 import { template } from "create-typescript-app";
 
 export default createConfig(template, {

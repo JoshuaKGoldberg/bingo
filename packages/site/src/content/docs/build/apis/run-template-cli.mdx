@@ -1,0 +1,50 @@
+---
+description: Bingo API to run a template as an npx-style CLI.
+title: runTemplateCLI
+---
+
+Given a [Template](/build/concepts/templates), runs an interactive CLI to generate and apply its output.
+
+`runTemplateCLI` is typically placed in a template repository's [package `bin` entry](https://docs.npmjs.com/cli/configuring-npm/package-json#bin) to allow [`npx`](https://docs.npmjs.com/cli/commands/npx) execution of the template.
+
+A typical bin file will look something like:
+
+```js title="index.js"
+#!/usr/bin/env node
+import { runTemplateCLI } from "bingo";
+
+import template from "./template.js";
+
+process.exitCode = await runTemplateCLI(template);
+```
+
+`runTemplateCLI` takes in up to two arguments:
+
+1. A template _(required)_
+2. `package.json` data to display in the CLI _(optional)_
+
+It returns a Promise for a numeric status code.
+
+## Package Data
+
+If the optional package data argument is not provided, then `runTemplateCLI` will attempt to read from the nearest `package.json` to the file that is calling it.
+
+You can alternately provide data yourself.
+You must provide at least:
+
+    - `name` _(`string`)_
+    - `version` _(`string`)_
+
+For example, hardcoding the name and version:
+
+```js title="index.js"
+#!/usr/bin/env node
+import { runTemplateCLI } from "bingo";
+
+import template from "./template.js";
+
+process.exitCode = await runTemplateCLI(template, {
+	name: "my-example",
+	version: "1.2.3",
+});
+```

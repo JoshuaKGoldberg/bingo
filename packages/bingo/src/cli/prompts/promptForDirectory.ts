@@ -2,20 +2,25 @@ import * as prompts from "@clack/prompts";
 import * as fs from "node:fs/promises";
 import slugify from "slugify";
 
+import { AnyShape } from "../../options.js";
 import { Template } from "../../types/templates.js";
 import { validateNewDirectory } from "./validators.js";
 
-export interface PromptForDirectorySettings {
+export interface PromptForDirectorySettings<
+	OptionsShape extends AnyShape = AnyShape,
+> {
 	requestedDirectory?: string;
 	requestedRepository?: string;
-	template: Template;
+	template: Template<OptionsShape>;
 }
 
-export async function promptForDirectory({
+export async function promptForDirectory<
+	OptionsShape extends AnyShape = AnyShape,
+>({
 	requestedRepository,
 	requestedDirectory = requestedRepository,
 	template,
-}: PromptForDirectorySettings) {
+}: PromptForDirectorySettings<OptionsShape>) {
 	if (requestedDirectory) {
 		if (validateNewDirectory(requestedDirectory)) {
 			prompts.log.warn(`The '${requestedDirectory}' directory already exists.`);

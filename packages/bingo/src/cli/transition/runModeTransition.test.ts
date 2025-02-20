@@ -62,11 +62,11 @@ vi.mock("../createInitialCommit.js", () => ({
 	},
 }));
 
-const mockLogTransitionHelpText = vi.fn();
+const mockLogHelpText = vi.fn();
 
-vi.mock("../loggers/logTransitionHelpText.js", () => ({
-	get logTransitionHelpText() {
-		return mockLogTransitionHelpText;
+vi.mock("../loggers/logHelpText.js", () => ({
+	get logHelpText() {
+		return mockLogHelpText;
 	},
 }));
 
@@ -135,20 +135,7 @@ const templateWithRepository = createTemplate({
 
 const args = ["bingo-my-app"];
 
-const descriptor = "Test Source";
-const type = "template";
-
-const source = {
-	descriptor,
-	load: () => Promise.resolve(template),
-	type,
-};
-
-const sourceWithRepository = {
-	descriptor,
-	load: () => Promise.resolve(templateWithRepository),
-	type,
-};
+const from = "create-example";
 
 const promptedOptions = {
 	abc: "def",
@@ -156,75 +143,20 @@ const promptedOptions = {
 
 describe("runModeTransition", () => {
 	it("logs help text instead of running when help is true", async () => {
-		mockParseTransitionSource.mockReturnValueOnce(source);
-
 		await runModeTransition({
 			args,
 			configFile: undefined,
 			display,
+			from,
 			help: true,
+			template,
 		});
 
-		expect(mockLogTransitionHelpText).toHaveBeenCalledWith(source);
+		expect(mockLogHelpText).toHaveBeenCalledWith("transition", from, template);
 		expect(mockLogStartText).not.toHaveBeenCalled();
 	});
 
-	it("returns the error when parseTransitionSource returns an error", async () => {
-		const error = new Error("Oh no!");
-
-		mockParseTransitionSource.mockReturnValueOnce(error);
-
-		const actual = await runModeTransition({
-			args,
-			configFile: undefined,
-			display,
-		});
-
-		expect(actual).toEqual({
-			error,
-			outro: error.message,
-			status: CLIStatus.Error,
-		});
-	});
-
-	it("returns the error when the loaded source resolves with an error", async () => {
-		const error = new Error("Oh no!");
-
-		mockParseTransitionSource.mockReturnValueOnce({
-			load: () => Promise.resolve(error),
-		});
-
-		const actual = await runModeTransition({
-			args,
-			configFile: undefined,
-			display,
-		});
-
-		expect(actual).toEqual({
-			error,
-			outro: error.message,
-			status: CLIStatus.Error,
-		});
-	});
-
-	it("returns the cancellation when the loaded source is cancelled", async () => {
-		mockParseTransitionSource.mockReturnValueOnce({
-			load: () => Promise.resolve(mockCancel),
-		});
-
-		const actual = await runModeTransition({
-			args,
-			configFile: undefined,
-			display,
-		});
-
-		expect(actual).toEqual({
-			status: CLIStatus.Cancelled,
-		});
-	});
-
 	it("returns the cancellation when promptForOptions is cancelled", async () => {
-		mockParseTransitionSource.mockReturnValueOnce(source);
 		mockPromptForOptions.mockResolvedValueOnce({
 			cancelled: true,
 			prompted: promptedOptions,
@@ -234,6 +166,8 @@ describe("runModeTransition", () => {
 			args,
 			configFile: undefined,
 			display,
+			from,
+			template,
 		});
 
 		expect(actual).toEqual({
@@ -245,7 +179,6 @@ describe("runModeTransition", () => {
 	it("returns the error when runTemplate resolves with an error", async () => {
 		const error = new Error("Oh no!");
 
-		mockParseTransitionSource.mockReturnValueOnce(source);
 		mockPromptForOptions.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
@@ -255,6 +188,8 @@ describe("runModeTransition", () => {
 			args,
 			configFile: undefined,
 			display,
+			from,
+			template,
 		});
 
 		expect(actual).toEqual({
@@ -266,7 +201,6 @@ describe("runModeTransition", () => {
 	});
 
 	it("doesn't clear the existing repository when the template does not have a repository locator", async () => {
-		mockParseTransitionSource.mockReturnValueOnce(source);
 		mockPromptForOptions.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
@@ -275,6 +209,8 @@ describe("runModeTransition", () => {
 			args,
 			configFile: undefined,
 			display,
+			from,
+			template,
 		});
 
 		expect(actual).toEqual({
@@ -287,10 +223,6 @@ describe("runModeTransition", () => {
 	});
 
 	it("clears the existing repository online when a forked repository locator is available and offline is falsy", async () => {
-		const descriptor = "Test Source";
-		const type = "template";
-
-		mockParseTransitionSource.mockReturnValueOnce(sourceWithRepository);
 		mockPromptForOptions.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
@@ -303,6 +235,8 @@ describe("runModeTransition", () => {
 			args,
 			configFile: undefined,
 			display,
+			from,
+			template: templateWithRepository,
 		});
 
 		expect(actual).toEqual({
@@ -311,8 +245,8 @@ describe("runModeTransition", () => {
 		});
 		expect(mockLogStartText).toHaveBeenCalledWith(
 			"transition",
-			descriptor,
-			type,
+			from,
+			"template",
 			undefined,
 		);
 		expect(mockClearTemplateFiles).toHaveBeenCalled();
@@ -325,10 +259,6 @@ describe("runModeTransition", () => {
 	});
 
 	it("clears the existing repository offline when a forked repository locator is available and offline is true", async () => {
-		const descriptor = "Test Source";
-		const type = "template";
-
-		mockParseTransitionSource.mockReturnValueOnce(sourceWithRepository);
 		mockPromptForOptions.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
@@ -341,7 +271,9 @@ describe("runModeTransition", () => {
 			args,
 			configFile: undefined,
 			display,
+			from,
 			offline: true,
+			template: templateWithRepository,
 		});
 
 		expect(actual).toEqual({
@@ -350,8 +282,8 @@ describe("runModeTransition", () => {
 		});
 		expect(mockLogStartText).toHaveBeenCalledWith(
 			"transition",
-			descriptor,
-			type,
+			from,
+			"template",
 			true,
 		);
 		expect(mockClearTemplateFiles).toHaveBeenCalled();

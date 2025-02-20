@@ -346,11 +346,11 @@ import { exampleTemplate } from "./exampleTemplate.js";
 describe("exampleTemplate", () => {
 	describe("name", () => {
 		it("uses the package.json name if it exists", async () => {
-			const take = vi.fn().mockResolvedValue({ name: "bingo-example" });
+			const take = vi.fn().mockResolvedValue({ name: "create-example" });
 
 			const actual = await testOptions(exampleTemplate, { take });
 
-			expect(actual).toEqual({ name: "bingo-example" });
+			expect(actual).toEqual({ name: "create-example" });
 			expect(take).toHaveBeenCalledWith(inputFromFileJSON, {
 				filePath: "package.json",
 			});

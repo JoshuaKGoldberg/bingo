@@ -16,7 +16,7 @@ npm i input-from-fetch
 ```ts
 import { inputFromScript } from "input-from-fetch";
 
-await take(inputFromScript, { command: "npm whoami" });
+await take(inputFromScript, { command: "https://example.com" });
 ```
 
 ## Options

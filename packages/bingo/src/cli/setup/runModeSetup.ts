@@ -2,16 +2,16 @@ import * as prompts from "@clack/prompts";
 import chalk from "chalk";
 
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
+import { AnyShape } from "../../options.js";
 import { runTemplate } from "../../runners/runTemplate.js";
+import { Template } from "../../types/templates.js";
 import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
-import { tryImportTemplate } from "../importers/tryImportTemplate.js";
+import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
-import { logSetupHelpText } from "../loggers/logSetupHelpText.js";
 import { logStartText } from "../loggers/logStartText.js";
-import { CLIMessage } from "../messages.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForDirectory } from "../prompts/promptForDirectory.js";
 import { promptForOptions } from "../prompts/promptForOptions.js";
@@ -22,19 +22,19 @@ import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 import { createTrackingBranches } from "./createTrackingBranches.js";
 import { getRepositoryLocator } from "./getRepositoryLocator.js";
 
-export interface RunModeSetupSettings {
+export interface RunModeSetupSettings<OptionsShape extends AnyShape> {
 	args: string[];
 	directory?: string;
 	display: ClackDisplay;
-	from?: string;
+	from: string;
 	help?: boolean;
 	offline?: boolean;
 	owner?: string;
 	repository?: string;
-	yes?: boolean;
+	template: Template<OptionsShape>;
 }
 
-export async function runModeSetup({
+export async function runModeSetup<OptionsShape extends AnyShape>({
 	args,
 	repository,
 	directory: requestedDirectory = repository,
@@ -42,25 +42,13 @@ export async function runModeSetup({
 	from,
 	help,
 	offline,
-	yes,
-}: RunModeSetupSettings): Promise<ModeResults> {
-	if (!from || help) {
-		return await logSetupHelpText(from, { help, yes });
+	template,
+}: RunModeSetupSettings<OptionsShape>): Promise<ModeResults> {
+	if (help) {
+		return logHelpText("setup", from, template);
 	}
 
 	logStartText("setup", from, "template", offline);
-
-	const template = await tryImportTemplate(from, yes);
-	if (template instanceof Error) {
-		return {
-			error: template,
-			outro: CLIMessage.Exiting,
-			status: CLIStatus.Error,
-		};
-	}
-	if (prompts.isCancel(template)) {
-		return { status: CLIStatus.Cancelled };
-	}
 
 	const directory = await promptForDirectory({
 		requestedDirectory,
@@ -158,7 +146,7 @@ export async function runModeSetup({
 	);
 
 	return {
-		outro: `Thanks for using ${chalk.bgGreenBright.black("bingo")}! 💝`,
+		outro: `Thanks for using ${chalk.bgGreenBright.black(from)}! 💝`,
 		status: CLIStatus.Success,
 		suggestions: creation.suggestions,
 	};

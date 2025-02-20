@@ -3,34 +3,35 @@ description: "Configuring Bingo from a config file."
 title: Configuration
 ---
 
-Most options for Bingo templates can be specified on the [`bingo` CLI](/cli).
-However, for describing complex options and/or keeping them persist over time, you may want to create a configuration file named `bingo.config.js`.
+Most options for Bingo templates can be specified on the [CLI](/cli).
+However, for describing complex options and/or keeping them persist over time, you may want to create a configuration file.
 Bingo configuration files are useful if you:
 
 - Have rich customizations to the template that should be applied to the repository
 - Keep your repository updating to the latest template versions using [Execution > Transition Mode](/execution#transition-mode)
 
-Bingo provides a `createConfig()` function that takes in a template and returns a configuration object.
-`bingo.config.js` configuration files should `export default` that object.
+Bingo templates each:
+
+- Provide a `createConfig()` function that creates a configuration object.
+- Support reading a `*.config.js` configuration file that `export default`s that object.
 
 For example, this configuration keeps a repository up-to-date with [`create-example`](https://github.com/JoshuaKGoldberg/create-example):
 
-```ts title="bingo.config.js"
-import { createConfig } from "bingo";
-import { template } from "bingo-example";
+```ts title="create-example.config.js"
+import { createConfig } from "create-example";
 
-export default createConfig(template);
+export default createConfig({
+	options: {
+		title: "Hello, world!",
+	},
+});
 ```
 
-Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo example`.
+Running `npx create-example` in a repository with that `create-example.config.js` would be the equivalent of running `npx create-example --title "Hello, world!"`.
 
 ## `createConfig`
 
-The exported `createConfig` function takes in up to two arguments:
-
-1. A template imported from a package.
-   This is always required.
-2. An object containing any `options` and/or `settings` to be passed to the preset.
+The exported `createConfig` function takes in an object containing any `options` and/or `settings` to be passed to the template.
 
 :::tip
 See the documentation for your specific template for additional `options` and `settings`.
@@ -42,21 +43,20 @@ Any type-safe options the template has declared.
 
 For example, this configuration keeps a repository up-to-date with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app), which requires a `preset` option to be specified:
 
-```ts title="bingo.config.js"
-import { createConfig } from "bingo";
-import { template } from "create-typescript-app";
+```ts title="create-typescript-app.config.js"
+import { createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
+export default createConfig({
 	options: {
 		preset: "everything",
 	},
 });
 ```
 
-Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo typescript-app@beta --preset everything`.
+Running `npx create-typescript-app@beta` in a repository with that `create-typescript-app.config.js` would be the equivalent of running `npx create-typescript-app@beta --preset everything`.
 
 :::note
-See the documentation of your Template for what `options` are available.
+See the documentation of your template for what `options` are available.
 :::
 
 ### `settings`
@@ -65,11 +65,10 @@ Any custom settings specified by the template.
 
 For example, this configuration customizes the preset list of blocks in [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app)'s _Everything_ `preset`:
 
-```ts title="bingo.config.js"
-import { createConfig } from "bingo";
-import { blockCSpell, template } from "create-typescript-app";
+```ts title="create-typescript-app.config.js"
+import { blockCSpell, createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
+export default createConfig({
 	options: {
 		preset: "everything",
 	},
@@ -81,8 +80,8 @@ export default createConfig(template, {
 });
 ```
 
-Running `npx bingo` in a repository with that `bingo.config.js` would be the equivalent of running `npx bingo typescript-app@beta --preset everything`, except all CSpell-related files and scripts would be skipped.
+Running `npx create-typescript-app@beta` in a repository with that `create-typescript-app.config.js` would be the equivalent of running `npx create-typescript-app@beta --preset everything`, except all CSpell-related files and scripts would be skipped.
 
 :::note
-See the documentation of your Template for what `settings` are available.
+See the documentation of your template for what `settings` are available.
 :::

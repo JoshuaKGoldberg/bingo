@@ -23,7 +23,7 @@ It returns a [`Creation`](/build/concepts/creations) object.
 
 The following example template takes in a `repository` option and produces a `README.md` file with a heading:
 
-```ts title="example-template.js"
+```ts title="template.js"
 import { createTemplate } from "bingo";
 import { z } from "zod";
 
@@ -41,21 +41,20 @@ export default createTemplate({
 });
 ```
 
-If someone were to run `npx bingo ./example-template.js`, it would know to ask for a `title`:
+If someone were to run `npx bingo ./template.js`, it would know to ask for a `title`:
 
-```plaintext title="npx bingo ./example-template.js"
-┌  ✨ Welcome to Bingo: a delightful repository templating engine. ✨
+```plaintext title="npx bingo ./template.js"
+┌  ✨ bingo@0.5.0 ✨
 │
-│  Learn more about Bingo on:
-│    https://create.bingo
+│  Learn more on: https://create.bingo/build
 │
-│  Running with mode --setup for a new repository using the template:
-│    ./example-template.js
+│  Running with mode --setup for a new repository using:
+│    ./template.js
 |
 | What will the title be? (--title)
 ```
 
-If someone were to run `npx bingo ./example-template.js --title "Hello World"`, a `README.md` file would be created with that title as a heading:
+If someone were to run `npx bingo ./template.js --title "Hello World"`, a `README.md` file would be created with that title as a heading:
 
 ```md title="README.md"
 # Hello World

@@ -65,20 +65,35 @@ describe("readProductionSettings", () => {
 		);
 	});
 
+	it("returns mode: setup when only a config file with a mismatched name is found without a mode", async () => {
+		mockReaddir.mockResolvedValueOnce(["mismatched.config.ts"]);
+
+		const actual = await readProductionSettings({
+			from: "create-example",
+		});
+
+		expect(actual).toEqual({ mode: "setup" });
+	});
+
 	it("returns the config file and mode: transition when a config file is found without a mode", async () => {
-		const configFile = "bingo.config.ts";
+		const configFile = "create-example.config.ts";
 		mockReaddir.mockResolvedValueOnce([configFile]);
 
-		const actual = await readProductionSettings();
+		const actual = await readProductionSettings({
+			from: "create-example",
+		});
 
 		expect(actual).toEqual({ configFile, mode: "transition" });
 	});
 
 	it("returns the config file relative to the directory when a config file is found with a directory", async () => {
-		const configFile = "bingo.config.ts";
+		const configFile = "create-example.config.ts";
 		mockReaddir.mockResolvedValueOnce([configFile]);
 
-		const actual = await readProductionSettings({ directory: "path/to" });
+		const actual = await readProductionSettings({
+			directory: "path/to",
+			from: "create-example",
+		});
 
 		expect(actual).toEqual({
 			configFile: path.join("path/to", configFile),

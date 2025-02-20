@@ -1,34 +1,33 @@
-import * as prompts from "@clack/prompts";
-
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
+import { AnyShape } from "../../options.js";
 import { runTemplate } from "../../runners/runTemplate.js";
+import { Template } from "../../types/templates.js";
 import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
+import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
-import { logTransitionHelpText } from "../loggers/logTransitionHelpText.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForOptions } from "../prompts/promptForOptions.js";
 import { CLIStatus } from "../status.js";
 import { ModeResults } from "../types.js";
 import { clearTemplateFiles } from "./clearTemplateFiles.js";
 import { getForkedRepositoryLocator } from "./getForkedRepositoryLocator.js";
-import { parseTransitionSource } from "./parseTransitionSource.js";
 
-export interface RunModeTransitionSettings {
+export interface RunModeTransitionSettings<OptionsShape extends AnyShape> {
 	args: string[];
 	configFile: string | undefined;
 	directory?: string;
 	display: ClackDisplay;
-	from?: string;
+	from: string;
 	help?: boolean;
 	offline?: boolean;
-	yes?: boolean;
+	template: Template<OptionsShape>;
 }
 
-export async function runModeTransition({
+export async function runModeTransition<OptionsShape extends AnyShape>({
 	args,
 	configFile,
 	directory = ".",
@@ -36,40 +35,15 @@ export async function runModeTransition({
 	from,
 	help,
 	offline,
-	yes,
-}: RunModeTransitionSettings): Promise<ModeResults> {
-	const source = parseTransitionSource({
-		configFile,
-		directory,
-		from,
-		yes,
-	});
-
+	template,
+}: RunModeTransitionSettings<OptionsShape>): Promise<ModeResults> {
 	if (help) {
-		return await logTransitionHelpText(source);
+		return logHelpText("transition", from, template);
 	}
 
-	if (source instanceof Error) {
-		return {
-			error: source,
-			outro: source.message,
-			status: CLIStatus.Error,
-		};
-	}
+	const transitionType = configFile ? "config file" : "template";
 
-	logStartText("transition", source.descriptor, source.type, offline);
-
-	const template = await source.load();
-	if (template instanceof Error) {
-		return {
-			error: template,
-			outro: template.message,
-			status: CLIStatus.Error,
-		};
-	}
-	if (prompts.isCancel(template)) {
-		return { status: CLIStatus.Cancelled };
-	}
+	logStartText("transition", from, transitionType, offline);
 
 	const system = await createSystemContextWithAuth({
 		directory,
@@ -104,12 +78,10 @@ export async function runModeTransition({
 		return { status: CLIStatus.Cancelled };
 	}
 
-	const descriptor = template.about?.name ?? from ?? "";
-
 	const creation = await runSpinnerTask(
 		display,
-		`Running the${descriptor} template`,
-		`Ran the${descriptor} template`,
+		`Running ${from}`,
+		`Ran ${from}`,
 		async () =>
 			await runTemplate(template, {
 				...system,

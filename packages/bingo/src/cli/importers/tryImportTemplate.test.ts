@@ -16,7 +16,7 @@ describe("tryImportTemplate", () => {
 
 		mockTryImportWithPredicate.mockResolvedValueOnce(error);
 
-		const actual = await tryImportTemplate("bingo-my-app", false);
+		const actual = await tryImportTemplate("bingo-my-app");
 
 		expect(actual).toEqual(error);
 	});
@@ -26,7 +26,7 @@ describe("tryImportTemplate", () => {
 
 		mockTryImportWithPredicate.mockResolvedValueOnce(template);
 
-		const actual = await tryImportTemplate("bingo-my-app", false);
+		const actual = await tryImportTemplate("bingo-my-app");
 
 		expect(actual).toEqual(template);
 	});
