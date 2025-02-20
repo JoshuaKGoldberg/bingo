@@ -122,9 +122,6 @@ importers:
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
-      enhanced-resolve:
-        specifier: ^5.18.1
-        version: 5.18.1
       get-github-auth-token:
         specifier: ^0.1.1
         version: 0.1.1
