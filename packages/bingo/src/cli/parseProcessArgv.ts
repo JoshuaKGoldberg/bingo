@@ -1,8 +1,10 @@
 import { parseArgs, ParseArgsConfig } from "node:util";
 
+// TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
+
 type ParseArgsOptionsConfig = NonNullable<ParseArgsConfig["options"]>;
 
-export const cliArgsOptions = {
+const cliArgsOptions = {
 	directory: {
 		type: "string",
 	},
@@ -25,8 +27,6 @@ export const cliArgsOptions = {
 		type: "boolean",
 	},
 } satisfies ParseArgsOptionsConfig;
-
-// TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
 
 export interface RunCLIRawValues {
 	directory?: boolean | string | undefined;

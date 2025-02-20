@@ -31,7 +31,6 @@
 		"cached-factory": "^0.1.0",
 		"call-id": "^0.1.0",
 		"chalk": "^5.4.1",
-		"enhanced-resolve": "^5.18.1",
 		"get-github-auth-token": "^0.1.1",
 		"hash-object": "^5.0.1",
 		"hosted-git-info": "^8.0.2",
