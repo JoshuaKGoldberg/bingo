@@ -2,7 +2,6 @@ import chalk from "chalk";
 import { z } from "zod";
 
 import { AnyShape } from "../options.js";
-import { packageData } from "../packageData.js";
 import { Template } from "../types/templates.js";
 import { ClackDisplay } from "./display/createClackDisplay.js";
 import { logOutro } from "./loggers/logOutro.js";
@@ -36,11 +35,6 @@ export async function runCLI<OptionsShape extends AnyShape = AnyShape>({
 	template,
 	values,
 }: RunCLISettings<OptionsShape>) {
-	if (values.version) {
-		console.log(packageData.version);
-		return CLIStatus.Success;
-	}
-
 	const validatedValues = valuesSchema.parse(values);
 	const productionSettings = await readProductionSettings({
 		from,

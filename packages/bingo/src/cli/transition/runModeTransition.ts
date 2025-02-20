@@ -37,10 +37,11 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 	offline,
 	template,
 }: RunModeTransitionSettings<OptionsShape>): Promise<ModeResults> {
-	const transitionType = configFile ? "config file" : "template";
 	if (help) {
 		return logHelpText("transition", from, template);
 	}
+
+	const transitionType = configFile ? "config file" : "template";
 
 	logStartText("transition", from, transitionType, offline);
 
