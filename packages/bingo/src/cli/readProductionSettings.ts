@@ -7,11 +7,13 @@ import { ProductionSettings } from "./types.js";
 
 export interface ReadProductionSettingsOptions {
 	directory?: string;
+	from?: string;
 	mode?: ProductionMode;
 }
 
 export async function readProductionSettings({
 	directory = ".",
+	from,
 	mode,
 }: ReadProductionSettingsOptions = {}): Promise<Error | ProductionSettings> {
 	const items = await tryCatchSafe(fs.readdir(directory));
@@ -25,8 +27,12 @@ export async function readProductionSettings({
 			: { mode: defaultMode };
 	}
 
+	const configFileTester = from
+		? new RegExp(`${from}\\.config\\.\\w+`)
+		: undefined;
+
 	for (const item of items) {
-		if (/bingo\.config\.\w+/.test(item)) {
+		if (configFileTester?.test(item)) {
 			return {
 				configFile: path.join(directory, item),
 				mode: "transition",

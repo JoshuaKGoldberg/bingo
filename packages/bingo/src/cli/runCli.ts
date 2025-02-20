@@ -42,7 +42,10 @@ export async function runCLI<OptionsShape extends AnyShape = AnyShape>({
 	}
 
 	const validatedValues = valuesSchema.parse(values);
-	const productionSettings = await readProductionSettings(validatedValues);
+	const productionSettings = await readProductionSettings({
+		from,
+		...validatedValues,
+	});
 	if (productionSettings instanceof Error) {
 		logOutro(chalk.red(productionSettings.message));
 		return CLIStatus.Error;
