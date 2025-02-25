@@ -5,6 +5,56 @@ import { createBase } from "../creators/createBase.js";
 import { produceStratumTemplate } from "./produceStratumTemplate.js";
 
 describe("produceStratumTemplate", () => {
+	it("excludes a block when its exclusion option is enabled", () => {
+		const base = createBase({
+			options: {},
+		});
+
+		const blockA = base.createBlock({
+			about: { name: "A" },
+			produce() {
+				return {
+					files: {
+						"value-a.txt": "A",
+					},
+				};
+			},
+		});
+		const blockB = base.createBlock({
+			about: { name: "B" },
+			produce() {
+				return {
+					files: {
+						"value-b.txt": "B",
+					},
+				};
+			},
+		});
+
+		const presetUsingOption = base.createPreset({
+			about: { name: "Test" },
+			blocks: [blockA, blockB],
+		});
+
+		const template = base.createStratumTemplate({
+			presets: [presetUsingOption],
+		});
+
+		const actual = produceStratumTemplate(template, {
+			options: {
+				// This would be rather complex to do in types...
+				excludeA: true,
+				preset: "test",
+			},
+		});
+
+		expect(actual).toEqual({
+			files: {
+				"value.txt": "abc",
+			},
+		});
+	});
+
 	it("passes addons to the preset when provided", () => {
 		const baseWithOption = createBase({
 			options: {

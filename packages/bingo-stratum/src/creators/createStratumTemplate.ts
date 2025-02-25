@@ -1,5 +1,4 @@
 import { AnyShape } from "bingo";
-import slugify from "slugify";
 import { z } from "zod";
 
 import { hasName } from "../predicates/hasName.js";
