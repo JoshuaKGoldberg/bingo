@@ -5,17 +5,15 @@ import { z } from "zod";
 import { testInput } from "./testInput.js";
 
 const inputDoubler = createInput({
-	args: {
-		value: z.number(),
-	},
+	args: [z.number()],
 	produce({ args }) {
-		return args.value * 2;
+		return args[0] * 2;
 	},
 });
 
 describe("testInput", () => {
 	it("forwards args to the input", () => {
-		const actual = testInput(inputDoubler, { args: { value: 2 } });
+		const actual = testInput(inputDoubler, { args: [2] });
 
 		expect(actual).toEqual(4);
 	});

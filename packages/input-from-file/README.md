@@ -16,14 +16,14 @@ npm i input-from-file
 ```ts
 import { inputFromFile } from "input-from-file";
 
-await take(inputFromFile, { filePath: "data.txt" });
+await take(inputFromFile, "data.txt");
 ```
 
 ## Options
 
 `inputFromFile` takes a single argument, `filePath`, of type `string`.
 
-It reads the `filePath` from disk and returns either:
+It reads the `filePath` from disk and returns a Promise for either:
 
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught reading the file
 - `string`: The text contents of the file

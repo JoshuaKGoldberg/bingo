@@ -10,7 +10,7 @@ describe("inputFromFetch", () => {
 		const fetch = vi.fn().mockResolvedValue(expected);
 
 		const actual = await testInput(inputFromFetch, {
-			args: { resource },
+			args: [resource],
 			fetchers: createMockFetchers(fetch),
 		});
 

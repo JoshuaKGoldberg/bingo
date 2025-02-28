@@ -16,14 +16,14 @@ npm i input-from-file-json
 ```ts
 import { inputFromFileJSON } from "input-from-file-json";
 
-await take(inputFromFileJSON, { filePath: "data.json" });
+await take(inputFromFileJSON, "data.json");
 ```
 
 ## Options
 
 `inputFromFileJSON` takes a single argument, `filePath`, of type `string`.
 
-It reads the `filePath` from disk and returns either:
+It reads the `filePath` from disk and returns a Promise for either:
 
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught reading or parsing the file
 - `unknown`: The result of running `JSON.parse` on the file's text contents

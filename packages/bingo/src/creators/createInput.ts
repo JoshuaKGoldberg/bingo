@@ -1,25 +1,30 @@
 import { z } from "zod";
 
-import { AnyShape, InferredObject } from "../options.js";
+import { AnyShapesArray, InferredValues } from "../options.js";
 import {
 	Input,
 	InputContext,
 	InputContextWithArgs,
 	InputProducerWithArgs,
 	InputProducerWithoutArgs,
+	InputWithArgs,
+	InputWithoutArgs,
 } from "../types/inputs.js";
 import { isDefinitionWithArgs } from "./utils.js";
 
 export type InputDefinition<
 	Result,
-	ArgsShape extends AnyShape | undefined = undefined,
-> = ArgsShape extends object
-	? InputDefinitionWithArgs<Result, ArgsShape>
+	ArgsShapes extends AnyShapesArray | undefined,
+> = ArgsShapes extends object
+	? InputDefinitionWithArgs<Result, ArgsShapes>
 	: InputDefinitionWithoutArgs<Result>;
 
-export interface InputDefinitionWithArgs<Result, ArgsShape extends AnyShape> {
-	args: ArgsShape;
-	produce: InputProducerWithArgs<Result, ArgsShape>;
+export interface InputDefinitionWithArgs<
+	Result,
+	ArgsShapes extends AnyShapesArray,
+> {
+	args: ArgsShapes;
+	produce: InputProducerWithArgs<Result, InferredValues<ArgsShapes>>;
 }
 
 export interface InputDefinitionWithoutArgs<Result> {
@@ -28,28 +33,45 @@ export interface InputDefinitionWithoutArgs<Result> {
 
 export function createInput<
 	Result,
-	ArgsShape extends AnyShape | undefined = undefined,
+	const ArgsShapes extends AnyShapesArray | undefined = undefined,
 >(
-	inputDefinition: InputDefinition<Result, ArgsShape>,
-): Input<Result, ArgsShape> {
-	if (!isDefinitionWithArgs(inputDefinition)) {
-		return ((context: InputContext) => {
-			return inputDefinition.produce(context);
-		}) as Input<Result, ArgsShape>;
-	}
+	inputDefinition: InputDefinition<Result, ArgsShapes>,
+): Input<Result, ArgsShapes> {
+	return (
+		isDefinitionWithArgs(inputDefinition)
+			? createInputWithArgs(inputDefinition)
+			: createInputWithoutArgs(inputDefinition)
+	) as Input<Result, ArgsShapes>;
+}
 
-	const argsShape = z.object(inputDefinition.args);
+function createInputWithArgs<Result, const ArgsShapes extends AnyShapesArray>(
+	inputDefinition: InputDefinitionWithArgs<Result, ArgsShapes>,
+): InputWithArgs<Result, ArgsShapes> {
+	const argsShape = z.tuple(inputDefinition.args);
 
-	function input(
-		context: InputContextWithArgs<InferredObject<NonNullable<ArgsShape>>>,
-	) {
-		return inputDefinition.produce({
+	function input(context: InputContextWithArgs<InferredValues<ArgsShapes>>) {
+		const args: InferredValues<ArgsShapes> = argsShape.parse(context.args);
+
+		const givenContext = {
 			...context,
-			args: argsShape.parse(context.args),
-		});
+			args,
+		};
+
+		const result = inputDefinition.produce(givenContext);
+
+		return result;
 	}
 
 	input.args = inputDefinition.args;
 
-	return input as Input<Result, ArgsShape>;
+	return input as InputWithArgs<Result, ArgsShapes>;
+}
+
+function createInputWithoutArgs<Result>(
+	inputDefinition: InputDefinitionWithoutArgs<Result>,
+): InputWithoutArgs<Result> {
+	return ((context: InputContext) => {
+		// TODO (once above is fixed)
+		return inputDefinition.produce(context);
+	}) as InputWithoutArgs<Result>;
 }

@@ -1,7 +1,7 @@
 import { BingoSystem } from "bingo-systems";
 
 import { createSystemContext } from "../contexts/createSystemContext.js";
-import { AnyShape, InferredObject } from "../options.js";
+import { AnyShapesArray, InferredValues } from "../options.js";
 import { Input } from "../types/inputs.js";
 
 export interface RunInputSettings<Args extends object = object>
@@ -12,9 +12,9 @@ export interface RunInputSettings<Args extends object = object>
 	offline?: boolean;
 }
 
-export function runInput<Result, ArgsShape extends AnyShape>(
+export function runInput<Result, ArgsShape extends AnyShapesArray>(
 	input: Input<Result, ArgsShape>,
-	settings: RunInputSettings<InferredObject<ArgsShape>>,
+	settings: RunInputSettings<InferredValues<ArgsShape>>,
 ) {
 	const system = createSystemContext({
 		directory: settings.directory ?? ".",

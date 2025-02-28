@@ -6,20 +6,18 @@ import { createInput } from "../creators/createInput.js";
 import { runInput } from "./runInput.js";
 
 const input = createInput({
-	args: {
-		value: z.number(),
-	},
+	args: [z.number()],
 	async produce({ args, runner }) {
 		return {
 			directory: (await runner("pwd")).stdout,
-			doubled: args.value * 2,
+			doubled: args[0] * 2,
 		};
 	},
 });
 
 describe("runInput", () => {
 	it("defaults directory to '.' when not provided", async () => {
-		const actual = await runInput(input, { args: { value: 2 } });
+		const actual = await runInput(input, { args: [2] });
 
 		expect(actual).toEqual({
 			directory: process.cwd(),
@@ -31,7 +29,7 @@ describe("runInput", () => {
 		const directory = path.join(process.cwd(), "..");
 
 		const actual = await runInput(input, {
-			args: { value: 2 },
+			args: [2],
 			directory,
 		});
 

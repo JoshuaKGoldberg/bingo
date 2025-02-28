@@ -25,20 +25,16 @@ describe("createInput", () => {
 		expect(actual).toBe(expected);
 	});
 
-	test("production with args", () => {
-		const expected = 234;
+	test("production with one arg", () => {
+		const added = 234;
 
 		const input = createInput({
-			args: {
-				offset: z.number(),
-			},
-			produce: ({ args }) => expected + args.offset,
+			args: [z.number()],
+			produce: ({ args }) => added + args[0],
 		});
 
 		const actual = input({
-			args: {
-				offset: 1000,
-			},
+			args: [1000],
 			fetchers: createSystemFetchers({ fetch: vi.fn() }),
 			fs: {
 				readDirectory: vi.fn(),

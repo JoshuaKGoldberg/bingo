@@ -8,9 +8,7 @@ describe("inputFromFileJSON", () => {
 		const data = { value: "abc123" };
 
 		const actual = await testInput(inputFromFileJSON, {
-			args: {
-				filePath: "file.txt",
-			},
+			args: ["file.txt"],
 			take: () => Promise.resolve(JSON.stringify(data)),
 		});
 
@@ -21,9 +19,7 @@ describe("inputFromFileJSON", () => {
 		const error = new Error("Oh no!");
 
 		const actual = await testInput(inputFromFileJSON, {
-			args: {
-				filePath: "file.txt",
-			},
+			args: ["file.txt"],
 			take: () => error,
 		});
 
@@ -32,9 +28,7 @@ describe("inputFromFileJSON", () => {
 
 	it("returns the parsing error when inputFromFile resolves with non-parsable string", async () => {
 		const actual = await testInput(inputFromFileJSON, {
-			args: {
-				filePath: "file.txt",
-			},
+			args: ["file.txt"],
 			take: () => Promise.resolve("invalid"),
 		});
 

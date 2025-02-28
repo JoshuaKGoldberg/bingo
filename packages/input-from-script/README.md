@@ -14,16 +14,16 @@ npm i input-from-script
 ```
 
 ```ts
-import { inputFromFetch } from "input-from-script";
+import { inputFromScript } from "input-from-script";
 
-await take(inputFromFetch, { resource: "npm whoami" });
+await take(inputFromScript, "npm whoami");
 ```
 
 ## Options
 
 `inputFromScript` takes a single argument, `command`, of type `string`.
 
-It runs the `command` with [`execa`](https://www.npmjs.com/package/execa) and returns either:
+It runs the `command` with [`execa`](https://www.npmjs.com/package/execa) and returns a Promise for either:
 
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught running the script
 - `Result`: The type from `execa`, including the `stdout` property

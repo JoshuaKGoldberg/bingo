@@ -1,11 +1,11 @@
 import { ReadingFileSystem, SystemFetchers, SystemRunner } from "bingo-systems";
 
-import { AnyShape, InferredObject } from "../options.js";
+import { AnyShapesArray, InferredValues } from "../options.js";
 
 export type Input<
 	Result,
-	ArgsShape extends AnyShape | undefined = undefined,
-> = ArgsShape extends AnyShape
+	ArgsShape extends AnyShapesArray | undefined,
+> = ArgsShape extends object
 	? InputWithArgs<Result, ArgsShape>
 	: InputWithoutArgs<Result>;
 
@@ -22,25 +22,25 @@ export interface InputContextWithArgs<Args extends object>
 	args: Args;
 }
 
-export type InputProducerWithArgs<Result, ArgsSchema extends AnyShape> = (
-	context: InputContextWithArgs<InferredObject<ArgsSchema>>,
+export type InputProducerWithArgs<Result, Args extends unknown[]> = (
+	context: InputContextWithArgs<Args>,
 ) => Result;
 
 export type InputProducerWithoutArgs<Result> = (
 	context: InputContext,
 ) => Result;
 
-export interface InputWithArgs<Result, ArgsSchema extends AnyShape> {
-	(context: InputContextWithArgs<InferredObject<ArgsSchema>>): Result;
+export interface InputWithArgs<Result, ArgsSchema extends AnyShapesArray> {
+	(context: InputContextWithArgs<InferredValues<ArgsSchema>>): Result;
 	args: ArgsSchema;
 }
 
 export type InputWithoutArgs<Result> = (context: InputContext) => Result;
 
 export interface TakeInput {
-	<Result, ArgsShape extends AnyShape>(
+	<Result, ArgsShape extends AnyShapesArray>(
 		input: InputWithArgs<Result, ArgsShape>,
-		args: InferredObject<ArgsShape>,
+		...args: InferredValues<ArgsShape>
 	): Result;
 	<Result>(input: InputWithoutArgs<Result>): Result;
 }

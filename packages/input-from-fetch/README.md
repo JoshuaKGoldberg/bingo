@@ -16,17 +16,16 @@ npm i input-from-fetch
 ```ts
 import { inputFromScript } from "input-from-fetch";
 
-await take(inputFromScript, { command: "https://example.com" });
+await take(inputFromScript, "https://example.com");
 ```
 
 ## Options
 
-`inputFromFetch` defines two parameters:
+`inputFromFetch` defines one parameters:
 
-- `resource` _(required)_: the `string` or [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) to be passed to [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-- `options` _(optional)_: the [`RequestInit`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit) object to be passed to [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- `resource` _(required)_: the `string` to be passed to [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
-It sends a request to the `resource` with [Input Context `fetch`](https://create.bingo/build/details/contexts#input-fetchers) and returns either:
+It sends a request to the `resource` with [Input Context `fetch`](https://create.bingo/build/details/contexts#input-fetchers) and returns a Promise for either:
 
 - `undefined`: If the [`offline`](https://create.bingo/cli#--offline) flag is enabled
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught running the fetch

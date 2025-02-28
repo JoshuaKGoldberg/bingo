@@ -10,7 +10,7 @@ describe("inputFromScript", () => {
 		const runner = vi.fn().mockResolvedValue(expected);
 
 		const actual = await testInput(inputFromScript, {
-			args: { command },
+			args: [command],
 			runner,
 		});
 
