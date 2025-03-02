@@ -1,28 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { executeTemplate } from "./executeTemplate.js";
 
-const mockCompile = vi.fn();
-
-vi.mock("handlebars", () => ({
-	get default() {
-		return {
-			compile: mockCompile,
-		};
-	},
-}));
-
 describe("executeTemplate", () => {
 	it("passes options to the template", () => {
+		const source = "{{abc}}";
 		const options = { abc: 123 };
-		const sourcePath = "file.hbs";
-		const template = vi.fn();
 
-		mockCompile.mockReturnValueOnce(template);
+		const actual = executeTemplate(source, options);
 
-		executeTemplate(sourcePath, options);
-
-		expect(mockCompile).toHaveBeenCalledWith(sourcePath);
-		expect(template).toHaveBeenCalledWith(options);
+		expect(actual).toBe("123");
 	});
 });

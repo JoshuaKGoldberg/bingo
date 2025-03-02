@@ -12,7 +12,7 @@ export async function intake(rootPath: string, settings: IntakeSettings = {}) {
 	const stats = await fs.stat(rootPath);
 
 	return stats.isDirectory()
-		? intakeDirectory(rootPath, settings)
+		? await intakeDirectory(rootPath, settings)
 		: await intakeFile(rootPath, stats.mode);
 }
 

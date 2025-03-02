@@ -1,6 +1,6 @@
 {
 	"name": "bingo-handlebars",
-	"version": "0.5.0",
+	"version": "0.1.0",
 	"description": "Use Handlebars templates for files in Bingo templates. 🥸",
 	"repository": {
 		"type": "git",
