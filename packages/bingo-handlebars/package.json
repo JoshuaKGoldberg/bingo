@@ -26,10 +26,6 @@
 	"dependencies": {
 		"handlebars": "4.7.8"
 	},
-	"devDependencies": {
-		"bingo": "workspace:^",
-		"bingo-testers": "workspace:^"
-	},
 	"peerDependencies": {
 		"bingo": "workspace:^",
 		"bingo-fs": "workspace:^",

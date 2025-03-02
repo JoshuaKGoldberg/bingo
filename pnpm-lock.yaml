@@ -168,6 +168,9 @@ importers:
 
   packages/bingo-handlebars:
     dependencies:
+      bingo:
+        specifier: workspace:^
+        version: link:../bingo
       bingo-fs:
         specifier: workspace:^
         version: link:../bingo-fs
@@ -180,13 +183,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      bingo:
-        specifier: workspace:^
-        version: link:../bingo
-      bingo-testers:
-        specifier: workspace:^
-        version: link:../bingo-testers
 
   packages/bingo-stratum:
     dependencies:
