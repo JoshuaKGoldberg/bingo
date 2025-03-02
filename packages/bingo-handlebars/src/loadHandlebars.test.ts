@@ -33,7 +33,7 @@ describe("loadHandlebars", () => {
 		);
 	});
 
-	it.only("returns a handlebars() function that uses optionsDefaults when the source is a directory", async () => {
+	it("returns a handlebars() function that uses optionsDefaults when the source is a directory", async () => {
 		mockIntake.mockResolvedValueOnce({
 			"file.txt.hbs": [`{{abc}}{{def}}`],
 		});
