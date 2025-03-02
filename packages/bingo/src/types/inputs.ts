@@ -9,17 +9,18 @@ export type Input<
 	? InputWithArgs<Result, ArgsShape>
 	: InputWithoutArgs<Result>;
 
-export interface InputContext {
-	fetchers: SystemFetchers;
-	fs: ReadingFileSystem;
-	offline?: boolean;
-	runner: SystemRunner;
-	take: TakeInput;
-}
+export type InputContext<Args extends object | undefined> = Args extends object
+	? InputContextWithArgs<Args>
+	: InputContextWithoutArgs;
 
 export interface InputContextWithArgs<Args extends object>
-	extends InputContext {
+	extends InputContextWithoutArgs {
 	args: Args;
+}
+
+export interface InputContextWithoutArgs extends InputSystem {
+	offline?: boolean;
+	take: TakeInput;
 }
 
 export type InputProducerWithArgs<Result, ArgsSchema extends AnyShape> = (
@@ -27,20 +28,32 @@ export type InputProducerWithArgs<Result, ArgsSchema extends AnyShape> = (
 ) => Result;
 
 export type InputProducerWithoutArgs<Result> = (
-	context: InputContext,
+	context: InputContextWithoutArgs,
 ) => Result;
+
+export interface InputSystem {
+	fetchers: SystemFetchers;
+	fs: ReadingFileSystem;
+	runner: SystemRunner;
+}
+
+export interface InputThenable<Result> extends PromiseLike<Result> {
+	(): Result;
+}
 
 export interface InputWithArgs<Result, ArgsSchema extends AnyShape> {
 	(context: InputContextWithArgs<InferredObject<ArgsSchema>>): Result;
 	args: ArgsSchema;
 }
 
-export type InputWithoutArgs<Result> = (context: InputContext) => Result;
+export type InputWithoutArgs<Result> = (
+	context: InputContextWithoutArgs,
+) => Result;
 
 export interface TakeInput {
 	<Result, ArgsShape extends AnyShape>(
 		input: InputWithArgs<Result, ArgsShape>,
 		args: InferredObject<ArgsShape>,
-	): Result;
-	<Result>(input: InputWithoutArgs<Result>): Result;
+	): InputThenable<Result>;
+	<Result>(input: InputWithoutArgs<Result>): InputThenable<Result>;
 }

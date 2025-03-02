@@ -225,7 +225,7 @@ export default createTemplate({
 	},
 	prepare({ take }) {
 		return {
-			nvm: async () => await take(inputFromFile, { filePath: ".nvmrc" }),
+			nvm: take(inputFromFile, { filePath: ".nvmrc" }),
 		};
 	},
 	produce() {

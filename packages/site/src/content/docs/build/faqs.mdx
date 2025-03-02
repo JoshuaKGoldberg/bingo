@@ -77,7 +77,7 @@ This is for two reasons:
 
 - Bases often need data to be shared between multiple -even many- different Options.
   Loading implementations become much cleaner when all data loaders can be declared once in a `prepare()` function,
-  wrapped in a caching [`lazyValue`](https://github.com/sindresorhus/lazy-value), then used as needed across any number of Options.
+  wrapped in a caching [`take`](https://www.create.bingo/build/details/contexts/#input-take), then used as needed across any number of Options.
 - Long-term, the engine should not be locked into any one schema engine.
   Adopting Zod-specific features will make it harder to swap between other implementers of [standard-schema](https://github.com/standard-schema/standard-schema) in the future if needed.
 

@@ -28,6 +28,7 @@ export * from "./runners/runTemplate.js";
 // Runtime (Miscellaneous)
 export * from "./contexts/createSystemContext.js";
 export * from "./contexts/createSystemContextWithAuth.js";
+export * from "./contexts/createTake.js";
 export * from "./runners/applyFilesToSystem.js";
 export * from "./utils/awaitLazyProperties.js";
 

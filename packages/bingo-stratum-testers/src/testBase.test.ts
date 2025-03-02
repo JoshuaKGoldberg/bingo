@@ -96,7 +96,7 @@ describe("testBase", () => {
 			},
 			prepare({ take }) {
 				return {
-					value: () => take(inputConstant),
+					value: take(inputConstant),
 				};
 			},
 		});

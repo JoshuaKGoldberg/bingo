@@ -61,8 +61,7 @@ export const base = createBase({
 	},
 	prepare({ take }) {
 		return {
-			name: async () =>
-				(await take(inputFromFileJSON, { fileName: "package.json" })).name,
+			name: (await take(inputFromFileJSON, { fileName: "package.json" })).name,
 		};
 	},
 });

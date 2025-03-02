@@ -1,4 +1,4 @@
-import { testInput } from "bingo-testers";
+import { createMockTake, testInput } from "bingo-testers";
 import { describe, expect, it } from "vitest";
 
 import { inputFromFileJSON } from "./index.js";
@@ -11,7 +11,7 @@ describe("inputFromFileJSON", () => {
 			args: {
 				filePath: "file.txt",
 			},
-			take: () => Promise.resolve(JSON.stringify(data)),
+			take: createMockTake(() => Promise.resolve(JSON.stringify(data))),
 		});
 
 		expect(actual).toEqual(data);
@@ -24,7 +24,7 @@ describe("inputFromFileJSON", () => {
 			args: {
 				filePath: "file.txt",
 			},
-			take: () => error,
+			take: createMockTake(() => error),
 		});
 
 		expect(actual).toEqual(error);
@@ -35,7 +35,7 @@ describe("inputFromFileJSON", () => {
 			args: {
 				filePath: "file.txt",
 			},
-			take: () => Promise.resolve("invalid"),
+			take: createMockTake(() => Promise.resolve("invalid")),
 		});
 
 		expect(actual).toEqual(

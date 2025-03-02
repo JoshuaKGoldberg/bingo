@@ -273,8 +273,7 @@ export default createTemplate({
 	},
 	prepare({ take }) {
 		return {
-			author: async () =>
-				await take(inputFromScript, { command: "npm whoami" }),
+			author: take(inputFromScript, { command: "npm whoami" }),
 		};
 	},
 	produce() {
@@ -288,15 +287,11 @@ Using `take` and Inputs to access external resources allows for straightforward 
 See [Templating FAQs > Why should we use `take` and Inputs in `prepare()`?](/build/faqs#why-should-we-use-take-and-inputs-in-prepare).
 :::
 
-If an asynchronously loaded resource is used for multiple options, you'll likely want to cache it.
-The [`lazy-value`](https://www.npmjs.com/package/lazy-value) package's [`lazyValue` function](https://github.com/sindresorhus/lazy-value?tab=readme-ov-file#usage) is a handy way to cache that work.
-
 For example, the following template defaults its `--author` and `--owner` options to executing `npm whoami` and/or `gh api user -q . login`.
 Both shell commands are cached and run no more than once each:
 
 ```ts
 import { createTemplate } from "bingo";
-import lazyValue from "lazy-value";
 
 export default createTemplate({
 	options: {
@@ -304,13 +299,8 @@ export default createTemplate({
 		owner: z.string(),
 	},
 	prepare({ runner }) {
-		const npm = lazyValue(
-			async () => await take(inputFromScript, { command: "npm whoami" }),
-		);
-		const github = lazyValue(
-			async () =>
-				await take(inputFromScript, { command: "gh api user -q .login" }),
-		);
+		const npm = take(inputFromScript, { command: "npm whoami" });
+		const github = take(inputFromScript, { command: "gh api user -q .login" });
 
 		return {
 			author: async () => (await npm()) ?? (await github())?.toLowerCase(),

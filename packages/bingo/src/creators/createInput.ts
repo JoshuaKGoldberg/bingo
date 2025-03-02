@@ -3,8 +3,8 @@ import { z } from "zod";
 import { AnyShape, InferredObject } from "../options.js";
 import {
 	Input,
-	InputContext,
 	InputContextWithArgs,
+	InputContextWithoutArgs,
 	InputProducerWithArgs,
 	InputProducerWithoutArgs,
 } from "../types/inputs.js";
@@ -33,7 +33,7 @@ export function createInput<
 	inputDefinition: InputDefinition<Result, ArgsShape>,
 ): Input<Result, ArgsShape> {
 	if (!isDefinitionWithArgs(inputDefinition)) {
-		return ((context: InputContext) => {
+		return ((context: InputContextWithoutArgs) => {
 			return inputDefinition.produce(context);
 		}) as Input<Result, ArgsShape>;
 	}

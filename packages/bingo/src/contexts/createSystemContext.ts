@@ -6,8 +6,8 @@ import {
 	createWritingFileSystem,
 } from "bingo-systems";
 
-import { TakeInput } from "../types/inputs.js";
 import { createDisplay, Display } from "./createDisplay.js";
+import { createTake } from "./createTake.js";
 
 export interface SystemContextSettings extends Partial<BingoSystem> {
 	auth?: string;
@@ -27,12 +27,10 @@ export function createSystemContext(settings: SystemContextSettings) {
 		runner: settings.runner ?? createSystemRunner(settings.directory),
 	};
 
-	const take = ((input, args) => input({ args, take, ...system })) as TakeInput;
-
 	return {
 		...system,
 		directory: settings.directory,
 		display: settings.display ?? createDisplay(),
-		take,
+		take: createTake(system),
 	};
 }

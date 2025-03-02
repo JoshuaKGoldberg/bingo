@@ -3,6 +3,7 @@ import { BingoSystem } from "bingo-systems";
 
 import { createMockFetchers } from "./createMockFetchers.js";
 import { createMockFileSystem } from "./createMockFileSystem.js";
+import { createMockTake } from "./createMockTake.js";
 import { MockSystemOptions } from "./types.js";
 import { createFailingFunction } from "./utils.js";
 
@@ -14,7 +15,7 @@ export interface MockSystems {
 export function createMockSystems(
 	settings: MockSystemOptions = {},
 ): MockSystems {
-	const fetchers = settings.fetchers ?? createMockFetchers(fetch);
+	const fetchers = settings.fetchers ?? createMockFetchers();
 	const fs = createMockFileSystem(settings.fs);
 	const runner = settings.runner ?? createFailingFunction("runner", "an input");
 
@@ -22,7 +23,7 @@ export function createMockSystems(
 
 	const take =
 		settings.take ??
-		(((input, args) => input({ args, take, ...system })) as TakeInput);
+		createMockTake(createFailingFunction("runner", "an input"));
 
 	return { system, take };
 }
