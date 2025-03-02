@@ -35,7 +35,7 @@ export async function promptForDirectory<
 			template.about?.name &&
 			// @ts-expect-error -- https://github.com/simov/slugify/issues/196
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			`my-${slugify(template.about.name, { lower: true })}`,
+			`my-${slugify(template.about.name.replace(/^create[^a-z]+/i, ""), { lower: true })}`,
 		message:
 			"What will the directory and name of the repository be? (--directory)",
 		validate: validateNewDirectory,

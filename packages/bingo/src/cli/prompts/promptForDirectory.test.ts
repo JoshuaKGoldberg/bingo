@@ -33,7 +33,7 @@ const templateWithoutAbout = createTemplate({
 });
 
 const templateWithName = createTemplate({
-	about: { name: "Test Template" },
+	about: { name: "Create Test Template" },
 	options: {},
 	produce: vi.fn(),
 });
