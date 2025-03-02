@@ -15,3 +15,12 @@ export interface CreatedFileOptions {
 	 */
 	executable?: boolean;
 }
+
+export interface IntakeDirectory {
+	[i: string]: IntakeDirectory | IntakeFileEntry | undefined;
+}
+
+export type IntakeFileEntry = Exclude<
+	CreatedFileEntry,
+	CreatedDirectory | string
+>;

@@ -10,14 +10,14 @@ For the equivalent API to only create those objects in memory, see [`produceTemp
 
 Given a [Template](/build/concepts/templates) and any settings, generates and applies [Creation](/build/concepts/creations) output by running the template's production function(s).
 
-`produceTemplate` takes in up to two arguments:
+`runTemplate` takes in up to two arguments:
 
 1. A template
 2. A settings object, only required if the template includes required options.
    It may contain properties from a [Template Context](/build/details/contexts#template-contexts):
    - `options`: any options matching the template's [`options` schema](/build/apis/create-template#options)
 
-It applies those creations, then returns an object with:
+It applies those creations, then returns a Promise for an object with:
 
 - `creation`: the resultant [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations)
 - `options`: the full merged options that production ran with

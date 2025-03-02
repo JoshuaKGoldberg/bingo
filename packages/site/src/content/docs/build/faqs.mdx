@@ -112,14 +112,15 @@ Some callers might have separately loaded in all required options, and not want 
 
 ## Productions
 
-### Can `produce()`, `setup()`, or `transition()` run asynchronously?
+### Why do `produce()`, `setup()`, or `transition()` support asynchronous functions?
 
-> Or: why are these methods synchronous?
+> Or: why do these methods' types allow returning a Promise?
 
 Any information that you would want to read asynchronously should be taken in as options.
 Options allow defining important intake information with well-typed Zod schemas and `prepare()` logic to efficiently infer default values.
 
-If you have a use case for information that should be asynchronously loaded but cannot be an option, please [file a feature request issue on Bingo](https://github.com/JoshuaKGoldberg/bingo/issues/new?template=03-feature.yml).
+However, it can be useful to read in template files from disk.
+The [Handlebars engine](/engines/handlebars/about) is a common example.
 
 ### How should I make all file creations formatted consistently?
 

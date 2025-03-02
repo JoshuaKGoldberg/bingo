@@ -1,0 +1,91 @@
+---
+description: Applies Handlebars templates from a single path.
+title: handlebars()
+---
+
+The exported `handlebars()` function generates [`files` Creations](/build/concepts/creations#files) using Handlebars templates on disk.
+It takes up to two parameters:
+
+1. `sourcePath: string` _(required)_: absolute path to a template file or a directory containing Handlebars templates files
+2. `options: object` _(optional)_: any values to use in the templates
+
+For example, this template uses a `../template/package.json.hbs` file relative to the template's source file:
+
+```ts
+import { createTemplate } from "bingo";
+import { handlebars } from "bingo-handlebars";
+import path from "node:path";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		return {
+			files: {
+				"package.json": await handlebars(
+					path.join(import.meta.dirname, "../template/package.json.hbs"),
+					options,
+				),
+			},
+		};
+	},
+});
+```
+
+If a `template/package.json.hbs` file exists with the following contents:
+
+```plaintext title="template/package.json.hbs"
+{
+	"name": "{{repository}}",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/{{owner}}/{{repository}}",
+	}
+}
+```
+
+Given the options `{ owner: "your-username", repository : "my-handlebars-app" }`, the created `package.json` would look like:
+
+```json title="package.json"
+{
+	"name": "my-handlebars-app",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/your-username/my-handlebars-app"
+	}
+}
+```
+
+## Directories
+
+If the path given to the generated `handlebars()` contains a directory, that directory will be recursively read.
+Any file names ending with `.hbs` will have that suffix removed.
+
+For example, this template uses a `../template` directory relative to the template's source file for all its `files` Creations:
+
+```ts
+import { createTemplate } from "bingo";
+import { handlebars } from "bingo-handlebars";
+import path from "node:path";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		return {
+			files: await handlebars(
+				path.join(import.meta.dirname, "template"),
+				options,
+			),
+		};
+	},
+});
+```
+
+If the `template/` directory contains `README.md.hbs` and `package.json.hbs` template files, then `README.md` and `package.json` files will be created.

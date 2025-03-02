@@ -1,0 +1,77 @@
+---
+description: Generates a reusable handlebars() function.
+title: loadHandlebars()
+---
+
+The exported `loadHandlebars()` function generates the equivalent of a [`handlebars`() function](/engines/handlebars/handlebars) function that pulls templates from a specific directory.
+It takes up to two parameters:
+
+1. `directoryPath: string` _(required)_: absolute path to a directory containing Handlebars templates
+2. `optionsDefault: object` _(optional)_: any values to provide to use in the templates
+
+`loadHandlebars()` is useful when you have multiple calls to Handlebars templates interspersed amongst your `files` creations
+
+For example, this template uses two `../template/*.hbs` files relative to the template's source file:
+
+```ts
+import { createTemplate } from "bingo";
+import { loadHandlebars } from "bingo-handlebars";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		const handlebars = await loadHandlebars(
+			path.join(import.meta.dirname, "../template"),
+			options,
+		);
+
+		return {
+			files: {
+				"package.json": handlebars("package.json.hbs"),
+				"README.md": handlebars("README.md.hbs"),
+			},
+		};
+	},
+});
+```
+
+Generated `handlebars()` functions otherwise provide the same API as the [exported `handlebars()`](/engines/handlebars/handlebars).
+
+## Option Defaults
+
+The optional `optionsDefaults` parameter for `loadHandlebars()` provides any options that should always be provided to templates.
+Default options will be overridden by any options provided by the generated `handlebars()` function.
+
+For example, this template renders its `package.json` with default options, but overrides its `repository` value to be `"other-repository"`:
+
+```ts
+import { createTemplate } from "bingo";
+import { loadHandlebars } from "bingo-handlebars";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		const handlebars = await loadHandlebars(
+			path.join(import.meta.dirname, "../template"),
+			options,
+		);
+
+		return {
+			files: {
+				"package.json": handlebars("package.json.hbs"),
+				"README.md": handlebars("README.md.hbs", {
+					repository: "other-repository",
+				}),
+			},
+		};
+	},
+});
+```

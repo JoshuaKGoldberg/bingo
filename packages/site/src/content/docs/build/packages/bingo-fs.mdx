@@ -62,36 +62,36 @@ export default createTemplate({
 
 ## APIs
 
-### `intakeFromDirectory`
+### `intake`
 
-Given a directory path, reads in the directory as to the `bingo-fs` directory structure.
+Given a file or directory path, reads it in as a `bingo-fs` directory structure or file entry.
 
 Parameters:
 
 1. `directoryPath: string` _(required)_
-2. `settings: IntakeFromDirectorySettings` _(optional)_:
-   - [`exclude: RegExp`](#intakefromdirectory-exclude)
+2. `settings: IntakeSettings` _(optional)_:
+   - [`exclude: RegExp`](#intake-exclude)
 
 For example, retrieving all files in a `src/` directory:
 
 ```ts
-import { intakeFromDirectory } from "bingo-fs";
+import { intake } from "bingo-fs";
 
 // { "index.ts": "..." }
-await intakeFromDirectory("src");
+await intake("src");
 ```
 
-#### `exclude` {#intakefromdirectory-exclude}
+#### `exclude` {#intake-exclude}
 
 An optional regular expression to filter out directory children.
 
 For example, you may want to avoid `.git` and `node_modules` directories:
 
 ```ts
-import { intakeFromDirectory } from "bingo-fs";
+import { intake } from "bingo-fs";
 
 // Result: { README.md: "...", src: { "index.ts": "..." }, ... }
-await intakeFromDirectory(".", {
+await intake(".", {
 	exclude: /node_modules|^\.git$/,
 });
 ```

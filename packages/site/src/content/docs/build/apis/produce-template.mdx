@@ -18,7 +18,7 @@ Given a [Template](/build/concepts/templates) and any settings, creates a [Creat
    - `options`: any options matching the template's [`options` schema](/build/apis/create-template#options)
    - _(optional)_ any other properties from a [Template Context](/build/details/contexts#template-contexts)
 
-It returns an object with:
+It returns an a Promise for an object with:
 
 - `creation`: the resultant [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations)
 - `options`: the full merged options that production ran with
@@ -40,12 +40,12 @@ const template = createTemplate({
 });
 
 // { creation: { files: { "README.md": "# Hello, World!" } } }
-produceTemplate(template);
+await produceTemplate(template);
 ```
 
 :::note
-`produceTemplate()` is synchronous and will not run a template's [`prepare()`](/build/apis/create-template#prepare) method to infer option defaults.
-Use the asynchronous [`prepareOptions`](/build/apis/prepare-options) API to generate options that can be passed as [settings `options`](#options).
+`produceTemplate()` will not run a template's [`prepare()`](/build/apis/create-template#prepare) method to infer option defaults.
+Use the [`prepareOptions`](/build/apis/prepare-options) API to first generate options that can be passed as [settings `options`](#options).
 :::
 
 ## Settings
@@ -80,7 +80,7 @@ const template = createTemplate({
 //   creation: { files: { "README.md": "# My App" } },
 //   options: { title: "My App" },
 // }
-produceTemplate(template, { options: { title: "My App" } });
+await produceTemplate(template, { options: { title: "My App" } });
 ```
 
 ### `mode`
@@ -120,7 +120,7 @@ const template = createTemplate({
 //     }
 //   },
 // }
-produceTemplate(template);
+await produceTemplate(template);
 
 // {
 //   creation: {
@@ -130,7 +130,7 @@ produceTemplate(template);
 //     }
 //   },
 // }
-produceTemplate(template, { mode: "setup" });
+await produceTemplate(template, { mode: "setup" });
 ```
 
 ### `offline`
@@ -154,8 +154,8 @@ const template = createTemplate({
 });
 
 // { scripts: ["pnpm install"] }
-produceTemplate(template);
+await produceTemplate(template);
 
 // { scripts: ["pnpm install --offline"] }
-produceTemplate(template, { offline: true });
+await produceTemplate(template, { offline: true });
 ```
