@@ -38,11 +38,11 @@ vi.mock("../../contexts/createSystemContextWithAuth.js", () => ({
 	},
 }));
 
-const mockPromptForOptions = vi.fn();
+const mockPromptForOptionSchemas = vi.fn();
 
-vi.mock("../prompts/promptForOptions.js", () => ({
-	get promptForOptions() {
-		return mockPromptForOptions;
+vi.mock("../prompts/promptForOptionSchemas.js", () => ({
+	get promptForOptionSchemas() {
+		return mockPromptForOptionSchemas;
 	},
 }));
 
@@ -157,7 +157,7 @@ describe("runModeTransition", () => {
 	});
 
 	it("returns the cancellation when promptForOptions is cancelled", async () => {
-		mockPromptForOptions.mockResolvedValueOnce({
+		mockPromptForOptionSchemas.mockResolvedValueOnce({
 			cancelled: true,
 			prompted: promptedOptions,
 		});
@@ -179,7 +179,7 @@ describe("runModeTransition", () => {
 	it("returns the error when runTemplate resolves with an error", async () => {
 		const error = new Error("Oh no!");
 
-		mockPromptForOptions.mockResolvedValueOnce({
+		mockPromptForOptionSchemas.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
 		mockRunTemplate.mockRejectedValueOnce(error);
@@ -201,7 +201,7 @@ describe("runModeTransition", () => {
 	});
 
 	it("doesn't clear the existing repository when the template does not have a repository locator", async () => {
-		mockPromptForOptions.mockResolvedValueOnce({
+		mockPromptForOptionSchemas.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
 
@@ -223,7 +223,7 @@ describe("runModeTransition", () => {
 	});
 
 	it("clears the existing repository online when a forked repository locator is available and offline is falsy", async () => {
-		mockPromptForOptions.mockResolvedValueOnce({
+		mockPromptForOptionSchemas.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
 		mockGetForkedRepositoryLocator.mockResolvedValueOnce({
@@ -259,7 +259,7 @@ describe("runModeTransition", () => {
 	});
 
 	it("clears the existing repository offline when a forked repository locator is available and offline is true", async () => {
-		mockPromptForOptions.mockResolvedValueOnce({
+		mockPromptForOptionSchemas.mockResolvedValueOnce({
 			prompted: promptedOptions,
 		});
 		mockGetForkedRepositoryLocator.mockResolvedValueOnce({

@@ -5,7 +5,7 @@ import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { SystemContext } from "../../types/system.js";
 import { Template } from "../../types/templates.js";
 import { getSchemaDefaultValue } from "../../utils/getSchemaDefaultValue.js";
-import { promptForSchema } from "./promptForSchema.js";
+import { promptForOptionSchema } from "./promptForOptionSchema.js";
 
 export type PromptedOptions<Options extends object> =
 	| PromptedOptionsCancelled<Options>
@@ -28,7 +28,7 @@ export interface PromptForOptionsSettings<OptionsShape extends AnyShape> {
 	system: SystemContext;
 }
 
-export async function promptForOptions<
+export async function promptForOptionSchemas<
 	OptionsShape extends AnyShape = AnyShape,
 >(
 	template: Template<OptionsShape>,
@@ -57,7 +57,12 @@ export async function promptForOptions<
 			continue;
 		}
 
-		const produced = await promptForSchema(key, schema, defaultValue);
+		const produced = await promptForOptionSchema(
+			key,
+			schema,
+			schema.description,
+			defaultValue,
+		);
 		if (prompts.isCancel(produced)) {
 			return { cancelled: true, prompted };
 		}

@@ -14,7 +14,7 @@ import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForDirectory } from "../prompts/promptForDirectory.js";
-import { promptForOptions } from "../prompts/promptForOptions.js";
+import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
 import { CLIStatus } from "../status.js";
 import { ModeResults } from "../types.js";
 import { makeRelative } from "../utils.js";
@@ -64,7 +64,7 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 		offline,
 	});
 
-	const baseOptions = await promptForOptions(template, {
+	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {
 			directory,
 			repository: repository ?? directory,

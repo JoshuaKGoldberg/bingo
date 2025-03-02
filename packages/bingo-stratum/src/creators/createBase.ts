@@ -14,7 +14,9 @@ import { Preset, PresetDefinition } from "../types/presets.js";
 import {
 	StratumTemplate,
 	StratumTemplateDefinition,
+	ZodPresetNameLiterals,
 } from "../types/templates.js";
+import { slugifyPresetName } from "../utils.ts/slugifyPresetName.js";
 import { assertNoDuplicateBlocks } from "./assertNoDuplicateBlocks.js";
 import { assertNoPresetOption } from "./assertNoPresetOption.js";
 import { applyZodDefaults, isDefinitionWithAddons } from "./utils.js";
@@ -78,12 +80,24 @@ export function createBase<OptionsShape extends AnyShape>(
 	function createStratumTemplate(
 		templateDefinition: StratumTemplateDefinition<OptionsShape>,
 	): StratumTemplate<OptionsShape> {
+		const presetOption = z
+			.union(
+				templateDefinition.presets.map((preset) =>
+					z.literal(slugifyPresetName(preset.about.name)),
+				) as ZodPresetNameLiterals,
+			)
+			.describe("starting set of tooling to use");
 		const template: StratumTemplate<OptionsShape> = {
 			...templateDefinition,
 			base,
 			options: {
 				...base.options,
-				preset: z.string().describe("Which starting set of tooling to use."),
+				preset: presetOption.default(
+					slugifyPresetName(
+						(templateDefinition.suggested ?? templateDefinition.presets[0])
+							.about.name,
+					),
+				) as unknown as z.ZodUnion<ZodPresetNameLiterals>, // TODO: why don't the types allow a ZodDefault here?
 			},
 			prepare: base.prepare,
 			produce(context) {

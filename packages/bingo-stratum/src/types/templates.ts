@@ -30,9 +30,15 @@ export interface StratumTemplateDefinition<
 }
 
 export interface StratumTemplateOptionsShape {
-	preset: z.ZodString;
+	preset: z.ZodUnion<ZodPresetNameLiterals>;
 }
 
 export type StratumTemplateProduce<Options extends object> = (
 	context: TemplateContext<Options & { preset: string }>,
 ) => Partial<BlockCreation<Options>>;
+
+export type ZodPresetNameLiterals = [
+	z.ZodLiteral<string>,
+	z.ZodLiteral<string>,
+	...z.ZodLiteral<string>[],
+];
