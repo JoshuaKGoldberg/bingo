@@ -184,6 +184,9 @@ importers:
       bingo:
         specifier: workspace:^
         version: link:../bingo
+      bingo-testers:
+        specifier: workspace:^
+        version: link:../bingo-testers
 
   packages/bingo-stratum:
     dependencies:

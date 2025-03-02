@@ -1,9 +1,9 @@
-import { CreatedFileEntry } from "bingo-fs";
+import { CreatedFileEntry, IntakeDirectory, IntakeFileEntry } from "bingo-fs";
 
 import { executeTemplate } from "./executeTemplate.js";
 
 export function executeTemplatesRecursive(
-	source: CreatedFileEntry | undefined,
+	source: IntakeDirectory | IntakeFileEntry | undefined,
 	options: object | undefined,
 ): CreatedFileEntry | undefined {
 	if (!source) {
@@ -16,14 +16,10 @@ export function executeTemplatesRecursive(
 			: [executeTemplate(source[0], options), source[1]];
 	}
 
-	if (typeof source === "object") {
-		return Object.fromEntries(
-			Object.entries(source).map(([key, value]) => [
-				key.replace(/\.hbs$/i, ""),
-				executeTemplatesRecursive(value, options),
-			]),
-		);
-	}
-
-	return executeTemplate(source, options);
+	return Object.fromEntries(
+		Object.entries(source).map(([key, value]) => [
+			key.replace(/\.hbs$/i, ""),
+			executeTemplatesRecursive(value, options),
+		]),
+	);
 }

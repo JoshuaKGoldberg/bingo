@@ -16,9 +16,11 @@ export interface CreatedFileOptions {
 	executable?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface IntakeDirectory {
-	[i: string]: IntakeFileEntry | undefined;
+	[i: string]: IntakeDirectory | IntakeFileEntry | undefined;
 }
 
-export type IntakeFileEntry = Exclude<CreatedFileEntry, string>;
+export type IntakeFileEntry = Exclude<
+	CreatedFileEntry,
+	CreatedDirectory | string
+>;
