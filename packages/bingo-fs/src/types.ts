@@ -15,3 +15,10 @@ export interface CreatedFileOptions {
 	 */
 	executable?: boolean;
 }
+
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export interface IntakeDirectory {
+	[i: string]: IntakeFileEntry | undefined;
+}
+
+export type IntakeFileEntry = Exclude<CreatedFileEntry, string>;
