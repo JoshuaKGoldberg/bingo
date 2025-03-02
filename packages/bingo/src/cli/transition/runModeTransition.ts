@@ -10,7 +10,7 @@ import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
-import { promptForOptions } from "../prompts/promptForOptions.js";
+import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
 import { CLIStatus } from "../status.js";
 import { ModeResults } from "../types.js";
 import { clearTemplateFiles } from "./clearTemplateFiles.js";
@@ -66,7 +66,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 		);
 	}
 
-	const baseOptions = await promptForOptions(template, {
+	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {
 			...parseZodArgs(args, template.options),
 		},
