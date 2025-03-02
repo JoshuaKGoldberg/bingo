@@ -27,7 +27,8 @@ export function createSystemContext(settings: SystemContextSettings) {
 		runner: settings.runner ?? createSystemRunner(settings.directory),
 	};
 
-	const take = ((input, args) => input({ args, take, ...system })) as TakeInput;
+	const take = ((input, args) =>
+		input({ args, offline: settings.offline, take, ...system })) as TakeInput;
 
 	return {
 		...system,

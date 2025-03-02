@@ -132,4 +132,32 @@ describe("createSystemContext", () => {
 			expect(runner).toBe(mockSystemRunner);
 		});
 	});
+
+	describe("take", () => {
+		it("does not enable offline when settings.offline is not enabled", () => {
+			const input = vi.fn();
+			const { take } = createSystemContext({ directory: "." });
+
+			take(input);
+
+			expect(input).toHaveBeenCalledWith(
+				expect.objectContaining({
+					offline: undefined,
+				}),
+			);
+		});
+
+		it("enables offline when settings.offline is true", () => {
+			const input = vi.fn();
+			const { take } = createSystemContext({ directory: ".", offline: true });
+
+			take(input);
+
+			expect(input).toHaveBeenCalledWith(
+				expect.objectContaining({
+					offline: true,
+				}),
+			);
+		});
+	});
 });
