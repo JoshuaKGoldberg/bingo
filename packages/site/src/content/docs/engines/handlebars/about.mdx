@@ -3,7 +3,20 @@ description: Handlebars templating engine for Bingo.
 title: Handlebars Templating Engine
 ---
 
-This engine does not yet exist.
-It will soon.
-Cheers!
-🥸
+import { PackageManagers } from "starlight-package-managers";
+
+[Handlebars](https://handlebarsjs.com) is a popular templating language.
+It allows defining plain text templates with indications for where to substitue in dynamic values.
+
+The [`bingo-handlebars`](https://npmjs.com/package/bingo-handlebars) package provides wrapping logic to use Handlebars templates to generate file creations.
+
+<PackageManagers type="add" pkg="bingo-handlebars" />
+
+If you'd like to use the Handlebars langauge in your Bingo template, you have two options:
+
+1. [`handlebars()`](/engines/handlebars/handlebars): applies Handlebars templates from a single path.
+2. [`loadHandlebars()`](/engines/handlebars/handlebars): generates a reusable `handlebars()`
+
+:::tip
+See the [Handlebars Language Guide](https://handlebarsjs.com/guide) for details on the Handlebars templating language.
+:::

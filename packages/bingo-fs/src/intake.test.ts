@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { intakeFromDirectory } from "./intakeFromDirectory.js";
+import { intake } from "./intake.js";
 
 const mockReaddir = vi.fn();
 const mockReadFile = vi.fn();
@@ -18,23 +18,41 @@ vi.mock("node:fs/promises", () => ({
 	},
 }));
 
-describe("intakeFromDirectory", () => {
-	it("returns an empty object when the directory has no files", async () => {
-		mockReaddir.mockResolvedValueOnce([]);
+describe("intake", () => {
+	it("returns the file contents when given a path to a file", async () => {
+		const contents = "abc123";
 
-		const directory = await intakeFromDirectory("from");
+		mockReadFile.mockResolvedValueOnce(contents);
+		mockStat.mockResolvedValueOnce({
+			isDirectory: () => false,
+			mode: "000",
+		});
 
-		expect(directory).toEqual({});
-		expect(mockReaddir.mock.calls).toEqual([["from"]]);
-		expect(mockStat).not.toHaveBeenCalled();
+		const actual = await intake("from");
+
+		expect(actual).toEqual([contents, { executable: false }]);
+		expect(mockReaddir).not.toHaveBeenCalled();
+		expect(mockStat).toHaveBeenCalledOnce();
 	});
 
-	it("returns files when the directory contains files", async () => {
+	it("returns an empty object when given a path to a directory with no files", async () => {
+		mockReaddir.mockResolvedValueOnce([]);
+		mockStat.mockResolvedValueOnce({ isDirectory: () => true });
+
+		const actual = await intake("from");
+
+		expect(actual).toEqual({});
+		expect(mockReaddir.mock.calls).toEqual([["from"]]);
+		expect(mockStat).toHaveBeenCalledOnce();
+	});
+
+	it("returns directory files when given a path to a directory with files", async () => {
 		mockReaddir.mockResolvedValueOnce(["included-a", "included-b"]);
 		mockReadFile
 			.mockResolvedValueOnce("contents-a")
 			.mockResolvedValueOnce("contents-b");
 		mockStat
+			.mockResolvedValueOnce({ isDirectory: () => true })
 			.mockResolvedValueOnce({
 				isDirectory: () => false,
 				mode: 0x644,
@@ -44,25 +62,27 @@ describe("intakeFromDirectory", () => {
 				mode: 0x755,
 			});
 
-		const directory = await intakeFromDirectory("from");
+		const actual = await intake("from");
 
-		expect(directory).toEqual({
+		expect(actual).toEqual({
 			"included-a": ["contents-a", { executable: false }],
 			"included-b": ["contents-b", { executable: true }],
 		});
 		expect(mockReaddir.mock.calls).toEqual([["from"]]);
 		expect(mockStat.mock.calls).toEqual([
+			["from"],
 			["from/included-a"],
 			["from/included-b"],
 		]);
 	});
 
-	it("returns non-excluded files when the directory contains files and excludes is provided", async () => {
+	it("returns non-excluded files when given a path to a directory with files and excludes is provided", async () => {
 		mockReaddir.mockResolvedValueOnce(["excluded", "included-a", "included-b"]);
 		mockReadFile
 			.mockResolvedValueOnce("contents-a")
 			.mockResolvedValueOnce("contents-b");
 		mockStat
+			.mockResolvedValueOnce({ isDirectory: () => true })
 			.mockResolvedValueOnce({
 				isDirectory: () => false,
 				mode: 0x644,
@@ -72,46 +92,47 @@ describe("intakeFromDirectory", () => {
 				mode: 0x755,
 			});
 
-		const directory = await intakeFromDirectory("from", {
+		const actual = await intake("from", {
 			exclude: /excluded/,
 		});
 
-		expect(directory).toEqual({
+		expect(actual).toEqual({
 			"included-a": ["contents-a", { executable: false }],
 			"included-b": ["contents-b", { executable: true }],
 		});
 		expect(mockReaddir.mock.calls).toEqual([["from"]]);
 		expect(mockStat.mock.calls).toEqual([
+			["from"],
 			["from/included-a"],
 			["from/included-b"],
 		]);
 	});
 
-	it("returns a nested file when the directory contains a nested directory", async () => {
+	it("returns a nested file when given a path to a directory with a nested directory", async () => {
 		mockReaddir
 			.mockResolvedValueOnce(["middle"])
 			.mockResolvedValueOnce(["excluded", "included"]);
 		mockReadFile.mockResolvedValueOnce("contents");
 		mockStat
-			.mockResolvedValueOnce({
-				isDirectory: () => true,
-			})
+			.mockResolvedValueOnce({ isDirectory: () => true })
+			.mockResolvedValueOnce({ isDirectory: () => true })
 			.mockResolvedValueOnce({
 				isDirectory: () => false,
 				mode: 0x644,
 			});
 
-		const directory = await intakeFromDirectory("from", {
+		const actual = await intake("from", {
 			exclude: /excluded/,
 		});
 
-		expect(directory).toEqual({
+		expect(actual).toEqual({
 			middle: {
 				included: ["contents", { executable: false }],
 			},
 		});
 		expect(mockReaddir.mock.calls).toEqual([["from"], ["from/middle"]]);
 		expect(mockStat.mock.calls).toEqual([
+			["from"],
 			["from/middle"],
 			["from/middle/included"],
 		]);

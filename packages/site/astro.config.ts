@@ -111,7 +111,21 @@ export default defineConfig({
 						icon: "setting",
 						items: [
 							{ label: "About", link: "engines/about" },
-							{ label: "Handlebars", link: "engines/handlebars/about" },
+							{
+								collapsed: true,
+								items: [
+									{ label: "About", link: "engines/handlebars/about" },
+									{
+										label: "handlebars",
+										link: "engines/handlebars/handlebars",
+									},
+									{
+										label: "loadHandlebars",
+										link: "engines/handlebars/load-handlebars",
+									},
+								],
+								label: "Handlebars",
+							},
 							{
 								collapsed: true,
 								items: [

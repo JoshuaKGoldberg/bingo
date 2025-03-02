@@ -10,6 +10,7 @@
 		{ "path": "./packages/bingo-systems" },
 		{ "path": "./packages/bingo" },
 		{ "path": "./packages/bingo-testers" },
+		{ "path": "./packages/bingo-handlebars" },
 		{ "path": "./packages/bingo-stratum" },
 		{ "path": "./packages/bingo-stratum-testers" },
 		{ "path": "./packages/input-from-fetch" },
