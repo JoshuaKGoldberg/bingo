@@ -14,21 +14,21 @@ export interface ProduceTemplateSettings<OptionsShape extends AnyShape>
 	options: InferredObject<OptionsShape>;
 }
 
-export function produceTemplate<OptionsShape extends AnyShape>(
+export async function produceTemplate<OptionsShape extends AnyShape>(
 	template: Template<OptionsShape>,
 	settings: ProduceTemplateSettings<OptionsShape>,
-): Partial<Creation> {
+): Promise<Partial<Creation>> {
 	const system = createSystemContext({
 		directory: ".",
 		...settings,
 	});
 
 	const context = { ...settings, ...system };
-	let creation = template.produce(context);
+	let creation = await template.produce(context);
 
 	const augmenter = settings.mode && template[settings.mode];
 	if (augmenter) {
-		creation = mergeCreations(creation, augmenter(context));
+		creation = mergeCreations(creation, await augmenter(context));
 	}
 
 	return creation;

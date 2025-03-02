@@ -33,8 +33,8 @@ const template = createTemplate({
 });
 
 describe("produceTemplate", () => {
-	it("runs the template's produce without augmentations when mode is undefined", () => {
-		const creation = produceTemplate(template, {
+	it("runs the template's produce without augmentations when mode is undefined", async () => {
+		const creation = await produceTemplate(template, {
 			options: { title: "Test Title" },
 		});
 
@@ -45,8 +45,8 @@ describe("produceTemplate", () => {
 		});
 	});
 
-	it("runs the template's produce and setup when mode is setup", () => {
-		const creation = produceTemplate(template, {
+	it("runs the template's produce and setup when mode is setup", async () => {
+		const creation = await produceTemplate(template, {
 			mode: "setup",
 			options: { title: "Test Title" },
 		});
@@ -59,8 +59,8 @@ describe("produceTemplate", () => {
 		});
 	});
 
-	it("runs the template's produce and transition when mode is transition", () => {
-		const creation = produceTemplate(template, {
+	it("runs the template's produce and transition when mode is transition", async () => {
+		const creation = await produceTemplate(template, {
 			mode: "transition",
 			options: { title: "Test Title" },
 		});

@@ -4,6 +4,8 @@ import { Creation } from "./creations.js";
 import { TakeInput } from "./inputs.js";
 import { LazyOptionalOptions } from "./options.js";
 
+export type PromiseOrSync<T> = Promise<T> | T;
+
 export interface RepositoryLocator {
 	owner: string;
 	repository: string;
@@ -42,4 +44,4 @@ export interface TemplatePrepareContext<Options extends object>
 
 export type TemplateProduce<Options extends object> = (
 	context: TemplateContext<Options>,
-) => Partial<Creation>;
+) => PromiseOrSync<Partial<Creation>>;
