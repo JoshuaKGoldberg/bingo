@@ -3,11 +3,15 @@ import { describe, expect, it, vi } from "vitest";
 import { createWritingFileSystem } from "./createWritingFileSystem.js";
 
 const mockMkdir = vi.fn();
+const mockRm = vi.fn();
 const mockWriteFile = vi.fn();
 
 vi.mock("node:fs/promises", () => ({
 	get mkdir() {
 		return mockMkdir;
+	},
+	get rm() {
+		return mockRm;
 	},
 	get writeFile() {
 		return mockWriteFile;
@@ -32,7 +36,16 @@ describe("createWritingFileSystem", () => {
 	});
 
 	describe("writeFile", () => {
-		it("writes without mode when options does not exist", async () => {
+		it("writes without mode when options does not exist and rm rejects", async () => {
+			mockRm.mockRejectedValueOnce(new Error("Oh no!"));
+			const system = createWritingFileSystem();
+
+			await system.writeFile(filePath, contents);
+
+			expect(mockWriteFile).toHaveBeenCalledWith(filePath, contents, undefined);
+		});
+
+		it("writes without mode when options does not exist and rm does not reject", async () => {
 			const system = createWritingFileSystem();
 
 			await system.writeFile(filePath, contents);
