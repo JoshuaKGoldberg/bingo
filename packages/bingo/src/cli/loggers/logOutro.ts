@@ -16,8 +16,14 @@ export function logOutro(
 		for (const [group, groupItems] of Object.entries(items)) {
 			for (const [id, item] of Object.entries(groupItems)) {
 				if (item.error) {
-					prompts.log.warn(
-						`The ${chalk.red(id)} ${group} failed. You should re-run it and fix its complaints.\n${item.error as string}`,
+					const error =
+						item.error instanceof Error
+							? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+								item.error.stack!
+							: (item.error as string);
+
+					prompts.log.error(
+						`The ${chalk.red(id)} ${group} failed. You should re-run it and fix its complaints.\n${error}`,
 					);
 				}
 			}
