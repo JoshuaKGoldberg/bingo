@@ -9,6 +9,6 @@ export function createMockFetchers(
 ): SystemFetchers {
 	return {
 		fetch,
-		octokit: new Octokit({ request: fetch }),
+		octokit: new Octokit({ request: { fetch } }),
 	};
 }
