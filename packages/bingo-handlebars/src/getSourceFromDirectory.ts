@@ -1,10 +1,10 @@
-import { IntakeDirectory, IntakeFileEntry } from "bingo-fs";
+import { IntakeDirectory, IntakeEntry } from "bingo-fs";
 
 export function getSourceFromDirectory(
 	directoryPath: string,
 	directory: IntakeDirectory,
 	filePath: string,
-): IntakeDirectory | IntakeFileEntry {
+): IntakeEntry {
 	const source = getSourceFromPathArray(directory, filePath.split(/[/\\]/));
 
 	if (!source) {
@@ -19,7 +19,7 @@ export function getSourceFromDirectory(
 function getSourceFromPathArray(
 	directory: IntakeDirectory,
 	filePath: string[],
-): IntakeDirectory | IntakeFileEntry | undefined {
+): IntakeDirectory | IntakeEntry | undefined {
 	if (!filePath.length) {
 		return directory;
 	}

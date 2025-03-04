@@ -3,8 +3,10 @@ description: "The pieces of a repository as described by templates."
 title: Creations
 ---
 
-A _Creation_ is what's returned by a template's `produce()` function.
-It may contain any of the following properties:
+A _Creation_ is an in-memory representation of a repository.
+They are returned by template `produce()` functions to describe how to create a repository using that tempalte.
+
+Creations may contain any of the following properties:
 
 - ["Direct" creations](#direct-creations) that always cause changes to the repository:
   - [`files`](#files): Files to create or modify on disk
@@ -13,21 +15,15 @@ It may contain any of the following properties:
 - ["Indirect" creations](#indirect-creations) to hint to the Bingo CLI:
   - [`suggestions`](#suggestions): Printed tips for the next steps the user should take
 
-For example, this template both creates a Prettier config and runs Prettier:
+For example, this creation describes creating a Prettier config file and running Prettier's CLI:
 
 ```ts
-import { createTemplate } from "bingo";
-
-export default createTemplate({
-	produce() {
-		return {
-			files: {
-				".prettierrc.json": `{ useTabs: true }`,
-			},
-			scripts: ["npx prettier . --write"],
-		};
+{
+	files: {
+		".prettierrc.json": `{ useTabs: true }`
 	},
-});
+	scripts: ["npx prettier . --write"]
+}
 ```
 
 ## Direct Creations

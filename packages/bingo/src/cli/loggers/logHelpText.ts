@@ -1,7 +1,7 @@
 import * as prompts from "@clack/prompts";
 import chalk from "chalk";
 
-import { AnyShape } from "../../options.js";
+import { AnyShape } from "../../types/shapes.js";
 import { Template } from "../../types/templates.js";
 import { CLIMessage } from "../messages.js";
 import { CLIStatus } from "../status.js";

@@ -2,10 +2,10 @@ import { BingoSystem } from "bingo-systems";
 import fs from "node:fs/promises";
 
 import { createSystemContextWithAuth } from "../contexts/createSystemContextWithAuth.js";
-import { AnyShape, InferredObject } from "../options.js";
 import { produceTemplate } from "../producers/produceTemplate.js";
 import { Creation } from "../types/creations.js";
 import { ProductionMode } from "../types/modes.js";
+import { AnyShape, InferredObject } from "../types/shapes.js";
 import { Template } from "../types/templates.js";
 import { runCreation } from "./runCreation.js";
 

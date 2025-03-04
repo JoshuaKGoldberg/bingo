@@ -1,15 +1,20 @@
 import { z } from "zod";
 
-import { AnyShape, InferredObject } from "../options.js";
 import {
 	Input,
-	InputContext,
 	InputContextWithArgs,
+	InputContextWithoutArgs,
 	InputProducerWithArgs,
 	InputProducerWithoutArgs,
 } from "../types/inputs.js";
+import { AnyShape, InferredObject } from "../types/shapes.js";
 import { isDefinitionWithArgs } from "./utils.js";
 
+/**
+ * Definition for creating a new Input that might have args defined.
+ * @see {@link createInput}
+ * @see {@link https://create.bingo/build/apis/create-input}
+ */
 export type InputDefinition<
 	Result,
 	ArgsShape extends AnyShape | undefined = undefined,
@@ -17,15 +22,29 @@ export type InputDefinition<
 	? InputDefinitionWithArgs<Result, ArgsShape>
 	: InputDefinitionWithoutArgs<Result>;
 
+/**
+ * Definition for creating a new Input that has args defined.
+ * @see {@link createInput}
+ * @see {@link https://create.bingo/build/apis/create-input}
+ */
 export interface InputDefinitionWithArgs<Result, ArgsShape extends AnyShape> {
 	args: ArgsShape;
 	produce: InputProducerWithArgs<Result, ArgsShape>;
 }
 
+/**
+ * Definition for creating a new Input that does not have args defined.
+ * @see {@link createInput}
+ * @see {@link https://create.bingo/build/apis/create-input}
+ */
 export interface InputDefinitionWithoutArgs<Result> {
 	produce: InputProducerWithoutArgs<Result>;
 }
 
+/**
+ * Creates a new Input.
+ * @see {@link https://create.bingo/build/apis/create-input}
+ */
 export function createInput<
 	Result,
 	ArgsShape extends AnyShape | undefined = undefined,
@@ -33,7 +52,7 @@ export function createInput<
 	inputDefinition: InputDefinition<Result, ArgsShape>,
 ): Input<Result, ArgsShape> {
 	if (!isDefinitionWithArgs(inputDefinition)) {
-		return ((context: InputContext) => {
+		return ((context: InputContextWithoutArgs) => {
 			return inputDefinition.produce(context);
 		}) as Input<Result, ArgsShape>;
 	}

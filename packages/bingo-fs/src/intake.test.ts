@@ -19,6 +19,16 @@ vi.mock("node:fs/promises", () => ({
 }));
 
 describe("intake", () => {
+	it("returns undefined when nothing exists under the path", async () => {
+		mockStat.mockRejectedValueOnce(new Error("Oh no!"));
+
+		const actual = await intake("from");
+
+		expect(actual).toEqual(undefined);
+		expect(mockReaddir).not.toHaveBeenCalled();
+		expect(mockStat).toHaveBeenCalledOnce();
+	});
+
 	it("returns the file contents when given a path to a file", async () => {
 		const contents = "abc123";
 

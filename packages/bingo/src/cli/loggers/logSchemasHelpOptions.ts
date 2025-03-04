@@ -1,4 +1,4 @@
-import { AnyShape } from "../../options.js";
+import { AnyShape } from "../../types/shapes.js";
 import { getSchemaTypeName } from "../../utils/getSchemaTypeName.js";
 import { logHelpOptions } from "./logHelpOptions.js";
 

@@ -42,8 +42,8 @@ describe("mergeFileEntries", () => {
 			new Error("Conflicting created files at path: 'test/path'."),
 		],
 	] satisfies [
-		CreatedFileEntry | undefined,
-		CreatedFileEntry | undefined,
+		CreatedFileEntry | false | undefined,
+		CreatedFileEntry | false | undefined,
 		CreatedFileEntry | Error | undefined,
 	][])("%j with %j", (first, second, expected) => {
 		if (expected instanceof Error) {

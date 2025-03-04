@@ -28,4 +28,4 @@ It runs the `command` with [`execa`](https://www.npmjs.com/package/execa) and re
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught running the script
 - `Result`: The type from `execa`, including the `stdout` property
 
-See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/concepts/inputs)** for more documentation on Inputs.
+See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/details/inputs)** for more documentation on Inputs.

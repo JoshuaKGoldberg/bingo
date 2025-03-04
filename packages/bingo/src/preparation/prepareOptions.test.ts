@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { createTemplate } from "../creators/createTemplate.js";
-import { HasOptionsAndPrepare, prepareOptions } from "./prepareOptions.js";
+import { HasOptionsAndMaybePrepare, prepareOptions } from "./prepareOptions.js";
 
 const system = {
 	fetchers: {
@@ -49,7 +49,7 @@ describe("prepareOptions", () => {
 	});
 
 	describe("prepare", () => {
-		const baseWithOptionalOption: HasOptionsAndPrepare<{
+		const baseWithOptionalOption: HasOptionsAndMaybePrepare<{
 			value: z.ZodOptional<z.ZodString>;
 		}> = {
 			options: {

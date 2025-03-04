@@ -9,6 +9,10 @@ import { runCLI } from "./runCLI.js";
 import { CLIStatus } from "./status.js";
 import { makeRelative } from "./utils.js";
 
+/**
+ * Runs the full Bingo CLI, including reading process arguments.
+ * @returns CLI status to assign to `process.exitCode`.
+ */
 export async function runBingoCLI() {
 	const { args, positionals, values } = parseProcessArgv();
 	if (values.version) {

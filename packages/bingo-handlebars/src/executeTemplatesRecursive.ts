@@ -1,11 +1,11 @@
-import { CreatedFileEntry, IntakeDirectory, IntakeFileEntry } from "bingo-fs";
+import { CreatedEntry } from "bingo-fs";
 
 import { executeTemplate } from "./executeTemplate.js";
 
 export function executeTemplatesRecursive(
-	source: IntakeDirectory | IntakeFileEntry | undefined,
+	source: CreatedEntry | undefined,
 	options: object | undefined,
-): CreatedFileEntry | undefined {
+): CreatedEntry | undefined {
 	if (!source) {
 		return source;
 	}

@@ -32,4 +32,4 @@ It sends a request to the `resource` with [Input Context `fetch`](https://create
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught running the fetch
 - [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response): The awaited response from `fetch()`
 
-See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/concepts/inputs)** for more documentation on Inputs.
+See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/details/inputs)** for more documentation on Inputs.

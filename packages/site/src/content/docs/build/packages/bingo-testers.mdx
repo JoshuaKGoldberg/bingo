@@ -9,7 +9,7 @@ Test utilities for composable, testable, type-safe templates. ⚗️
 
 <PackageManagers type="add" pkg="bingo-testers" dev />
 
-The separate `bingo-testers` package includes testing utilities that run [Inputs](/build/concepts/inputs) and [Templates](/build/concepts/templates) in fully virtualized environments.
+The separate `bingo-testers` package includes testing utilities that run [Inputs](/build/details/inputs) and [Templates](/build/concepts/templates) in fully virtualized environments.
 This is intended for use in unit tests that should mock out all [Contexts](/build/details/contexts).
 
 :::tip
@@ -71,10 +71,10 @@ For example, if a `src/index.ts` has content `abc` in `actual` but content `bbc`
 
 ## `testInput`
 
-For [Inputs](/build/concepts/inputs), a `testInput` function is exported that is analogous to [`runInput`](/build/apis/run-input).
+For [Inputs](/build/details/inputs), a `testInput` function is exported that is analogous to [`runInput`](/build/apis/run-input).
 It takes in similar arguments:
 
-1. `input` _(required)_: an [Input](/build/concepts/inputs)
+1. `input` _(required)_: an [Input](/build/details/inputs)
 2. `context` _(optional)_: any properties from an [Input Context](/build/details/contexts#input-contexts)
 
 For example, this test asserts that an `inputNow` returns a numeric timestamp:
@@ -233,7 +233,7 @@ describe("inputGitUserEmail", () => {
 
 The [Context `take` function](/build/details/contexts#input-take) may be provided under `take`.
 
-This is how to simulate the results of calling to other [Inputs](/build/concepts/inputs).
+This is how to simulate the results of calling to other [Inputs](/build/details/inputs).
 
 For example, this test asserts that an `inputNpmUsername` Input uses the result of an `inputNpmWhoami` Input:
 
@@ -332,7 +332,7 @@ describe("exampleTemplate", () => {
 
 The [Context `take` function](/build/details/contexts#options-take) may be provided under `take`.
 
-This is how to simulate the results of [Inputs](/build/concepts/inputs).
+This is how to simulate the results of [Inputs](/build/details/inputs).
 
 For example, this test asserts that a template defaults its `name` to the property in `package.json`:
 

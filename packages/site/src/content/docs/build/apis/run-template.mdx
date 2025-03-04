@@ -22,7 +22,7 @@ It applies those creations, then returns a Promise for an object with:
 - `creation`: the resultant [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations)
 - `options`: the full merged options that production ran with
 
-For example, given this template that creates a README.md file, `runTemplate` would write that file to disk:
+For example, given this template that creates a `README.md` file, `runTemplate` would write that file to disk:
 
 ```ts
 import { createTemplate, runTemplate } from "bingo";
@@ -134,7 +134,7 @@ await runTemplate(template, { mode: "setup" });
 
 ### `offline`
 
-Whether to hint to the template not to make network requests.
+Whether to skip network requests and generally hint to run in offline mode.
 
 This is equivalent to the [`--offline` CLI flag](/cli#--offline).
 

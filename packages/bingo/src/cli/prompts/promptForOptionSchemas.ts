@@ -1,7 +1,7 @@
 import * as prompts from "@clack/prompts";
 
-import { AnyShape, InferredObject } from "../../options.js";
 import { prepareOptions } from "../../preparation/prepareOptions.js";
+import { AnyShape, InferredObject } from "../../types/shapes.js";
 import { SystemContext } from "../../types/system.js";
 import { Template } from "../../types/templates.js";
 import { getSchemaDefaultValue } from "../../utils/getSchemaDefaultValue.js";
