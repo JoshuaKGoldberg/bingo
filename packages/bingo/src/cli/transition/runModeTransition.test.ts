@@ -20,6 +20,14 @@ vi.mock("@clack/prompts", () => ({
 	spinner: vi.fn(),
 }));
 
+const mockPrepareOptions = vi.fn();
+
+vi.mock("../../preparation/prepareOptions.js", () => ({
+	get prepareOptions() {
+		return mockPrepareOptions;
+	},
+}));
+
 const mockRunTemplate = vi.fn();
 
 vi.mock("../../runners/runTemplate.js", () => ({
@@ -154,6 +162,25 @@ describe("runModeTransition", () => {
 
 		expect(mockLogHelpText).toHaveBeenCalledWith("transition", from, template);
 		expect(mockLogStartText).not.toHaveBeenCalled();
+	});
+
+	it("returns the error when prepareOptions throws an error", async () => {
+		const error = new Error("Oh no!");
+		mockPrepareOptions.mockRejectedValueOnce(error);
+
+		const actual = await runModeTransition({
+			args,
+			configFile: undefined,
+			display,
+			from,
+			template,
+		});
+
+		expect(actual).toEqual({
+			error,
+			status: CLIStatus.Error,
+		});
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, {});
 	});
 
 	it("returns the cancellation when promptForOptions is cancelled", async () => {

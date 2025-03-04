@@ -50,6 +50,8 @@ $ npx create-typescript-app@beta
 Stratum Templates source their `options` from their [Base](/engines/stratum/concepts/bases).
 Options declared on a Template's Base are what may be set in a configuration's `options`.
 
+### `--preset`
+
 The only added option is `preset`, which is a required string option.
 It is a union of the lowercased labels provided under `presets`.
 
@@ -62,3 +64,7 @@ export default createConfig(template, {
 	options: { preset: "everything" },
 });
 ```
+
+During transition mode, Stratum will attempt to infer a default value for `--preset` will attempt a default value based using files on disk.
+That default value is computed by comparing existing files on disk to the files that would be produced by the Blocks.
+If Preset with the greatest percentage matches 35% or more of its created files, it will be used as the default.

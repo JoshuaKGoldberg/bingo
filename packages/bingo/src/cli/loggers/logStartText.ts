@@ -9,7 +9,7 @@ export function logStartText(
 	type: string,
 	offline: boolean | undefined,
 ) {
-	prompts.log.message(
+	prompts.log.step(
 		[
 			`Running with mode --${mode} using the ${type}:`,
 			`  ${chalk.green(from)}`,

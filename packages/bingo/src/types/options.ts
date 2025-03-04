@@ -1,4 +1,7 @@
+import { CreatedDirectory } from "bingo-fs";
+
 import { TakeInput } from "./inputs.js";
+import { ContextLog } from "./templates.js";
 
 /**
  * Either a value, an async function, or a sync function to generate the value or undefined.
@@ -21,6 +24,16 @@ export type LazyOptionalOptions<Options> = {
  * @see {@link http://create.bingo/build/apis/prepare-options}
  */
 export interface OptionsContext<Options extends object> {
+	/**
+	 * Logs a message to the running user.
+	 */
+	log: ContextLog;
+
+	/**
+	 * Existing directory of files on disk, if available.
+	 */
+	files?: CreatedDirectory;
+
 	/**
 	 * Whether Bingo is being run in an "offline" mode.
 	 * @see {@link http://create.bingo/build/details/contexts#options-offline}

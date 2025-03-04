@@ -1,8 +1,15 @@
+import { CreatedDirectory } from "bingo-fs";
+
 import { AboutBase } from "./about.js";
 import { Creation } from "./creations.js";
 import { TakeInput } from "./inputs.js";
 import { LazyOptionalOptions } from "./options.js";
 import { AnyShape, InferredObject } from "./shapes.js";
+
+/**
+ * Logs a message to the running user.
+ */
+export type ContextLog = (message: string) => void;
 
 /**
  * Either a value or a Promise for the value.
@@ -118,6 +125,16 @@ export type TemplatePrepare<Options extends object> = (
  */
 export interface TemplatePrepareContext<Options extends object>
 	extends TemplateContext<Options> {
+	/**
+	 * Logs a message to the running user.
+	 */
+	log: ContextLog;
+
+	/**
+	 * Existing directory of files on disk, if available.
+	 */
+	files?: CreatedDirectory;
+
 	/**
 	 * Runs an Input.
 	 */
