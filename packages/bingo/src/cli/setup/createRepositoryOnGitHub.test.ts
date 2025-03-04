@@ -9,9 +9,11 @@ const mockCreateUsingTemplate = vi.fn();
 const mockCreateInOrg = vi.fn();
 const mockCreateForAuthenticatedUser = vi.fn();
 const mockGetAuthenticated = vi.fn();
+const mockRequest = vi.fn();
 
 const createMockOctokit = () =>
 	({
+		request: mockRequest,
 		rest: {
 			repos: {
 				createForAuthenticatedUser: mockCreateForAuthenticatedUser,
@@ -26,6 +28,8 @@ const createMockOctokit = () =>
 
 describe("createRepositoryOnGitHub", () => {
 	it("creates using a template when one is provided", async () => {
+		mockRequest.mockResolvedValueOnce({ data: [{}] });
+
 		const template = {
 			owner: "JoshuaKGoldberg",
 			repository: "create-typescript-app",
@@ -49,6 +53,7 @@ describe("createRepositoryOnGitHub", () => {
 				login: options.owner,
 			},
 		});
+		mockRequest.mockResolvedValueOnce({ data: [{}] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
@@ -62,6 +67,7 @@ describe("createRepositoryOnGitHub", () => {
 	it("creates under an org when the user is not the owner", async () => {
 		const login = "other-user";
 		mockGetAuthenticated.mockResolvedValueOnce({ data: { login } });
+		mockRequest.mockResolvedValueOnce({ data: [{}] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
@@ -71,5 +77,26 @@ describe("createRepositoryOnGitHub", () => {
 			org: options.owner,
 		});
 		expect(mockCreateUsingTemplate).not.toHaveBeenCalled();
+	});
+
+	it("delays resolving until labels exist when the repository does not have labels for fewer than 10 calls", async () => {
+		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
+		mockRequest
+			.mockResolvedValueOnce({ data: [] })
+			.mockResolvedValueOnce({ data: [] })
+			.mockResolvedValueOnce({ data: [{}] });
+
+		await createRepositoryOnGitHub(options, createMockOctokit());
+
+		expect(mockRequest).toHaveBeenCalledTimes(3);
+	});
+
+	it("resolves after 10 retries when the repository does not have labels for 10 calls", async () => {
+		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
+		mockRequest.mockResolvedValue({ data: [] });
+
+		await createRepositoryOnGitHub(options, createMockOctokit());
+
+		expect(mockRequest).toHaveBeenCalledTimes(10);
 	});
 });
