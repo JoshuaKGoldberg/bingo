@@ -1,6 +1,6 @@
 import hashObject from "hash-object";
 
-import { CreatedScript } from "../types/creations.js";
+import { CreatedScript, CreatedScriptWithOptions } from "../types/creations.js";
 
 export function mergeScripts(
 	first: CreatedScript[],
@@ -8,7 +8,7 @@ export function mergeScripts(
 ): CreatedScript[] {
 	const commandsByPhase = new Map<number | undefined, string[][]>();
 	const commandsWithoutPhase: string[] = [];
-	const nonSilentPhases = new Set<number | undefined>();
+	const nonSilentPhaseScripts = new Set<string>();
 
 	for (const command of [...first, ...second]) {
 		if (typeof command === "string") {
@@ -17,7 +17,7 @@ export function mergeScripts(
 		}
 
 		if (!command.silent) {
-			nonSilentPhases.add(command.phase);
+			nonSilentPhaseScripts.add(makeSilenceHash(command));
 		}
 
 		const byPhase = commandsByPhase.get(command.phase);
@@ -47,7 +47,11 @@ export function mergeScripts(
 				.map((commands) => ({
 					commands,
 					phase,
-					...(!nonSilentPhases.has(phase) && { silent: true }),
+					...(!nonSilentPhaseScripts.has(
+						makeSilenceHash({ commands, phase }),
+					) && {
+						silent: true,
+					}),
 				}))
 				.filter((phaseCommand) => {
 					const hash = hashObject(phaseCommand);
@@ -65,4 +69,8 @@ export function mergeScripts(
 
 function firstHasSameStart(first: string[], second: string[]) {
 	return first.every((entry, i) => entry === second[i]);
+}
+
+function makeSilenceHash(command: CreatedScriptWithOptions) {
+	return hashObject([command.phase, command.commands]);
 }
