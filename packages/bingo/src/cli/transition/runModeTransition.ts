@@ -1,4 +1,5 @@
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
+import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { runTemplate } from "../../runners/runTemplate.js";
 import { AnyShape } from "../../types/shapes.js";
 import { Template } from "../../types/templates.js";
@@ -67,11 +68,26 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 		);
 	}
 
-	const baseOptions = await promptForOptionSchemas(template, {
-		existing: {
-			...parseZodArgs(args, template.options),
+	const providedOptions = parseZodArgs(args, template.options);
+	const existingOptions = await runSpinnerTask(
+		display,
+		"Inferring options from existing repository",
+		"Inferred options from existing repository",
+		async () => {
+			return await prepareOptions(template, {
+				...system,
+				existing: { ...providedOptions, directory },
+				offline,
+			});
 		},
-		offline,
+	);
+	if (existingOptions instanceof Error) {
+		logRerunSuggestion(args, providedOptions);
+		return { error: existingOptions, status: CLIStatus.Error };
+	}
+
+	const baseOptions = await promptForOptionSchemas(template, {
+		existing: existingOptions,
 		system,
 	});
 	if (baseOptions.cancelled) {

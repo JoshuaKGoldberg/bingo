@@ -24,7 +24,9 @@ export function createClackDisplay(): ClackDisplay {
 			Object.assign(groups.get(group).get(id), item);
 		},
 		log(message) {
-			spinner.message(message);
+			// TODO: file bug? on clack that there's an extra line
+			process.stdout.moveCursor(0, -1);
+			prompts.log.step(message + "\n");
 		},
 	} satisfies Display;
 

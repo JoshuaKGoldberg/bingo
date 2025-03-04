@@ -1,6 +1,5 @@
 import * as prompts from "@clack/prompts";
 
-import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { AnyShape, InferredObject } from "../../types/shapes.js";
 import { SystemContext } from "../../types/system.js";
 import { Template } from "../../types/templates.js";
@@ -24,7 +23,6 @@ export interface PromptedOptionsProduced<Options extends object> {
 
 export interface PromptForOptionsSettings<OptionsShape extends AnyShape> {
 	existing: Partial<InferredObject<OptionsShape>>;
-	offline?: boolean;
 	system: SystemContext;
 }
 
@@ -32,7 +30,7 @@ export async function promptForOptionSchemas<
 	OptionsShape extends AnyShape = AnyShape,
 >(
 	template: Template<OptionsShape>,
-	{ existing, offline, system }: PromptForOptionsSettings<OptionsShape>,
+	{ existing, system }: PromptForOptionsSettings<OptionsShape>,
 ): Promise<PromptedOptions<InferredObject<OptionsShape>>> {
 	type Options = InferredObject<OptionsShape>;
 
@@ -40,11 +38,6 @@ export async function promptForOptionSchemas<
 	const completed: InferredObject<AnyShape> = {
 		directory,
 		...existing,
-		...(await prepareOptions(template, {
-			...system,
-			existing: { ...existing, directory },
-			offline,
-		})),
 	};
 	const prompted: Partial<Options> = {};
 

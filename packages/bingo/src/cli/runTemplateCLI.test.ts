@@ -8,6 +8,7 @@ const mockLog = {
 	error: vi.fn(),
 	info: vi.fn(),
 	message: vi.fn(),
+	step: vi.fn(),
 };
 
 vi.mock("@clack/prompts", () => ({

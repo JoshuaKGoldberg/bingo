@@ -192,6 +192,9 @@ importers:
       bingo-systems:
         specifier: workspace:^
         version: link:../bingo-systems
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
       hash-object:
         specifier: ^5.0.1
         version: 5.0.1

@@ -1,5 +1,7 @@
+import { CreatedDirectory, intake } from "bingo-fs";
 import { BingoSystem } from "bingo-systems";
 
+import { Display } from "../contexts/createDisplay.js";
 import { createSystemContextWithAuth } from "../contexts/createSystemContextWithAuth.js";
 import { LazyOptionalOptions, OptionsContext } from "../types/options.js";
 import { AnyShape, InferredObject } from "../types/shapes.js";
@@ -21,7 +23,9 @@ export interface HasOptionsAndMaybePrepare<OptionsShape extends AnyShape> {
 export interface PrepareOptionsSettings<OptionsShape extends AnyShape>
 	extends Partial<BingoSystem> {
 	directory?: string;
+	display?: Display;
 	existing?: Partial<InferredObject<OptionsShape>>;
+	files?: CreatedDirectory;
 	offline?: boolean;
 }
 
@@ -39,13 +43,22 @@ export async function prepareOptions<OptionsShape extends AnyShape>(
 		return existing;
 	}
 
+	const directory = settings.directory ?? ".";
 	const system = await createSystemContextWithAuth({
-		directory: settings.directory ?? ".",
+		directory,
 		...settings,
 	});
 
+	const files =
+		settings.files ??
+		((await intake(directory, {
+			exclude: /node_modules|^\.git$/,
+		})) as CreatedDirectory);
+
 	return await awaitLazyProperties(
 		base.prepare({
+			files,
+			log: system.display.log,
 			options: existing,
 			...system,
 		}),

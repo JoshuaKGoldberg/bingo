@@ -2,6 +2,7 @@ import * as prompts from "@clack/prompts";
 import chalk from "chalk";
 
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
+import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { runTemplate } from "../../runners/runTemplate.js";
 import { AnyShape } from "../../types/shapes.js";
 import { Template } from "../../types/templates.js";
@@ -65,13 +66,20 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 		offline,
 	});
 
+	const providedOptions = parseZodArgs(args, template.options);
+	const preparedOptions = await prepareOptions(template, {
+		...system,
+		existing: { ...providedOptions, directory },
+		offline,
+	});
+
 	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {
 			directory,
 			repository: repository ?? directory,
-			...parseZodArgs(args, template.options),
+			...providedOptions,
+			...preparedOptions,
 		},
-		offline,
 		system,
 	});
 	if (baseOptions.cancelled) {

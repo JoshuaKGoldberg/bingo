@@ -166,6 +166,44 @@ This context object is provided to:
 
 - [`prepareOptions`](/build/apis/prepare-options)
 
+### `log` {#options-log}
+
+Logs a message to the running user.
+
+This can be useful for templates that infer important options from disk.
+For example, if a [Stratum template](/engines/stratum/concepts/templates) infers its [`--preset`](/engines/stratum/concepts/templates#--preset), it will explicitly say so.
+
+For example, this template logs if its name falls back to the default:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		name: z.string().optional(),
+	},
+	prepare({ log, options }) {
+		if (!options.name) {
+			log(`Defaulting to --name "(anonymous)".`);
+		}
+		return {
+			name: "(anonymous)",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Running that template would add a new log to the Bingo CLI:
+
+```plaintext
+│
+◇  Defaulting to --name "(anonymous)".
+│
+```
+
 ### `offline` {#options-offline}
 
 Whether to hint to the template not to make network requests.

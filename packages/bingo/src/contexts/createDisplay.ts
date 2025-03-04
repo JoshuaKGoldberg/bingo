@@ -1,6 +1,6 @@
 export interface Display {
-	item(group: string, id: string, item: Partial<DisplayItem>): void;
-	log(message: string): void;
+	item: (group: string, id: string, item: Partial<DisplayItem>) => void;
+	log: (message: string) => void;
 }
 
 export interface DisplayItem {
