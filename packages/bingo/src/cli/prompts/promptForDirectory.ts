@@ -2,7 +2,7 @@ import * as prompts from "@clack/prompts";
 import * as fs from "node:fs/promises";
 import slugify from "slugify";
 
-import { AnyShape } from "../../options.js";
+import { AnyShape } from "../../types/shapes.js";
 import { Template } from "../../types/templates.js";
 import { validateNewDirectory } from "./validators.js";
 

@@ -41,7 +41,6 @@ export default defineConfig({
 							{
 								items: [
 									{ label: "Creations", link: "build/concepts/creations" },
-									{ label: "Inputs", link: "build/concepts/inputs" },
 									{ label: "Modes", link: "build/concepts/modes" },
 									{ label: "Templates", link: "build/concepts/templates" },
 								],
@@ -50,6 +49,7 @@ export default defineConfig({
 							{
 								items: [
 									{ label: "Contexts", link: "build/details/contexts" },
+									{ label: "Inputs", link: "build/details/inputs" },
 									{ label: "Merging", link: "build/details/merging" },
 								],
 								label: "Details",
@@ -71,6 +71,10 @@ export default defineConfig({
 									{
 										label: "produceTemplate",
 										link: "build/apis/produce-template",
+									},
+									{
+										label: "runCreation",
+										link: "build/apis/run-creation",
 									},
 									{
 										label: "runInput",

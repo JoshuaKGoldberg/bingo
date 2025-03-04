@@ -7,19 +7,20 @@ title: createTemplate
 
 A template definition must contain:
 
-- [`produce`](#produce): a synchronous function that generates the list of creations to place in a repository
+- [`produce`](#produce): generates [Creations](/build/concepts/creations) describing a repository made from the template
 
 A template definition may optionally contain:
 
 - [`about`](#about): documentation metadata about the template
 - [`options`](#options): an object with Zod schemas for any options the template takes in
-- [`prepare`](#prepare): creates functions to lazily load default options values
+- [`prepare`](#prepare): sets up lazily load default options values
 - [`setup`](#setup): additional production function for initializing a new repository with the template
 - [`transition`](#transition): additional production function for migrating an existing repository to the template
 
 ## `produce`
 
-A synchronous function that receives up two two parameters:
+Generates the [Creations](/build/concepts/creations) describing a repository made from the template.
+It receives up two two parameters:
 
 1. `context`: a [Template Context](/build/details/contexts#template-contexts)
 2. `settings`: any additional template-specific properties
@@ -224,7 +225,7 @@ Requiring the `owner` and `repository` fields be string-like allows [Setup mode]
 
 ### `prepare`
 
-Creates lazily loaded default values for options.
+Sets up lazily loaded default values for options.
 Receives an [Options Context](/build/details/contexts#options-contexts) and returns a [`Creation`](/build/concepts/creations).
 
 Templates can optionally define a `prepare()` function that provides fallback values for options.
@@ -259,7 +260,7 @@ Any function provided for an option property will be called and awaited if the o
 This allows potentially slow accesses of asynchronous defaults to only be run and waited for if they're not explicitly provided.
 
 Asynchronous defaults are often used for external resources such as the file system, network requests, or shell commands.
-The [`take` function](/build/details/contexts#options-take) can be used with [Inputs](/build/concepts/inputs) to access those external resources.
+The [`take` function](/build/details/contexts#options-take) can be used with [Inputs](/build/details/inputs) to access those external resources.
 
 For example, this template defaults a `--author` option to the result of running `npm whoami` with [`input-from-script`](https://www.npmjs.com/package/input-from-script):
 

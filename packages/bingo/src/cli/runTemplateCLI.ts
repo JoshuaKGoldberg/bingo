@@ -1,7 +1,7 @@
 import * as prompts from "@clack/prompts";
 
-import { AnyShape } from "../options.js";
 import { packageData } from "../packageData.js";
+import { AnyShape } from "../types/shapes.js";
 import { Template } from "../types/templates.js";
 import {
 	DisplayPackageData,
@@ -12,6 +12,10 @@ import { parseProcessArgv } from "./parseProcessArgv.js";
 import { runCLI } from "./runCLI.js";
 import { CLIStatus } from "./status.js";
 
+/**
+ * Runs an interactive CLI to generate and apply a template's output.
+ * @see {@link https://create.bingo/build/apis/run-template-cli}
+ */
 export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
 	template: Template<OptionsShape>,
 	providedTemplatePackageData?: DisplayPackageData,

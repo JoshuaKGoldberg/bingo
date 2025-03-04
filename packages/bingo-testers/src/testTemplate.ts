@@ -1,15 +1,10 @@
-import {
-	AnyShape,
-	InferredObject,
-	produceTemplate,
-	SystemContext,
-	Template,
-} from "bingo";
+import { AnyShape, InferredObject, produceTemplate, Template } from "bingo";
+import { BingoSystem } from "bingo-systems";
 
 import { createMockSystems } from "./createMockSystems.js";
 
 export interface TestProductionSettingsBase {
-	system?: Omit<Partial<SystemContext>, "take">;
+	system?: Omit<Partial<BingoSystem>, "take">;
 }
 
 export interface TestTemplateProductionSettings<OptionsShape extends AnyShape>

@@ -1,8 +1,4 @@
-import {
-	CreatedDirectory,
-	CreatedFileEntry,
-	CreatedFileOptions,
-} from "bingo-fs";
+import { CreatedDirectory, CreatedEntry, CreatedFileMetadata } from "bingo-fs";
 import { createTwoFilesPatch } from "diff";
 import path from "node:path";
 import { withoutUndefinedProperties } from "without-undefined-properties";
@@ -13,12 +9,12 @@ export interface DiffedCreatedDirectory {
 
 export type DiffedCreatedFileEntry =
 	| [string]
-	| [string | undefined, DiffedCreatedFileOptions?]
-	| CreatedFileEntry
+	| [string | undefined, DiffedCreatedFileMetadata?]
+	| CreatedEntry
 	| DiffedCreatedDirectory
 	| string;
 
-export interface DiffedCreatedFileOptions {
+export interface DiffedCreatedFileMetadata {
 	executable?: string;
 }
 
@@ -35,8 +31,8 @@ export function diffCreatedDirectory(
 }
 
 function diffCreatedDirectoryChild(
-	childActual: CreatedFileEntry | undefined,
-	childCreated: CreatedFileEntry | undefined,
+	childActual: CreatedEntry | undefined,
+	childCreated: CreatedEntry | undefined,
 	pathToChild: string,
 	processText: ProcessText,
 ): DiffedCreatedFileEntry | undefined {
@@ -67,7 +63,7 @@ function diffCreatedDirectoryChild(
 				pathToChild,
 				processText,
 			);
-			const optionsDiff = diffCreatedFileOptions(
+			const optionsDiff = diffCreatedFileMetadata(
 				childActual[1],
 				childCreated[1],
 				pathToChild,
@@ -169,13 +165,13 @@ function diffCreatedFileText(
 /**
  * @todo
  * Unclear yet how to represent a diff in the mode...
- * Should a DiffedFileEntry type replace CreatedFileOptions.mode with string?
+ * Should a DiffedFileEntry type replace CreatedFileMetadata.mode with string?
  */
-function diffCreatedFileOptions(
-	actual: CreatedFileOptions | undefined,
-	created: CreatedFileOptions | undefined,
+function diffCreatedFileMetadata(
+	actual: CreatedFileMetadata | undefined,
+	created: CreatedFileMetadata | undefined,
 	pathToFile: string,
-): DiffedCreatedFileOptions | undefined {
+): DiffedCreatedFileMetadata | undefined {
 	if (
 		actual?.executable === undefined ||
 		created?.executable === undefined ||

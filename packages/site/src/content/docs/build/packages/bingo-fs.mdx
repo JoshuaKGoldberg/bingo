@@ -41,7 +41,7 @@ Each property in a `files` object may be one of the following:
 - `false` or `undefined`: Ignored
 - `object`: A directory, whose properties recursively are file creations
 - `string`: A file to be created
-- `[string, CreatedFileOptions]`: A file to be created with options:
+- `[string, CreatedFileMetadata]`: A file to be created with options:
   - `executable`: Whether to add permissions to make the file executable
 
 For example, this Bingo template produces an executable `.husky/pre-commit` file:
@@ -60,17 +60,21 @@ export default createTemplate({
 });
 ```
 
+### Types
+
 ## APIs
 
 ### `intake`
 
-Given a file or directory path, reads it in as a `bingo-fs` directory structure or file entry.
+Given a directory or file path, reads it in as a `bingo-fs` directory structure or file entry.
 
 Parameters:
 
 1. `directoryPath: string` _(required)_
 2. `settings: IntakeSettings` _(optional)_:
    - [`exclude: RegExp`](#intake-exclude)
+
+Returns the directory or file if it existed, or `undefined` if it didn't.
 
 For example, retrieving all files in a `src/` directory:
 

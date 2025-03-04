@@ -14,7 +14,7 @@ import {
 	ZodTypeAny,
 } from "zod";
 
-import { AnyShape, InferredObject } from "../../options.js";
+import { AnyShape, InferredObject } from "../../types/shapes.js";
 
 // TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
 

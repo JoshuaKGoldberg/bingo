@@ -1,6 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createConfig } from "../config/createConfig.js";
 import { createTemplate } from "../creators/createTemplate.js";
 import { isCreatedConfig } from "./isCreatedConfig.js";
 
@@ -23,11 +22,11 @@ describe("isCreatedConfig", () => {
 		[{ settings: null }, false],
 		[{ settings: {} }, false],
 		[{ settings: {}, template: {} }, false],
-		[createConfig(template), true],
-		[createConfig(template, {}), true],
-		[createConfig(template, { options: {} }), true],
-		[createConfig(template, { settings: {} }), true],
-		[createConfig(template, { options: {}, settings: {} }), true],
+		[{ template }, true],
+		[{ template }, true],
+		[{ options: {}, template }, true],
+		[{ settings: {}, template }, true],
+		[{ options: {}, settings: {}, template }, true],
 	])("%j", (input, expected) => {
 		const actual = isCreatedConfig(input);
 

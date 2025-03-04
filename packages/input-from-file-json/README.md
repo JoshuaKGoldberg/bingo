@@ -28,4 +28,4 @@ It reads the `filePath` from disk and returns either:
 - [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error): If an error was caught reading or parsing the file
 - `unknown`: The result of running `JSON.parse` on the file's text contents
 
-See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/concepts/inputs)** for more documentation on Inputs.
+See **[create.bingo > Templates > Concepts > Inputs](https://create.bingo/build/details/inputs)** for more documentation on Inputs.

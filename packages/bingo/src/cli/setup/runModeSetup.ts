@@ -2,8 +2,8 @@ import * as prompts from "@clack/prompts";
 import chalk from "chalk";
 
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
-import { AnyShape } from "../../options.js";
 import { runTemplate } from "../../runners/runTemplate.js";
+import { AnyShape } from "../../types/shapes.js";
 import { Template } from "../../types/templates.js";
 import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";

@@ -1,4 +1,4 @@
-import { CreatedDirectory } from "bingo-fs";
+import { CreatedDirectory, CreatedFileEntry } from "bingo-fs";
 
 import { mergeFileEntries } from "./mergeFileEntries.js";
 
@@ -42,7 +42,11 @@ function mergeCreatedDirectoriesWorker(
 					second as CreatedDirectory,
 					nextPath,
 				)
-			: mergeFileEntries(first, second, nextPath);
+			: mergeFileEntries(
+					first as CreatedFileEntry,
+					second as CreatedFileEntry,
+					nextPath,
+				);
 	}
 
 	return result;

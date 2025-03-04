@@ -1,0 +1,93 @@
+---
+description: Bingo API to apply Creations to disk.
+title: runCreation
+---
+
+Applies a [Creation](/build/concepts/creations) to disk by writing files, sending network requests, and executing shell scripts.
+
+`runCreation` takes in up to two arguments:
+
+1. `creation` _(required)_: a [Creation](/build/concepts/creations) object
+2. `settings` _(optional)_: any of:
+   - [`offline`](#offline): whether to run in "offline" mode
+   - [`system`](#system): virtual APIs to apply via
+
+For example, given this created `README.md` file, `runTemplate` would write that file to disk:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+
+await runCreation({
+	files: {
+		"README.md": `# Hello, World!`,
+	},
+});
+```
+
+## Settings
+
+### `offline`
+
+Whether to skip network requests.
+
+This is equivalent to the [`--offline` CLI flag](/cli#--offline).
+
+For example, this would only write files to disk, and not send any requests:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+import { z } from "zod";
+
+await runCration(
+	{
+		files: {
+			"README.md": `# Hello, World!`,
+		},
+		requests: [
+			{
+				id: "default-branch",
+				async send({ octokit }) {
+					await octokit.rest.repos.update({
+						default_branch: "main",
+						owner: options.owner,
+						repo: options.repository,
+					});
+				},
+			},
+		],
+	},
+	{
+		offline: true,
+	},
+);
+```
+
+### `system`
+
+File, network, and shell wrapper APIs.
+
+By default, these are provided by [`bingo-systems`](/build/packages/bingo-systems).
+They can be swapped out if you want to change or otherwise intercept system calls.
+
+For example, this adds a log to every shell command:
+
+```ts
+import { createSystemContext } from "bingo-systems";
+
+const defaultSystem = createSystemContext();
+
+await runCreation(
+	{
+		scripts: ["npm format --write"],
+	},
+	{
+		system: {
+			...createSystemContext(),
+			runner: async (...args) => {
+				console.log("Running:", args);
+				return await defaultSystem.runner(args);
+			},
+		},
+	},
+);
+```

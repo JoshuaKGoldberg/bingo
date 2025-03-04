@@ -1,8 +1,8 @@
-import { CreatedFileEntry } from "bingo-fs";
+import { CreatedEntry, CreatedFileEntry } from "bingo-fs";
 
 export function mergeFileEntries(
-	first: CreatedFileEntry | undefined,
-	second: CreatedFileEntry | undefined,
+	first: CreatedFileEntry | false | undefined,
+	second: CreatedFileEntry | false | undefined,
 	path: string[],
 ): CreatedFileEntry | undefined {
 	if (first === second || isBlankEntry(second)) {
@@ -30,9 +30,9 @@ export function mergeFileEntries(
 
 	const executable = firstSettings?.executable ?? secondSettings?.executable;
 
-	return executable ? [firstFile as string, { executable }] : firstFile;
+	return executable ? [firstFile, { executable }] : firstFile;
 }
 
-function isBlankEntry(entry: CreatedFileEntry | undefined) {
+function isBlankEntry(entry: CreatedEntry | undefined) {
 	return entry === false || entry === undefined;
 }

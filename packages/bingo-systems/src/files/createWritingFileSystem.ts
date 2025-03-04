@@ -1,4 +1,4 @@
-import { CreatedFileOptions } from "bingo-fs";
+import { CreatedFileMetadata } from "bingo-fs";
 import * as fs from "node:fs/promises";
 
 import { createReadingFileSystem } from "./createReadingFileSystem.js";
@@ -11,7 +11,7 @@ export function createWritingFileSystem() {
 		writeFile: async (
 			filePath: string,
 			contents: string,
-			options?: CreatedFileOptions,
+			options?: CreatedFileMetadata,
 		) => {
 			await fs.writeFile(
 				filePath,

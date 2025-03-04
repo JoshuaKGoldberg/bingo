@@ -1,5 +1,15 @@
-import { CreatedConfig } from "../config/types.js";
+import { AnyShape, InferredObject } from "../types/shapes.js";
+import { Template } from "../types/templates.js";
 import { isTemplate } from "./isTemplate.js";
+
+export interface CreatedConfig<
+	OptionsShape extends AnyShape = AnyShape,
+	Settings extends object = object,
+> {
+	options?: InferredObject<OptionsShape>;
+	settings?: Settings;
+	template: Template<OptionsShape>;
+}
 
 export function isCreatedConfig(value: unknown): value is CreatedConfig {
 	return (

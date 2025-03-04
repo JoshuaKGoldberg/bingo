@@ -19,10 +19,9 @@ It is a union of the lowercased labels for the Template's available [Presets](/e
 For example, given a Template whose Base includes a boolean `bin` string, this configuration explicitly sets that option to `"index.js"`:
 
 ```ts title="create-example.config.js"
-import { createConfig } from "bingo";
-import { blockCSpell, template } from "create-typescript-app";
+import { blockCSpell, createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
+export default createConfig({
 	options: {
 		base: "index.js",
 		preset: "everything",
