@@ -1,6 +1,6 @@
 {
 	"name": "bingo-stratum",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Highly composable, customizable templating engine for Bingo. 🏭",
 	"repository": {
 		"type": "git",

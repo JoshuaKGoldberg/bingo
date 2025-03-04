@@ -1,6 +1,6 @@
 {
 	"name": "bingo-systems",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "File, network, and shell wrapper APIs used by Bingo. 🧰",
 	"repository": {
 		"type": "git",
