@@ -4,19 +4,6 @@ import { mergeScripts } from "./mergeScripts.js";
 
 describe("mergeScripts", () => {
 	test.each([
-		[
-			[
-				{ commands: ["rm CONTRIBUTING.md"], phase: 0 },
-				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
-				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
-			],
-			[{ commands: ["rm DEVELOPMENT.md"], phase: 0 }],
-			[
-				{ commands: ["rm CONTRIBUTING.md"], phase: 0 },
-				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
-				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
-			],
-		],
 		[[], [], []],
 		[[], ["a"], ["a"]],
 		[["a"], [], ["a"]],
@@ -362,6 +349,72 @@ describe("mergeScripts", () => {
 					commands: ["pnpm lint"],
 					phase: 1,
 				},
+			],
+		],
+		[
+			[
+				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
+				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
+			],
+			[{ commands: ["rm DEVELOPMENT.md"], phase: 0 }],
+			[
+				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
+				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
+			],
+		],
+		[
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0 },
+				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
+				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
+			],
+			[{ commands: ["rm DEVELOPMENT.md"], phase: 0 }],
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0 },
+				{ commands: ["rm CODE_OF_CONDUCT.md"], phase: 0 },
+				{ commands: ["rm DEVELOPMENT.md"], phase: 0 },
+			],
+		],
+		[
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["pnpm install"], phase: 1 },
+			],
+			[{ commands: ["rm .prettierrc*"], phase: 0 }],
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["rm .prettierrc*"], phase: 0 },
+				{ commands: ["pnpm install"], phase: 1 },
+			],
+		],
+		[
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["rm .eslintrc*"], phase: 0, silent: true },
+			],
+			[{ commands: ["rm .prettierrc* prettier.config*"], phase: 0 }],
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["rm .eslintrc*"], phase: 0, silent: true },
+				{ commands: ["rm .prettierrc* prettier.config*"], phase: 0 },
+			],
+		],
+		[
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["rm .eslintrc*"], phase: 0, silent: true },
+				{ commands: ["pnpm install", "pnpm dedupe --offline"], phase: 1 },
+			],
+			[
+				{ commands: ["pnpm format --write"], phase: 2 },
+				{ commands: ["rm .prettierrc* prettier.config*"], phase: 0 },
+			],
+			[
+				{ commands: ["rm CONTRIBUTING.md"], phase: 0, silent: true },
+				{ commands: ["rm .eslintrc*"], phase: 0, silent: true },
+				{ commands: ["rm .prettierrc* prettier.config*"], phase: 0 },
+				{ commands: ["pnpm install", "pnpm dedupe --offline"], phase: 1 },
+				{ commands: ["pnpm format --write"], phase: 2 },
 			],
 		],
 	])("%j and %j", (first, second, expected) => {
