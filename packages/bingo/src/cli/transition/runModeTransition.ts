@@ -47,6 +47,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 
 	const system = await createSystemContextWithAuth({
 		directory,
+		display,
 		offline,
 	});
 

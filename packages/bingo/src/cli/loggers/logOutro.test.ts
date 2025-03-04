@@ -5,12 +5,12 @@ import { logOutro } from "./logOutro.js";
 
 const mockOutro = vi.fn();
 const mockConsoleLog = vi.fn();
-const mockPromptWarn = vi.fn();
+const mockPromptError = vi.fn();
 
 vi.mock("@clack/prompts", () => ({
 	get log() {
 		return {
-			warn: mockPromptWarn,
+			error: mockPromptError,
 		};
 	},
 	get outro() {
@@ -27,19 +27,19 @@ describe("logOutro", () => {
 		logOutro("Bye!");
 
 		expect(mockConsoleLog).not.toHaveBeenCalled();
-		expect(mockPromptWarn).not.toHaveBeenCalled();
+		expect(mockPromptError).not.toHaveBeenCalled();
 		expect(mockOutro.mock.calls).toEqual([["Bye!"]]);
 	});
 
 	describe("items", () => {
-		test("empty items", () => {
+		test("does not log an error items have no error", () => {
 			logOutro("Bye!", { items: {} });
 
-			expect(mockPromptWarn).not.toHaveBeenCalled();
+			expect(mockPromptError).not.toHaveBeenCalled();
 			expect(mockOutro.mock.calls).toEqual([["Bye!"]]);
 		});
 
-		test("items", () => {
+		test("logs an error stack when an item has an Error error", () => {
 			logOutro("Bye!", {
 				items: {
 					groupA: {
@@ -49,9 +49,29 @@ describe("logOutro", () => {
 				},
 			});
 
-			expect(mockPromptWarn.mock.calls).toEqual([
+			expect(mockPromptError.mock.calls).toEqual([
 				[
-					`The ${chalk.red("itemB")} groupA failed. You should re-run it and fix its complaints.\nError: Oh no!`,
+					expect.stringContaining(
+						`The ${chalk.red("itemB")} groupA failed. You should re-run it and fix its complaints.\nError: Oh no!`,
+					),
+				],
+			]);
+			expect(mockOutro.mock.calls).toEqual([["Bye!"]]);
+		});
+
+		test("logs an error stack when an item has a string error", () => {
+			logOutro("Bye!", {
+				items: {
+					groupA: {
+						itemA: {},
+						itemB: { error: "Oh no!" },
+					},
+				},
+			});
+
+			expect(mockPromptError.mock.calls).toEqual([
+				[
+					`The ${chalk.red("itemB")} groupA failed. You should re-run it and fix its complaints.\nOh no!`,
 				],
 			]);
 			expect(mockOutro.mock.calls).toEqual([["Bye!"]]);

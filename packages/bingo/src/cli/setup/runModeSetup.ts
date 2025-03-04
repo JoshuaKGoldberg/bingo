@@ -61,6 +61,7 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 
 	const system = await createSystemContextWithAuth({
 		directory,
+		display,
 		offline,
 	});
 

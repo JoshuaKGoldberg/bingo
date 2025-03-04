@@ -8,7 +8,7 @@ import {
 export async function createSystemContextWithAuth(
 	settings: Pick<
 		SystemContextSettings,
-		"auth" | "directory" | "fetchers" | "offline"
+		"auth" | "directory" | "display" | "fetchers" | "offline"
 	>,
 ) {
 	const authToken =
