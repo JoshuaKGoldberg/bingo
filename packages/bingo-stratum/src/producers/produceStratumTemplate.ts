@@ -2,7 +2,7 @@ import { AnyShape, InferredObject, ProductionMode } from "bingo";
 
 import { StratumRefinements } from "../types/refinements.js";
 import { StratumTemplate } from "../types/templates.js";
-import { getPresetByName } from "../utils.ts/getPresetByName.js";
+import { getPresetByName } from "../utils/getPresetByName.js";
 import { applyBlockRefinements } from "./applyBlockRefinements.js";
 import { produceBlocks } from "./produceBlocks.js";
 
@@ -29,7 +29,11 @@ export function produceStratumTemplate<
 		throw preset;
 	}
 
-	const blocks = applyBlockRefinements(preset.blocks, refinements.blocks);
+	const blocks = applyBlockRefinements(
+		preset.blocks,
+		options,
+		refinements.blocks,
+	);
 
 	return produceBlocks(blocks, {
 		addons: refinements.addons,

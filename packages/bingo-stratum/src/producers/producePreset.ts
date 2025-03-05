@@ -37,7 +37,11 @@ export function producePreset<OptionsShape extends AnyShape>(
 		refinements = {},
 	}: ProducePresetSettings<OptionsShape>,
 ): BlockCreation<InferredObject<OptionsShape>> {
-	const blocks = applyBlockRefinements(preset.blocks, refinements.blocks);
+	const blocks = applyBlockRefinements(
+		preset.blocks,
+		options,
+		refinements.blocks,
+	);
 
 	const creation = produceBlocks(blocks, {
 		addons: refinements.addons,

@@ -35,7 +35,7 @@ export interface StratumTemplateDefinition<OptionsShape extends AnyShape> {
 }
 
 export interface StratumTemplateOptionsShape {
-	preset: z.ZodUnion<ZodPresetNameLiterals>;
+	preset: z.ZodDefault<z.ZodUnion<ZodPresetNameLiterals>>;
 }
 
 export type ZodPresetNameLiterals = [
