@@ -13,7 +13,7 @@ Bingo configuration files are useful if you:
 Bingo templates each:
 
 - Provide a `createConfig()` function that creates a configuration object.
-- Support reading a `*.config.js` configuration file that `export default`s that object.
+- Support reading a `*.config.*` configuration file that `export default`s that object.
 
 For example, this configuration keeps a repository up-to-date with [`create-example`](https://github.com/JoshuaKGoldberg/create-example):
 
@@ -29,9 +29,13 @@ export default createConfig({
 
 Running `npx create-example` in a repository with that `create-example.config.js` would be the equivalent of running `npx create-example --title "Hello, world!"`.
 
+:::tip
+Configuration files can have any extension supported by your Node.js version, including `.js`, `.mjs`, or if on the latest Node.js versions, `.ts`.
+:::
+
 ## `createConfig`
 
-The exported `createConfig` function takes in an object containing any `options` and/or `refinements` to be passed to the template.
+Each template's exported `createConfig` function takes in an object containing any `options` and/or `refinements` to be passed to the template.
 
 :::tip
 See the documentation for your specific template for additional `options` and `refinements`.
@@ -83,5 +87,5 @@ export default createConfig({
 Running `npx create-typescript-app@beta` in a repository with that configuration file would be the equivalent of running `npx create-typescript-app@beta --preset everything`, except it would not apply any CSpell-related files or scripts.
 
 :::note
-See the documentation of your template for what `settings` are available.
+See the documentation of your template for what `refinements` are available.
 :::

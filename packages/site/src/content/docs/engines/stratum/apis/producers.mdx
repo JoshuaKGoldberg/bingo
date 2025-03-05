@@ -3,8 +3,6 @@ description: Stratum APIs to produce individual Blocks and Presets.
 title: Stratum Producer APIs
 ---
 
-TODO: Refinements!
-
 Stratum generally reuses existing Bingo producer APIs when possible:
 
 - [Base](/engines/stratum/concepts/bases) options can be prepared using the same API as Templates: [`prepareOptions` > Custom Engine Preparations](/build/apis/prepare-options#custom-engine-preparations).
@@ -160,7 +158,7 @@ Given a [Preset](/engines/stratum/concepts/presets) and the name of one of its [
 `producePreset` allows up to two parameters:
 
 1. `preset` _(required)_: a Preset
-2. `context` _(optional)_: any of the following properties
+2. `settings` _(optional)_: any of the following properties
 
 `producePreset` returns the Preset's [`Creation`](/build/concepts/creations), including both [direct creations](/build/concepts/creations#direct-creations) and [indirect creations](/build/concepts/creations#indirect-creations).
 
@@ -182,58 +180,6 @@ producePreset(preset, {
 	options: { title: "My App" },
 });
 ```
-
-### `addons` {#preset-addons}
-
-Any [Addons](/engines/stratum/apis/create-base#createblock-addons) to pass to the Preset's Blocks.
-
-For example, this production adds a `"generated"` Addon to a Prettier Block:
-
-```ts
-import { Preset, producePreset } from "bingo";
-import { z } from "zod";
-
-import { blockPrettier } from "./blockPrettier";
-
-declare const preset: Preset;
-
-producePreset(preset, {
-	addons: [blockPrettier({ ignores: ["generated"] })],
-	options: {
-		name: "My Production",
-	},
-	preset: "example",
-});
-```
-
-### `blocks` {#preset-blocks}
-
-Any Blocks to `add` and/or `remove`.
-
-For example, this production swaps in a Jest Block instead of a Vitest Block:
-
-```ts
-import { Preset, producePreset } from "bingo";
-import { z } from "zod";
-
-import { blockJest } from "./blockJest";
-import { blockVitest } from "./blockVitest";
-
-declare const preset: Preset;
-
-producePreset(preset, {
-	blocks: {
-		add: [blockJest],
-		exclude: [blockVitest],
-	},
-	options: {
-		name: "My Production",
-	},
-	preset: "example",
-});
-```
-
-See [Configurations > `blocks`](/engines/stratum/details/configurations#blocks) for how this is used.
 
 ### `offline` {#preset-offline}
 
@@ -300,3 +246,64 @@ const options = await prepareBase(base);
 
 producePreset(preset, { options });
 ```
+
+### `refinements` {#preset-refinements}
+
+Any optional Stratum customizations.
+These are analogous to [Details > Configurations > Refinements](/engines/stratum/details/configurations).
+
+#### `addons` {#preset-addons}
+
+Any [Addons](/engines/stratum/apis/create-base#createblock-addons) to pass to the Preset's Blocks.
+
+For example, this production adds a `"generated"` Addon to a Prettier Block:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+import { blockPrettier } from "./blockPrettier";
+
+declare const preset: Preset;
+
+producePreset(preset, {
+	addons: [
+		blockPrettier({
+			ignores: ["generated"],
+		}),
+	],
+	options: {
+		name: "My Production",
+	},
+	preset: "example",
+});
+```
+
+#### `blocks` {#preset-blocks}
+
+Any Blocks to `add` and/or `remove`.
+
+For example, this production swaps in a Jest Block instead of a Vitest Block:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+import { blockJest } from "./blockJest";
+import { blockVitest } from "./blockVitest";
+
+declare const preset: Preset;
+
+producePreset(preset, {
+	blocks: {
+		add: [blockJest],
+		exclude: [blockVitest],
+	},
+	options: {
+		name: "My Production",
+	},
+	preset: "example",
+});
+```
+
+See [Configurations > `blocks`](/engines/stratum/details/configurations#blocks) for how this is used.
