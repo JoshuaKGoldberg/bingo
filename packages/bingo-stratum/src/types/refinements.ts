@@ -20,7 +20,9 @@ export interface StratumRefinements<Options extends object = object> {
 	/**
 	 * Any extra addon values to merge in and pass to blocks.
 	 */
-	addons?: CreatedBlockAddons<object, Options>[];
+	// TODO: Get this to work with object or never...
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	addons?: CreatedBlockAddons<any, Options>[];
 
 	/**
 	 * Blocks to add and/or exclude from production.
