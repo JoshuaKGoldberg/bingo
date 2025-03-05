@@ -87,7 +87,7 @@ export async function runModeTransition<
 		return { error: loadedConfig, status: CLIStatus.Error };
 	}
 
-	const existingOptions = await runSpinnerTask(
+	const preparedOptions = await runSpinnerTask(
 		display,
 		"Inferring options from existing repository",
 		"Inferred options from existing repository",
@@ -103,13 +103,13 @@ export async function runModeTransition<
 			});
 		},
 	);
-	if (existingOptions instanceof Error) {
+	if (preparedOptions instanceof Error) {
 		logRerunSuggestion(args, providedOptions);
-		return { error: existingOptions, status: CLIStatus.Error };
+		return { error: preparedOptions, status: CLIStatus.Error };
 	}
 
 	const baseOptions = await promptForOptionSchemas(template, {
-		existing: existingOptions,
+		existing: { ...providedOptions, ...preparedOptions },
 		system,
 	});
 	if (baseOptions.cancelled) {

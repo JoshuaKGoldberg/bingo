@@ -70,11 +70,23 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	});
 
 	const providedOptions = parseZodArgs(args, template.options);
-	const preparedOptions = await prepareOptions(template, {
-		...system,
-		existing: { ...providedOptions, directory },
-		offline,
-	});
+
+	const preparedOptions = await runSpinnerTask(
+		display,
+		"Inferring default options from system",
+		"Inferred default options from system",
+		async () => {
+			return await prepareOptions(template, {
+				...system,
+				existing: { ...providedOptions, directory },
+				offline,
+			});
+		},
+	);
+	if (preparedOptions instanceof Error) {
+		logRerunSuggestion(args, providedOptions);
+		return { error: preparedOptions, status: CLIStatus.Error };
+	}
 
 	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {

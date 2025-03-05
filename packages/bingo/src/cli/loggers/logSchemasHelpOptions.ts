@@ -8,7 +8,7 @@ export function logSchemasHelpOptions(packageName: string, schemas: AnyShape) {
 		packageName,
 		Object.entries(schemas)
 			.map(([flag, schema]) => ({
-				flag,
+				flag: `--${flag}`,
 				text: asSentence(schema.description),
 				type: getSchemaTypeName(schema),
 			}))

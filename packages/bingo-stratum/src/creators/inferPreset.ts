@@ -13,7 +13,7 @@ import {
 } from "../producers/produceBlock.js";
 import { Block } from "../types/blocks.js";
 import { Preset } from "../types/presets.js";
-import { slugifyPresetName } from "../utils.ts/slugifyPresetName.js";
+import { slugifyName } from "../utils/slugifyName.js";
 
 export function inferPreset<OptionsShape extends AnyShape, Refinements>(
 	context: Pick<
@@ -58,7 +58,7 @@ export function inferPreset<OptionsShape extends AnyShape, Refinements>(
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		record!.percentage >= 0.35
 			? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				slugifyPresetName(record!.preset.about.name)
+				slugifyName(record!.preset.about.name)
 			: undefined
 	);
 }

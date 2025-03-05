@@ -1,7 +1,7 @@
 import { AnyShape } from "bingo";
 
 import { Preset } from "../types/presets.js";
-import { slugifyPresetName } from "./slugifyPresetName.js";
+import { slugifyName } from "./slugifyName.js";
 
 export function getPresetByName<OptionsShape extends AnyShape>(
 	presets: Preset<OptionsShape>[],
@@ -9,12 +9,12 @@ export function getPresetByName<OptionsShape extends AnyShape>(
 ) {
 	const presetsByName = new Map(
 		Array.from(
-			presets.map((preset) => [slugifyPresetName(preset.about.name), preset]),
+			presets.map((preset) => [slugifyName(preset.about.name), preset]),
 		),
 	);
 
 	return (
-		presetsByName.get(slugifyPresetName(requested)) ??
+		presetsByName.get(slugifyName(requested)) ??
 		new Error(
 			`${requested} is not one of: ${Array.from(presetsByName.keys()).join(", ")}`,
 		)

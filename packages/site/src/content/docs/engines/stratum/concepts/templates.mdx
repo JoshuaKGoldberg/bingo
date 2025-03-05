@@ -19,7 +19,7 @@ import { presetMinimal } from "./presetMinimal";
 
 export const template = createTemplate({
 	about: {
-		name: "TypeScript App",
+		name: "Stratum Example",
 	},
 	presets: [
 		{ label: "Minimal", preset: presetMinimal },
@@ -52,19 +52,64 @@ Options declared on a Template's Base are what may be set in a configuration's `
 
 ### `--preset`
 
-The only added option is `preset`, which is a required string option.
+All Stratum Templates include a `--preset`, option which is a required string.
 It is a union of the lowercased labels provided under `presets`.
 
-For example, given the earlier `template` with three Presets, the `preset` option would be type `"common" | "everything" | "minimal"`:
+For example, given the earlier `template` with three Presets, the `--preset` option would be type `"common" | "everything" | "minimal"`:
 
-```ts title="create-example.config.ts"
-import { template } from "create-typescript-app";
+It could be specified on the CLI:
+
+```shell
+npx create-stratum-example --preset everything
+```
+
+Presets can also be specified as a standard option in a configuration file:
+
+```ts title="create-stratum-example.config.ts"
+import { template } from "create-stratum-example";
 
 export default createConfig(template, {
-	options: { preset: "everything" },
+	options: {
+		preset: "everything",
+	},
 });
 ```
 
 During transition mode, Stratum will attempt to infer a default value for `--preset` based using files on disk.
 That default value is computed by comparing existing files on disk to the files that would be produced by the Blocks.
 If Preset with the greatest percentage matches 35% or more of its created files, it will be used as the default.
+
+### Exclusion Options
+
+Stratum Templates also add `--exclude-*` CLI options for each of their named Blocks.
+Each Block name is transformed to kebab-cases boolean option that defaults to `false`.
+
+For example, given the following named `ESLint` Block:
+
+```ts
+import { base } from "./base";
+
+export const blockESLint = base.createBlock({
+	about: {
+		name: "ESLint",
+	},
+	produce() {
+		return {
+			files: {
+				"eslint.config.js": "...",
+			},
+		};
+	},
+});
+```
+
+If a Stratum Template includes that Block, it will have an `--exclude-eslint` option available on the CLI:
+
+```shell
+npx create-stratum-example --exclude-eslint
+```
+
+:::note
+Exclusion options are not added to the TypeScript types of `createConfig` functions in configuration files.
+See [Details > Configurations > Refinements > `exclude`](/engines/stratum/details/configurations#exclude) for excluding Blocks in configuration files.
+:::
