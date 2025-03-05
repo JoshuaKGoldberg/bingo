@@ -1,0 +1,34 @@
+---
+/*
+Heavily inspired by starlight-blog:
+https://github.com/HiDeoo/starlight-blog/blob/main/packages/starlight-blog/overrides/ThemeSelect.astro
+*/
+
+import Default from "@astrojs/starlight/components/ThemeSelect.astro";
+---
+
+<div>
+	<a href="/guides/">Guides</a>
+</div>
+
+<Default><slot /></Default>
+
+<style>
+	div {
+		border-inline-end: 1px solid var(--sl-color-gray-5);
+		display: none;
+		padding-inline-end: 1rem;
+	}
+
+	@media (min-width: 50rem) {
+		div {
+			display: flex;
+		}
+	}
+
+	a {
+		color: var(--sl-color-text-accent);
+		font-weight: 600;
+		text-decoration: none;
+	}
+</style>
