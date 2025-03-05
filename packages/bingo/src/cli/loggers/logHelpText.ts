@@ -9,10 +9,10 @@ import { ModeResults } from "../types.js";
 import { logHelpOptions } from "./logHelpOptions.js";
 import { logSchemasHelpOptions } from "./logSchemasHelpOptions.js";
 
-export function logHelpText<OptionsShape extends AnyShape = AnyShape>(
+export function logHelpText<OptionsShape extends AnyShape, Refinements>(
 	mode: string,
 	from: string,
-	template: Template<OptionsShape>,
+	template: Template<OptionsShape, Refinements>,
 ): ModeResults {
 	const packageName = template.about?.name ?? from;
 

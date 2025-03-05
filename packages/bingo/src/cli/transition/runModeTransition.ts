@@ -16,8 +16,12 @@ import { CLIStatus } from "../status.js";
 import { ModeResults } from "../types.js";
 import { clearTemplateFiles } from "./clearTemplateFiles.js";
 import { getForkedRepositoryLocator } from "./getForkedRepositoryLocator.js";
+import { readConfigSettings } from "./readConfigSettings.js";
 
-export interface RunModeTransitionSettings<OptionsShape extends AnyShape> {
+export interface RunModeTransitionSettings<
+	OptionsShape extends AnyShape,
+	Refinements,
+> {
 	args: string[];
 	configFile: string | undefined;
 	directory?: string;
@@ -25,10 +29,13 @@ export interface RunModeTransitionSettings<OptionsShape extends AnyShape> {
 	from: string;
 	help?: boolean;
 	offline?: boolean;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 }
 
-export async function runModeTransition<OptionsShape extends AnyShape>({
+export async function runModeTransition<
+	OptionsShape extends AnyShape,
+	Refinements,
+>({
 	args,
 	configFile,
 	directory = ".",
@@ -37,7 +44,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 	help,
 	offline,
 	template,
-}: RunModeTransitionSettings<OptionsShape>): Promise<ModeResults> {
+}: RunModeTransitionSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("transition", from, template);
 	}
@@ -69,6 +76,17 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 	}
 
 	const providedOptions = parseZodArgs(args, template.options);
+
+	const loadedConfig = await readConfigSettings(
+		configFile,
+		directory,
+		template,
+	);
+	if (loadedConfig instanceof Error) {
+		logRerunSuggestion(args, providedOptions);
+		return { error: loadedConfig, status: CLIStatus.Error };
+	}
+
 	const existingOptions = await runSpinnerTask(
 		display,
 		"Inferring options from existing repository",
@@ -76,7 +94,11 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 		async () => {
 			return await prepareOptions(template, {
 				...system,
-				existing: { ...providedOptions, directory },
+				existing: {
+					...loadedConfig?.options,
+					...providedOptions,
+					directory,
+				},
 				offline,
 			});
 		},
@@ -106,6 +128,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 				mode: "transition",
 				offline,
 				options: baseOptions.completed,
+				refinements: loadedConfig?.refinements,
 			}),
 	);
 	if (creation instanceof Error) {

@@ -44,7 +44,7 @@ npm i bingo
 ```js title="template.js"
 import { createTemplate } from "bingo";
 
-export default createTemplate({
+const template = createTemplate({
 	produce() {
 		return {
 			files: {
@@ -53,6 +53,10 @@ export default createTemplate({
 		};
 	},
 });
+
+export default template;
+
+export const { createConfig } = template;
 ```
 
 You can then provide the path to that file to the [`bingo` CLI](/build/cli) to create a `README.md` file:

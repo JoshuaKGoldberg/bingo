@@ -13,6 +13,11 @@ import { createPreset } from "./createPreset.js";
 import { createStratumTemplate } from "./createStratumTemplate.js";
 import { applyZodDefaults, isDefinitionWithAddons } from "./utils.js";
 
+/**
+ * Creates a Stratum {@link Base}.
+ * @template OptionsShape Schemas of options the Base's Blocks take in.
+ * @see {@link https://www.create.bingo/engines/stratum/apis/create-base}
+ */
 export function createBase<OptionsShape extends AnyShape>(
 	baseDefinition: BaseDefinition<OptionsShape>,
 ): Base<OptionsShape> {

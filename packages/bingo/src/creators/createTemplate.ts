@@ -9,17 +9,20 @@ import { Template, TemplateDefinition } from "../types/templates.js";
  * @see {@link TemplateDefinition}
  * @see {@link https://create.bingo/build/apis/create-template}
  */
-export function createTemplate<OptionsShape extends AnyShape>(
-	definition: TemplateDefinition<OptionsShape>,
-): Template<OptionsShape>;
-export function createTemplate(
-	definition: TemplateDefinition<{}>,
-): Template<{}>;
-export function createTemplate<OptionsShape extends AnyShape>(
-	definition: TemplateDefinition<OptionsShape>,
-): Template<OptionsShape> {
-	return {
+export function createTemplate<OptionsShape extends AnyShape, Refinements>(
+	definition: TemplateDefinition<OptionsShape, Refinements>,
+): Template<OptionsShape, Refinements>;
+export function createTemplate<Customizations>(
+	definition: TemplateDefinition<{}, Customizations>,
+): Template<{}, Customizations>;
+export function createTemplate<OptionsShape extends AnyShape, Refinements>(
+	definition: TemplateDefinition<OptionsShape, Refinements>,
+): Template<OptionsShape, Refinements> {
+	const template: Template<OptionsShape, Refinements> = {
+		createConfig: (config) => ({ ...config, template }),
 		options: {} as OptionsShape,
 		...definition,
 	};
+
+	return template;
 }

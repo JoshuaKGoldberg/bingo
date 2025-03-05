@@ -12,8 +12,8 @@ export interface TestTemplateProductionSettings<OptionsShape extends AnyShape>
 	options: InferredObject<OptionsShape>;
 }
 
-export async function testTemplate<OptionsShape extends AnyShape>(
-	template: Template<OptionsShape>,
+export async function testTemplate<OptionsShape extends AnyShape, Refinements>(
+	template: Template<OptionsShape, Refinements>,
 	settings: TestTemplateProductionSettings<OptionsShape>,
 ) {
 	const { system } = createMockSystems(settings.system);

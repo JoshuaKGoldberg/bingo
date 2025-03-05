@@ -110,11 +110,11 @@ vi.mock("./getForkedRepositoryLocator.js", () => ({
 	},
 }));
 
-const mockParseTransitionSource = vi.fn();
+const mockReadConfigSettings = vi.fn();
 
-vi.mock("./parseTransitionSource.js", () => ({
-	get parseTransitionSource() {
-		return mockParseTransitionSource;
+vi.mock("./readConfigSettings.js", () => ({
+	get readConfigSettings() {
+		return mockReadConfigSettings;
 	},
 }));
 
@@ -162,6 +162,25 @@ describe("runModeTransition", () => {
 
 		expect(mockLogHelpText).toHaveBeenCalledWith("transition", from, template);
 		expect(mockLogStartText).not.toHaveBeenCalled();
+	});
+
+	it("returns the error when readConfigSettings resolves an error", async () => {
+		const error = new Error("Oh no!");
+		mockReadConfigSettings.mockResolvedValueOnce(error);
+
+		const actual = await runModeTransition({
+			args,
+			configFile: "example.config.ts",
+			display,
+			from,
+			template,
+		});
+
+		expect(actual).toEqual({
+			error,
+			status: CLIStatus.Error,
+		});
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, {});
 	});
 
 	it("returns the error when prepareOptions throws an error", async () => {

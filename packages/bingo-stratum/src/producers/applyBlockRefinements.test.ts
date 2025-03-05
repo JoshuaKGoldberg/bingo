@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { createBase } from "../creators/createBase.js";
-import { applyBlockModifications } from "./applyBlockModifications.js";
+import { applyBlockRefinements } from "./applyBlockRefinements.js";
 
 const base = createBase({
 	options: {
@@ -25,11 +25,11 @@ const blockC = base.createBlock({
 	produce: vi.fn(),
 });
 
-describe("applyBlockModifications", () => {
+describe("applyBlockRefinements", () => {
 	it("returns the initial blocks when no modifications are provided", () => {
 		const initial = [blockA, blockB];
 
-		const actual = applyBlockModifications(initial);
+		const actual = applyBlockRefinements(initial);
 
 		expect(actual).toBe(initial);
 	});
@@ -37,7 +37,7 @@ describe("applyBlockModifications", () => {
 	it("returns the initial blocks when modifications are empty", () => {
 		const initial = [blockA, blockB];
 
-		const actual = applyBlockModifications(initial, { add: [], exclude: [] });
+		const actual = applyBlockRefinements(initial, { add: [], exclude: [] });
 
 		expect(actual).toBe(initial);
 	});
@@ -45,7 +45,7 @@ describe("applyBlockModifications", () => {
 	it("applies modifications when they exist", () => {
 		const initial = [blockA, blockB];
 
-		const actual = applyBlockModifications(initial, {
+		const actual = applyBlockRefinements(initial, {
 			add: [blockC],
 			exclude: [blockB],
 		});

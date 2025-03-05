@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createTemplate } from "../creators/createTemplate.js";
-import { isCreatedConfig } from "./isCreatedConfig.js";
+import { isTemplateConfig } from "./isTemplateConfig.js";
 
 const template = createTemplate({
 	about: { name: "Test Template" },
@@ -9,7 +9,7 @@ const template = createTemplate({
 	produce: vi.fn(),
 });
 
-describe("isCreatedConfig", () => {
+describe("isTemplateConfig", () => {
 	test.each([
 		[null, false],
 		[undefined, false],
@@ -18,17 +18,17 @@ describe("isCreatedConfig", () => {
 		[{}, false],
 		[{ template: null }, false],
 		[{ template: {} }, false],
-		[{ settings: { options: {} }, template: {} }, false],
-		[{ settings: null }, false],
-		[{ settings: {} }, false],
-		[{ settings: {}, template: {} }, false],
+		[{ refinements: { options: {} }, template: {} }, false],
+		[{ refinements: null }, false],
+		[{ refinements: {} }, false],
+		[{ refinements: {}, template: {} }, false],
 		[{ template }, true],
 		[{ template }, true],
 		[{ options: {}, template }, true],
-		[{ settings: {}, template }, true],
-		[{ options: {}, settings: {}, template }, true],
+		[{ refinements: {}, template }, true],
+		[{ options: {}, refinements: {}, template }, true],
 	])("%j", (input, expected) => {
-		const actual = isCreatedConfig(input);
+		const actual = isTemplateConfig(input);
 
 		expect(actual).toBe(expected);
 	});

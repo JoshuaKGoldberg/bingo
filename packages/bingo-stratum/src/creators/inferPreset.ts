@@ -15,9 +15,9 @@ import { Block } from "../types/blocks.js";
 import { Preset } from "../types/presets.js";
 import { slugifyPresetName } from "../utils.ts/slugifyPresetName.js";
 
-export function inferPreset<OptionsShape extends AnyShape>(
+export function inferPreset<OptionsShape extends AnyShape, Refinements>(
 	context: Pick<
-		TemplatePrepareContext<Partial<InferredObject<OptionsShape>>>,
+		TemplatePrepareContext<Partial<InferredObject<OptionsShape>>, Refinements>,
 		"files" | "options"
 	>,
 	presets: Preset<OptionsShape>[],

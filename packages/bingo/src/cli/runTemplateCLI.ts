@@ -14,10 +14,15 @@ import { CLIStatus } from "./status.js";
 
 /**
  * Runs an interactive CLI to generate and apply a template's output.
+ * @template OptionsShape Schemas of options the template takes in.
+ * @template Refinements Any optional template-specific customizations.
  * @see {@link https://create.bingo/build/apis/run-template-cli}
  */
-export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
-	template: Template<OptionsShape>,
+export async function runTemplateCLI<
+	OptionsShape extends AnyShape,
+	Refinements,
+>(
+	template: Template<OptionsShape, Refinements>,
 	providedTemplatePackageData?: DisplayPackageData,
 ) {
 	const templatePackageData =
