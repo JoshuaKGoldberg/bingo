@@ -1,6 +1,6 @@
 {
 	"name": "input-from-file-json",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"description": "create input that reads a file as JSON.",
 	"repository": {
 		"type": "git",

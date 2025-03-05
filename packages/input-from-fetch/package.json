@@ -1,6 +1,6 @@
 {
 	"name": "input-from-fetch",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"description": "create input that runs a network request.",
 	"repository": {
 		"type": "git",

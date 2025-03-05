@@ -1,6 +1,6 @@
 {
 	"name": "bingo-fs",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"description": "The virtual file system used by Bingo. 🗄️",
 	"repository": {
 		"type": "git",
