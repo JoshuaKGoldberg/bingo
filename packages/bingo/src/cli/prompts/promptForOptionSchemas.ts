@@ -27,9 +27,10 @@ export interface PromptForOptionsSettings<OptionsShape extends AnyShape> {
 }
 
 export async function promptForOptionSchemas<
-	OptionsShape extends AnyShape = AnyShape,
+	OptionsShape extends AnyShape,
+	Refinements,
 >(
-	template: Template<OptionsShape>,
+	template: Template<OptionsShape, Refinements>,
 	{ existing, system }: PromptForOptionsSettings<OptionsShape>,
 ): Promise<PromptedOptions<InferredObject<OptionsShape>>> {
 	type Options = InferredObject<OptionsShape>;

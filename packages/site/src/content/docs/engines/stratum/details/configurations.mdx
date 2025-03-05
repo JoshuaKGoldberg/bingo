@@ -1,12 +1,12 @@
 ---
 description: Settings that customize the productions from Stratum Templates.
-title: Stratum Template Settings
+title: Stratum Configuration Files
 ---
 
 Recap: [Bingo configurations](/configuration) may specify two template-specific configurations:
 
 - [`options`](/configuration#options): any type-safe options the template has declared
-- [`settings`](/configuration#settings): any custom settings specified by the template
+- [`refinements`](/configuration#refinements): any customizations specified by the template
 
 ## Options
 
@@ -18,7 +18,7 @@ It is a union of the lowercased labels for the Template's available [Presets](/e
 
 For example, given a Template whose Base includes a boolean `bin` string, this configuration explicitly sets that option to `"index.js"`:
 
-```ts title="create-example.config.js"
+```ts title="create-typescript-app.config.ts"
 import { blockCSpell, createConfig } from "create-typescript-app";
 
 export default createConfig({
@@ -29,10 +29,9 @@ export default createConfig({
 });
 ```
 
-## Settings
+## Refinements
 
-`settings` configurations are general to all Stratum Templates.
-All Stratum Templates support the following settings in their configuration files:
+All Stratum Templates support the following `refinements` in their configuration files:
 
 ### `addons`
 
@@ -41,13 +40,14 @@ These will be [merged](/build/details/merging) in with Addons provided by other 
 
 For example, this configuration file adds the word `"arethetypeswrong"` to a CSpell Block's Addons:
 
-```ts title="create-example.config.js"
-import { createConfig } from "bingo";
-import { blockCSpell, template } from "create-typescript-app";
+```ts title="create-typescript-app.config.ts"
+import { blockCSpell, createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
-	options: { preset: "everything" },
-	settings: {
+export default createConfig({
+	options: {
+		preset: "everything",
+	},
+	refinements: {
 		addons: [
 			blockCSpell({
 				words: ["arethetypeswrong"],
@@ -57,7 +57,7 @@ export default createConfig(template, {
 });
 ```
 
-Running `npx bingo` in a repository with that configuration file would merge in that `words` to the Addons provided to its CSpell Block.
+Running `npx create-typescript-app` in a repository with that configuration file would merge in that `words` to the Addons provided to its CSpell Block.
 
 ### `blocks`
 
@@ -69,13 +69,14 @@ Any Blocks to add to what the Preset provides.
 
 For example, this configuration file adds in an "arethetypeswrong" Block alongside existing Blocks provided by `create-typescript-app`:
 
-```ts title="create-example.config.js"
-import { createConfig } from "bingo";
-import { blockAreTheTypesWrong, template } from "create-typescript-app";
+```ts title="create-typescript-app.config.ts"
+import { blockAreTheTypesWrong, createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
-	options: { preset: "everything" },
-	settings: {
+export default createConfig({
+	options: {
+		preset: "everything",
+	},
+	refinements: {
 		blocks: {
 			add: [blockAreTheTypesWrong],
 		},
@@ -83,7 +84,7 @@ export default createConfig(template, {
 });
 ```
 
-Running `npx bingo` in a repository with that configuration file would add in the created outputs from `blockAreTheTypesWrong`.
+Running `npx create-typescript-app` in a repository with that configuration file would add in the created outputs from `blockAreTheTypesWrong`.
 
 #### `exclude`
 
@@ -91,13 +92,14 @@ Any Blocks to exclude from what the Preset provides.
 
 For example, this configuration file omits the default _"This package was templated with..."_ notice that comes with `create-typescript-app`:
 
-```ts title="create-example.config.js"
-import { createConfig } from "bingo";
-import { blockTemplatedBy, template } from "create-typescript-app";
+```ts title="create-typescript-app.config.ts"
+import { blockTemplatedBy, createConfig } from "create-typescript-app";
 
-export default createConfig(template, {
-	options: { preset: "everything" },
-	settings: {
+export default createConfig({
+	options: {
+		preset: "everything",
+	},
+	refinements: {
 		blocks: {
 			exclude: [blockTemplatedBy],
 		},
@@ -105,7 +107,7 @@ export default createConfig(template, {
 });
 ```
 
-Running `npx bingo` in a repository with that configuration file would not include that Block, and so its generated README.md would not include the notice.
+Running `npx create-typescript-app` in a repository with that configuration file would not include that Block, and so its generated README.md would not include the notice.
 
 ### Custom Blocks
 
@@ -138,16 +140,16 @@ export const blockWallabyConfig = base.createBlock({
 });
 ```
 
-```ts
-// create-example.config.js
-import { createConfig } from "bingo";
-import { template } from "create-typescript-app";
+```ts title="create-typescript-app.config.ts"
+import { createConfig } from "create-typescript-app";
 
 import { blockWallabyConfig } from "./blockWallabyConfig.js";
 
-export default createConfig(template, {
-	options: { preset: "everything" },
-	settings: {
+export default createConfig({
+	options: {
+		preset: "everything",
+	},
+	refinements: {
 		blocks: {
 			add: [blockWallabyConfig],
 		},
@@ -189,16 +191,16 @@ export const blockLintAreTheTypesWrong = base.createBlock({
 });
 ```
 
-```ts
-// create-example.config.js
-import { createConfig } from "bingo";
-import { template } from "create-typescript-app";
+```ts title="create-typescript-app.config.ts"
+import { createConfig } from "create-typescript-app";
 
 import { blockLintAreTheTypesWrong } from "./blockLintAreTheTypesWrong.js";
 
-export default createConfig(template, {
-	options: { preset: "everything" },
-	settings: {
+export default createConfig({
+	options: {
+		preset: "everything",
+	},
+	refinements: {
 		blocks: {
 			add: [blockLintAreTheTypesWrong],
 		},

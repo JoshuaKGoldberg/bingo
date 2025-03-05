@@ -73,21 +73,24 @@ export default createTemplate({
 });
 ```
 
-### `settings`
+### `refinements`
 
-Any additional template-specific properties.
+Any additional template-specific customizations.
 
-These must be manually provided by users, such as through a [configuration file](/configuration#settings)
+Refinements differ from [options](#options) in that they're able to be any value.
+Refinements can never be assumed to exist, and must be manually provided by users -- most commonly through a [configuration file](/configuration#refinements).
 
-```ts title="myTemplate.ts"
+For example, this template allows a `getDocumentation` refinement:
+
+```ts title="template.ts"
 import { createTemplate } from "bingo";
 import { z } from "zod";
 
-export interface MyTemplateSettings {
+export interface MyTemplateRefinements {
 	getDocumentation: () => string;
 }
 
-export const myTemplate = createTemplate({
+export const template = createTemplate({
 	options: {
 		title: z.string(),
 	},
@@ -97,30 +100,35 @@ export const myTemplate = createTemplate({
 				"README.md": [
 					`# ${options.title}`,
 					"",
-					settings.getDocumentation(),
+					settings.getDocumentation?.() ?? "Documentation pending.",
 					"",
 				].join("\n"),
 			},
 		};
 	},
 });
+
+export const { createConfig } = template;
 ```
 
-```ts title="create-example.config.ts"
-import { createConfig } from "bingo";
-import { myTemplate } from "./myTemplate.ts";
+```ts title="my-template.config.ts"
+import { createConfig, template } from "./template.ts";
 
 export default createConfig(template, {
-	getDocumentation: () => "Hello, world!",
-	options: { title: "My App" },
+	options: {
+		title: "My App",
+	},
+	refinements: {
+		getDocumentation: () => "Hello, world!",
+	},
 });
 ```
 
-Settings are typically used by [Templating Engines](/engines/about) to provide rich values to template producers.
+Refinements are typically used by [Templating Engines](/engines/about) to provide rich values to template producers.
 For example, the [Stratum engine](/engines/stratum/about) uses them to allow passing in custom pieces of tooling.
 
 :::note
-Template settings should only be used for values that cannot be serialized into options as Zod schemas.
+Template refinements should only be used for values that cannot be serialized into options as Zod schemas.
 Prefer [`options`](#options) when possible so that values can have defaults set by [`prepare()`](#prepare).
 :::
 

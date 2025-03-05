@@ -1,6 +1,7 @@
 import {
 	AnyShape,
 	InferredObject,
+	Template,
 	TemplateAbout,
 	TemplateContext,
 	TemplatePrepare,
@@ -10,21 +11,27 @@ import { z } from "zod";
 import { Base } from "./bases.js";
 import { BlockCreation } from "./creations.js";
 import { Preset } from "./presets.js";
+import { StratumRefinements } from "./refinements.js";
 
-export interface StratumTemplate<OptionsShape extends AnyShape = AnyShape> {
-	about?: TemplateAbout;
+export interface StratumTemplate<OptionsShape extends AnyShape>
+	extends Template<
+		OptionsShape & StratumTemplateOptionsShape,
+		StratumRefinements<InferredObject<OptionsShape>>
+	> {
 	base: Base<OptionsShape>;
-	options: OptionsShape & StratumTemplateOptionsShape;
-	prepare: TemplatePrepare<InferredObject<OptionsShape>>;
+	prepare: TemplatePrepare<
+		InferredObject<OptionsShape>,
+		StratumRefinements<InferredObject<OptionsShape>>
+	>;
 	presets: Preset<OptionsShape>[];
-	produce: StratumTemplateProduce<InferredObject<OptionsShape>>;
 }
 
-export interface StratumTemplateDefinition<
-	OptionsShape extends AnyShape = AnyShape,
-> {
+export interface StratumTemplateDefinition<OptionsShape extends AnyShape> {
 	about?: TemplateAbout;
-	prepare?: TemplatePrepare<InferredObject<OptionsShape>>;
+	prepare?: TemplatePrepare<
+		InferredObject<OptionsShape>,
+		StratumRefinements<InferredObject<OptionsShape>>
+	>;
 	presets: Preset<OptionsShape>[];
 	suggested?: Preset<OptionsShape>;
 }
@@ -34,7 +41,10 @@ export interface StratumTemplateOptionsShape {
 }
 
 export type StratumTemplateProduce<Options extends object> = (
-	context: TemplateContext<Options & { preset: string }>,
+	context: TemplateContext<
+		Options & { preset: string },
+		StratumRefinements<Options>
+	>,
 ) => Partial<BlockCreation<Options>>;
 
 export type ZodPresetNameLiterals = [

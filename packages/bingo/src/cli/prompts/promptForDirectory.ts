@@ -7,20 +7,22 @@ import { Template } from "../../types/templates.js";
 import { validateNewDirectory } from "./validators.js";
 
 export interface PromptForDirectorySettings<
-	OptionsShape extends AnyShape = AnyShape,
+	OptionsShape extends AnyShape,
+	Refinements,
 > {
 	requestedDirectory?: string;
 	requestedRepository?: string;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 }
 
 export async function promptForDirectory<
-	OptionsShape extends AnyShape = AnyShape,
+	OptionsShape extends AnyShape,
+	Refinements,
 >({
 	requestedRepository,
 	requestedDirectory = requestedRepository,
 	template,
-}: PromptForDirectorySettings<OptionsShape>) {
+}: PromptForDirectorySettings<OptionsShape, Refinements>) {
 	if (requestedDirectory) {
 		if (validateNewDirectory(requestedDirectory)) {
 			prompts.log.warn(`The '${requestedDirectory}' directory already exists.`);

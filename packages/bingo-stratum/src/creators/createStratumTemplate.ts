@@ -2,7 +2,10 @@ import { AnyShape, InferredObject, LazyOptionalOptions } from "bingo";
 import chalk from "chalk";
 import { z } from "zod";
 
-import { produceStratumTemplate } from "../producers/produceStratumTemplate.js";
+import {
+	produceStratumTemplate,
+	ProduceStratumTemplateSettings,
+} from "../producers/produceStratumTemplate.js";
 import { Base } from "../types/bases.js";
 import {
 	StratumTemplate,
@@ -28,6 +31,7 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 	const template: StratumTemplate<OptionsShape> = {
 		...templateDefinition,
 		base,
+		createConfig: (config) => ({ ...config, template }),
 		options: {
 			...base.options,
 			preset: presetOption.default(
@@ -57,7 +61,11 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			} as LazyOptionalOptions<Partial<Options>>; // TODO: Why is this type assertion necessary?
 		},
 		produce(context) {
-			return produceStratumTemplate(template, context);
+			return produceStratumTemplate(
+				template,
+				// TODO: Why is this type assertion necessary?
+				context as ProduceStratumTemplateSettings<OptionsShape>,
+			);
 		},
 	};
 

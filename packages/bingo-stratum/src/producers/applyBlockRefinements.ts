@@ -1,9 +1,9 @@
 import { Block } from "../types/blocks.js";
-import { BlockModifications } from "../types/settings.js";
+import { BlockRefinements } from "../types/refinements.js";
 
-export function applyBlockModifications<Options extends object>(
+export function applyBlockRefinements<Options extends object>(
 	initial: Block<object | undefined, Options>[],
-	{ add = [], exclude = [] }: BlockModifications<Options> = {},
+	{ add = [], exclude = [] }: BlockRefinements<Options> = {},
 ) {
 	if (!add.length && !exclude.length) {
 		return initial;

@@ -23,7 +23,10 @@ import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 import { createTrackingBranches } from "./createTrackingBranches.js";
 import { getRepositoryLocator } from "./getRepositoryLocator.js";
 
-export interface RunModeSetupSettings<OptionsShape extends AnyShape> {
+export interface RunModeSetupSettings<
+	OptionsShape extends AnyShape,
+	Refinements,
+> {
 	args: string[];
 	directory?: string;
 	display: ClackDisplay;
@@ -32,10 +35,10 @@ export interface RunModeSetupSettings<OptionsShape extends AnyShape> {
 	offline?: boolean;
 	owner?: string;
 	repository?: string;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 }
 
-export async function runModeSetup<OptionsShape extends AnyShape>({
+export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	args,
 	repository,
 	directory: requestedDirectory = repository,
@@ -44,7 +47,7 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 	help,
 	offline,
 	template,
-}: RunModeSetupSettings<OptionsShape>): Promise<ModeResults> {
+}: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("setup", from, template);
 	}
