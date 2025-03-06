@@ -1,6 +1,6 @@
 {
 	"name": "input-from-file",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"description": "create input that reads a file as text.",
 	"repository": {
 		"type": "git",

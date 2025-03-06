@@ -1,6 +1,6 @@
 {
 	"name": "bingo-testers",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"description": "Test utilities for composable, testable, type-safe templates. ⚗️",
 	"repository": {
 		"type": "git",
