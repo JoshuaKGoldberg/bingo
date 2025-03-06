@@ -33,16 +33,34 @@ export async function createRepositoryOnGitHub(
 	// There's no built-in API to determine whether initialization is done,
 	// but we can approximate that by polling for whether labels are created.
 	// https://github.com/JoshuaKGoldberg/bingo/issues/243
-	// On the off chance the repository's organization has no default labels,
-	// we only retry up to 10 times.
-	for (let i = 0; i < 10; i += 1) {
-		const response = await octokit.request("GET /repos/{owner}/{repo}/labels", {
-			owner: target.owner,
-			repo: target.repository,
-		});
+	let knownLabelsLength = 0;
 
-		if (response.data.length) {
-			break;
+	// Labels aren't all created at once: GitHub populates them asynchronously.
+	// We need to wait until the number of labels stops changing.
+	// https://github.com/JoshuaKGoldberg/bingo/issues/251
+	let matchedLabelsLength = false;
+
+	// We limit retries case of GitHub slowness or an org with no default labels.
+	// Initial testing on a fast network found the maximum needed to be ~20-25.
+	for (let i = 0; i < 35; i += 1) {
+		const { data: labels } = await octokit.request(
+			"GET /repos/{owner}/{repo}/labels",
+			{
+				owner: target.owner,
+				repo: target.repository,
+			},
+		);
+
+		if (knownLabelsLength && labels.length === knownLabelsLength) {
+			if (matchedLabelsLength) {
+				return;
+			}
+
+			matchedLabelsLength = true;
+			continue;
 		}
+
+		knownLabelsLength = labels.length;
+		matchedLabelsLength = false;
 	}
 }
