@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
+import { BaseOptionsFor } from "../types/bases.js";
 import { createBase } from "./createBase.js";
 
 const mockInferPreset = vi.fn();
@@ -78,6 +79,21 @@ describe("createStratumTemplate", () => {
 
 				expect(mockInferPreset).not.toHaveBeenCalled();
 				expect(options).toEqual({});
+			});
+
+			it("does not call inferPreset when a preset option is manually provided", async () => {
+				const preset = "example";
+				const lazyOptions = templateWithPreset.prepare({
+					log: mockLog,
+					// TODO: why is this type assertion necessary?
+					options: { ...mockOptions, preset } as BaseOptionsFor<typeof base>,
+					take: vi.fn(),
+				});
+
+				const options = await awaitLazyProperties(lazyOptions);
+
+				expect(mockInferPreset).not.toHaveBeenCalled();
+				expect(options).toEqual({ preset });
 			});
 
 			it("does not display a log when inferPreset returns undefined", async () => {

@@ -73,6 +73,11 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 		prepare(context) {
 			return {
 				preset: () => {
+					if (context.options.preset) {
+						// TODO: why is this type assertion necessary?
+						return context.options.preset as string;
+					}
+
 					// TODO: It would be better to run the base.prepare first to generate option defaults.
 					// ...
 					const preset =
