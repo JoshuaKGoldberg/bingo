@@ -30,7 +30,7 @@
 		"octokit": "^4.1.2"
 	},
 	"devDependencies": {
-		"@types/node": "22.13.4"
+		"@types/node": "22.13.9"
 	},
 	"engines": {
 		"node": ">=18"
