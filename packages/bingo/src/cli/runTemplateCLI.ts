@@ -1,4 +1,5 @@
 import * as prompts from "@clack/prompts";
+import chalk from "chalk";
 
 import { packageData } from "../packageData.js";
 import { AnyShape } from "../types/shapes.js";
@@ -43,7 +44,7 @@ export async function runTemplateCLI<
 	return await runInsideClackDisplay(templatePackageData, async (display) => {
 		if (template.about?.repository) {
 			prompts.log.info(
-				`Learn more on:\n  https://github.com/${template.about.repository.owner}/${template.about.repository.repository}`,
+				`Learn more on:\n  ${chalk.blue(`https://github.com/${template.about.repository.owner}/${template.about.repository.repository}`)}`,
 			);
 		}
 
