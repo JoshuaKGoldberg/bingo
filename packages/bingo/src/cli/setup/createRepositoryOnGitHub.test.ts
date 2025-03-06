@@ -28,7 +28,7 @@ const createMockOctokit = () =>
 
 describe("createRepositoryOnGitHub", () => {
 	it("creates using a template when one is provided", async () => {
-		mockRequest.mockResolvedValueOnce({ data: [{}] });
+		mockRequest.mockResolvedValue({ data: [{}] });
 
 		const template = {
 			owner: "JoshuaKGoldberg",
@@ -53,7 +53,7 @@ describe("createRepositoryOnGitHub", () => {
 				login: options.owner,
 			},
 		});
-		mockRequest.mockResolvedValueOnce({ data: [{}] });
+		mockRequest.mockResolvedValue({ data: [{}] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
@@ -67,7 +67,7 @@ describe("createRepositoryOnGitHub", () => {
 	it("creates under an org when the user is not the owner", async () => {
 		const login = "other-user";
 		mockGetAuthenticated.mockResolvedValueOnce({ data: { login } });
-		mockRequest.mockResolvedValueOnce({ data: [{}] });
+		mockRequest.mockResolvedValue({ data: [{}] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
@@ -79,24 +79,40 @@ describe("createRepositoryOnGitHub", () => {
 		expect(mockCreateUsingTemplate).not.toHaveBeenCalled();
 	});
 
-	it("delays resolving until labels exist when the repository does not have labels for fewer than 10 calls", async () => {
+	it("resolves only after labels have the same length thrice in a row when the repository does not have labels for fewer than 35 calls", async () => {
 		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
 		mockRequest
 			.mockResolvedValueOnce({ data: [] })
 			.mockResolvedValueOnce({ data: [] })
+			.mockResolvedValueOnce({ data: [{}] })
+			.mockResolvedValueOnce({ data: [{}] })
 			.mockResolvedValueOnce({ data: [{}] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
-		expect(mockRequest).toHaveBeenCalledTimes(3);
+		expect(mockRequest).toHaveBeenCalledTimes(5);
 	});
 
-	it("resolves after 10 retries when the repository does not have labels for 10 calls", async () => {
+	it("resolves after 35 retries when the repository does not have labels for 35 calls", async () => {
 		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
 		mockRequest.mockResolvedValue({ data: [] });
 
 		await createRepositoryOnGitHub(options, createMockOctokit());
 
-		expect(mockRequest).toHaveBeenCalledTimes(10);
+		expect(mockRequest).toHaveBeenCalledTimes(35);
+	});
+
+	it("resolves after 35 retries when the repository labels keep increasing in count for 35 calls", async () => {
+		let callCount = 0;
+
+		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
+		mockRequest.mockImplementation(() => {
+			callCount += 1;
+			return Promise.resolve({ data: new Array(callCount).map(() => ({})) });
+		});
+
+		await createRepositoryOnGitHub(options, createMockOctokit());
+
+		expect(mockRequest).toHaveBeenCalledTimes(35);
 	});
 });
