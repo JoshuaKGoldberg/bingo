@@ -1,7 +1,3 @@
-export function createFailingFunction(label: string, user: string) {
-	return () => failingFunction(label, user);
-}
-
 export function createFailingObject(label: string, user: string) {
 	return new Proxy(
 		{},
@@ -9,6 +5,10 @@ export function createFailingObject(label: string, user: string) {
 			get: createFailingFunction(label, user),
 		},
 	);
+}
+
+function createFailingFunction(label: string, user: string) {
+	return () => failingFunction(label, user);
 }
 
 function failingFunction(label: string, user: string): never {
