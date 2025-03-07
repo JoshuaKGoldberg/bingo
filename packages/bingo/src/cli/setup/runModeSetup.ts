@@ -21,7 +21,6 @@ import { ModeResults } from "../types.js";
 import { makeRelative } from "../utils.js";
 import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 import { createTrackingBranches } from "./createTrackingBranches.js";
-import { getRepositoryLocator } from "./getRepositoryLocator.js";
 
 export interface RunModeSetupSettings<
 	OptionsShape extends AnyShape,
@@ -33,20 +32,23 @@ export interface RunModeSetupSettings<
 	from: string;
 	help?: boolean;
 	offline?: boolean;
-	owner?: string;
 	repository?: string;
 	template: Template<OptionsShape, Refinements>;
 }
 
 export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
+	// TODO: File or find an issue on eslint-plugin-perfectionist?
+	/* eslint-disable perfectionist/sort-objects */
 	args,
-	repository,
-	directory: requestedDirectory = repository,
 	display,
 	from,
 	help,
 	offline,
 	template,
+
+	repository: requestedRepository,
+	directory: requestedDirectory = requestedRepository,
+	/* eslint-enable perfectionist/sort-objects */
 }: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("setup", from, template);
@@ -56,7 +58,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 
 	const directory = await promptForDirectory({
 		requestedDirectory,
-		requestedRepository: repository,
+		requestedRepository,
 		template,
 	});
 	if (prompts.isCancel(directory)) {
@@ -88,10 +90,11 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { error: preparedOptions, status: CLIStatus.Error };
 	}
 
+	const repository = requestedRepository ?? directory;
 	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {
 			directory,
-			repository: repository ?? directory,
+			repository,
 			...providedOptions,
 			...preparedOptions,
 		},
@@ -102,20 +105,24 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { status: CLIStatus.Cancelled };
 	}
 
-	const locator = getRepositoryLocator(baseOptions.completed);
+	const remote = offline
+		? undefined
+		: await createRepositoryOnGitHub(
+				display,
+				{ repository, ...baseOptions.completed },
+				system.fetchers.octokit,
+				system.runner,
+				template.about?.repository,
+			);
 
-	if (!offline) {
-		await runSpinnerTask(
-			display,
-			"Creating repository on GitHub",
-			"Created repository on GitHub",
-			async () => {
-				await createRepositoryOnGitHub(
-					locator,
-					system.fetchers.octokit,
-					template.about?.repository,
-				);
-			},
+	if (remote instanceof Error) {
+		logRerunSuggestion(args, baseOptions.completed);
+		return { error: remote, status: CLIStatus.Error };
+	}
+
+	if (!remote) {
+		prompts.log.warn(
+			"Running in local-only mode without a repository on GitHub.",
 		);
 	}
 
@@ -148,8 +155,8 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		"Preparing local repository",
 		"Prepared local repository",
 		async () => {
-			await createTrackingBranches(locator, system.runner);
-			await createInitialCommit(system.runner, { offline });
+			await createTrackingBranches(remote, system.runner);
+			await createInitialCommit(system.runner, { push: !!remote });
 			await clearLocalGitTags(system.runner);
 		},
 	);
@@ -159,13 +166,13 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		[
 			"Great, you've got a new repository ready to use in:",
 			`  ${chalk.green(makeRelative(directory))}`,
-			...(offline
-				? []
-				: [
+			...(remote
+				? [
 						"",
 						"It's also pushed to GitHub on:",
-						`  ${chalk.green(`https://github.com/${locator.owner}/${locator.repository}`)}`,
-					]),
+						`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
+					]
+				: []),
 		].join("\n"),
 	);
 

@@ -146,7 +146,10 @@ export async function runModeTransition<
 			"Creating initial commit",
 			"Created initial commit",
 			async () => {
-				await createInitialCommit(system.runner, { amend: true, offline });
+				await createInitialCommit(system.runner, {
+					amend: true,
+					push: !offline,
+				});
 			},
 		);
 

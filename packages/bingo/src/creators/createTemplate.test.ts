@@ -9,7 +9,7 @@ describe("createTemplate", () => {
 			produce: vi.fn(),
 		});
 
-		expect(template.options.owner).toBeInstanceOf(z.ZodString);
+		expect(template.options.owner).toBeInstanceOf(z.ZodOptional);
 	});
 
 	it("uses definition.options.owner when it exists", () => {
