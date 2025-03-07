@@ -37,8 +37,6 @@ export interface RunModeSetupSettings<
 }
 
 export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
-	// TODO: File or find an issue on eslint-plugin-perfectionist?
-	/* eslint-disable perfectionist/sort-objects */
 	args,
 	display,
 	from,
@@ -46,6 +44,8 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	offline,
 	template,
 
+	// TODO: File or find an issue on eslint-plugin-perfectionist?
+	/* eslint-disable perfectionist/sort-objects */
 	repository: requestedRepository,
 	directory: requestedDirectory = requestedRepository,
 	/* eslint-enable perfectionist/sort-objects */
