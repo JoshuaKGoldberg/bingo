@@ -1,7 +1,8 @@
 {
 	"name": "input-from-file",
 	"version": "0.5.4",
-	"description": "create input that reads a file as text.",
+	"description": "Bingo input that reads a file as text.",
+	"homepage": "https://www.create.bingo",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",

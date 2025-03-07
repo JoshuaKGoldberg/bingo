@@ -2,6 +2,7 @@
 	"name": "bingo-fs",
 	"version": "0.5.4",
 	"description": "The virtual file system used by Bingo. 🗄️",
+	"homepage": "https://www.create.bingo/build/packages/bingo-fs",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",

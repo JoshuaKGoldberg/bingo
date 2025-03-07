@@ -2,6 +2,7 @@
 	"name": "bingo-testers",
 	"version": "0.5.4",
 	"description": "Test utilities for composable, testable, type-safe templates. ⚗️",
+	"homepage": "https://www.create.bingo/build/packages/bingo-testers",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",

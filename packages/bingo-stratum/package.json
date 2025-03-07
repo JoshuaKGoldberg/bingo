@@ -2,6 +2,7 @@
 	"name": "bingo-stratum",
 	"version": "0.5.4",
 	"description": "Highly composable, customizable templating engine for Bingo. 🏭",
+	"homepage": "https://www.create.bingo/engines/stratum/packages/bingo-stratum",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",
