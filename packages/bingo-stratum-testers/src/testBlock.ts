@@ -18,6 +18,7 @@ export interface BlockContextSettingsWithOptionalAddons<
 
 export interface BlockContextSettingsWithoutAddons<Options extends object> {
 	mode?: ProductionMode;
+	offline?: boolean;
 	options?: Options;
 }
 
