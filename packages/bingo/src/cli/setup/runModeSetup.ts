@@ -125,7 +125,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { error: remote, status: CLIStatus.Error };
 	}
 
-	if (!remote) {
+	if (!offline && !remote) {
 		prompts.log.warn(
 			"Running in local-only mode without a repository on GitHub.",
 		);
