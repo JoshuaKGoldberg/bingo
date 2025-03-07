@@ -55,12 +55,13 @@ export async function prepareOptions<OptionsShape extends AnyShape>(
 			exclude: /node_modules|^\.git$/,
 		})) as CreatedDirectory);
 
-	return await awaitLazyProperties(
-		base.prepare({
+	return await awaitLazyProperties({
+		...base.prepare({
 			files,
 			log: system.display.log,
 			options: existing,
 			...system,
 		}),
-	);
+		...existing,
+	});
 }
