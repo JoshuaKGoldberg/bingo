@@ -299,7 +299,7 @@ describe("runModeTransition", () => {
 		expect(mockClearLocalGitTags).toHaveBeenCalled();
 		expect(mockCreateInitialCommit).toHaveBeenCalledWith(mockSystem.runner, {
 			amend: true,
-			offline: undefined,
+			push: true,
 		});
 		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
 	});
@@ -336,7 +336,7 @@ describe("runModeTransition", () => {
 		expect(mockClearLocalGitTags).toHaveBeenCalled();
 		expect(mockCreateInitialCommit).toHaveBeenCalledWith(mockSystem.runner, {
 			amend: true,
-			offline: true,
+			push: false,
 		});
 		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
 	});

@@ -131,6 +131,9 @@ importers:
       hosted-git-info:
         specifier: ^8.0.2
         version: 8.0.2
+      new-github-repository:
+        specifier: ^0.2.1
+        version: 0.2.1
       prettier:
         specifier: 3.5.3
         version: 3.5.3
@@ -156,6 +159,9 @@ importers:
       '@types/node':
         specifier: 22.13.9
         version: 22.13.9
+      execa:
+        specifier: 9.5.2
+        version: 9.5.2
       octokit:
         specifier: 4.1.2
         version: 4.1.2
@@ -1190,6 +1196,9 @@ packages:
 
   '@octokit/openapi-types@23.0.1':
     resolution: {integrity: sha512-izFjMJ1sir0jn0ldEKhZ7xegCTj/ObmEDlEfpFrx4k/JyZSMRHbO3/rBwgE7f3m2DHt+RrNGIVw4wSmwnm3t/g==}
+
+  '@octokit/openapi-types@24.0.0':
+    resolution: {integrity: sha512-os8hmzrBPC3PDzXq93/9vBcxMvb90yw2SF76ANon+eP1HzVyd+TshkAkMX6bIm3bY5T3uXieQFDibcc35vM9mQ==}
 
   '@octokit/openapi-webhooks-types@9.1.0':
     resolution: {integrity: sha512-bO1D2jLdU8qEvqmbWjNxJzDYSFT4wesiYKIKP6f4LaM0XUGtn/0LBv/20hu9YqcnpdX38X5o/xANTMtIAqdwYw==}
@@ -3140,6 +3149,10 @@ packages:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
     engines: {node: '>= 10'}
 
+  new-github-repository@0.2.1:
+    resolution: {integrity: sha512-zzUV4UzmGgY/naFxleMZZQUGquODAKSLnu+lGqOWPfWunmyqJBlNNfYwah4Rpw00PduTVJm3W3Bvwoj6Y/Zm1w==}
+    engines: {node: '>=18.3.0'}
+
   nlcst-to-string@4.0.0:
     resolution: {integrity: sha512-YKLBCcUYKAg0FNlOBT6aI91qFmSiFKiluk655WzPF+DDMA02qIyy8uiRqI8QXtcFpEvll12LpL5MXqEmAZ+dcA==}
 
@@ -3170,6 +3183,10 @@ packages:
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
+
+  octokit-from-auth@0.3.0:
+    resolution: {integrity: sha512-HeS+YVPExV5nkdRZyQQRepZVV+pL4ahVmh9KfKXLAbNc3D82G2xeuSWfKzHSIlqB1taQnZYPJWdpfcIe45d1lw==}
+    engines: {node: '>=18.3.0'}
 
   octokit@4.1.2:
     resolution: {integrity: sha512-0kcTxJOK3yQrJsRb8wKa28hlTze4QOz4sLuUnfXXnhboDhFKgv8LxS86tFwbsafDW9JZ08ByuVAE8kQbYJIZkA==}
@@ -5242,6 +5259,8 @@ snapshots:
       '@octokit/types': 13.8.0
 
   '@octokit/openapi-types@23.0.1': {}
+
+  '@octokit/openapi-types@24.0.0': {}
 
   '@octokit/openapi-webhooks-types@9.1.0': {}
 
@@ -7782,6 +7801,12 @@ snapshots:
 
   neotraverse@0.6.18: {}
 
+  new-github-repository@0.2.1:
+    dependencies:
+      '@octokit/openapi-types': 24.0.0
+      octokit: 4.1.2
+      octokit-from-auth: 0.3.0
+
   nlcst-to-string@4.0.0:
     dependencies:
       '@types/nlcst': 2.0.3
@@ -7812,6 +7837,11 @@ snapshots:
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
+
+  octokit-from-auth@0.3.0:
+    dependencies:
+      get-github-auth-token: 0.1.1
+      octokit: 4.1.2
 
   octokit@4.1.2:
     dependencies:

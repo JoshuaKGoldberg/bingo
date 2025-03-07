@@ -1,15 +1,16 @@
 import { SystemRunner } from "bingo-systems";
 
-import { RepositoryLocator } from "./getRepositoryLocator.js";
+import { RepositoryLocator } from "./createRepositoryOnGitHub.js";
 
 export async function createTrackingBranches(
-	{ owner, repository }: RepositoryLocator,
+	remote: RepositoryLocator | undefined,
 	runner: SystemRunner,
 ) {
-	for (const command of [
-		`git init`,
-		`git remote add origin https://github.com/${owner}/${repository}`,
-	]) {
-		await runner(command);
+	await runner("git init");
+
+	if (remote) {
+		await runner(
+			`git remote add origin https://github.com/${remote.owner}/${remote.repository}`,
+		);
 	}
 }

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import { AnyShape } from "../types/shapes.js";
@@ -20,7 +22,12 @@ export function createTemplate<OptionsShape extends AnyShape, Refinements>(
 ): Template<OptionsShape, Refinements> {
 	const template: Template<OptionsShape, Refinements> = {
 		createConfig: (config) => ({ ...config, template }),
-		options: {} as OptionsShape,
+		options: {
+			owner: z.string().optional(),
+			// Fudging the types a bit: without options, the shape is {}.
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			...definition.options!,
+		},
 		...definition,
 	};
 

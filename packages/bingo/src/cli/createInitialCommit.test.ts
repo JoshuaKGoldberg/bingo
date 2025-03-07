@@ -6,7 +6,7 @@ describe("createInitialCommit", () => {
 	test("runs without --amend when amend is falsy", async () => {
 		const runner = vi.fn();
 
-		await createInitialCommit(runner);
+		await createInitialCommit(runner, { push: false });
 
 		expect(runner.mock.calls).toMatchInlineSnapshot(`
 			[
@@ -16,9 +16,6 @@ describe("createInitialCommit", () => {
 			  [
 			    "git commit --message feat:\\ initialized\\ repo\\ ✨ --no-gpg-sign",
 			  ],
-			  [
-			    "git push -u origin main --force",
-			  ],
 			]
 		`);
 	});
@@ -26,7 +23,7 @@ describe("createInitialCommit", () => {
 	test("runs with --amend when amend is true", async () => {
 		const runner = vi.fn();
 
-		await createInitialCommit(runner, { amend: true });
+		await createInitialCommit(runner, { amend: true, push: false });
 
 		expect(runner.mock.calls).toMatchInlineSnapshot(`
 			[
@@ -36,17 +33,14 @@ describe("createInitialCommit", () => {
 			  [
 			    "git commit --message feat:\\ initialized\\ repo\\ ✨ --amend --no-gpg-sign",
 			  ],
-			  [
-			    "git push -u origin main --force",
-			  ],
 			]
 		`);
 	});
 
-	test("doesn't push when offline is true", async () => {
+	test("pushes to the remote when push is true", async () => {
 		const runner = vi.fn();
 
-		await createInitialCommit(runner, { offline: true });
+		await createInitialCommit(runner, { push: true });
 
 		expect(runner.mock.calls).toMatchInlineSnapshot(`
 			[
@@ -55,6 +49,9 @@ describe("createInitialCommit", () => {
 			  ],
 			  [
 			    "git commit --message feat:\\ initialized\\ repo\\ ✨ --no-gpg-sign",
+			  ],
+			  [
+			    "git push -u origin main --force",
 			  ],
 			]
 		`);

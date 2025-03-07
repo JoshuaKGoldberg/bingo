@@ -1,118 +1,171 @@
 import { Octokit } from "octokit";
 import { describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 
+import { ClackDisplay } from "../display/createClackDisplay.js";
 import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 
-const options = { owner: "StubOwner", repository: "stub-repository" };
+vi.mock("@clack/prompts");
 
-const mockCreateUsingTemplate = vi.fn();
-const mockCreateInOrg = vi.fn();
-const mockCreateForAuthenticatedUser = vi.fn();
-const mockGetAuthenticated = vi.fn();
-const mockRequest = vi.fn();
+const mockNewGitHubRepository = vi.fn();
 
-const createMockOctokit = () =>
-	({
-		request: mockRequest,
-		rest: {
-			repos: {
-				createForAuthenticatedUser: mockCreateForAuthenticatedUser,
-				createInOrg: mockCreateInOrg,
-				createUsingTemplate: mockCreateUsingTemplate,
-			},
-			users: {
-				getAuthenticated: mockGetAuthenticated,
-			},
-		},
-	}) as unknown as Octokit;
+vi.mock("new-github-repository", () => ({
+	get newGitHubRepository() {
+		return mockNewGitHubRepository;
+	},
+}));
+
+const mockPromptForOptionSchema = vi.fn();
+
+vi.mock("../prompts/promptForOptionSchema.js", () => ({
+	get promptForOptionSchema() {
+		return mockPromptForOptionSchema;
+	},
+}));
+
+const display: ClackDisplay = {
+	dumpItems: vi.fn(),
+	item: vi.fn(),
+	log: vi.fn(),
+	spinner: {
+		message: vi.fn(),
+		start: vi.fn(),
+		stop: vi.fn(),
+	},
+};
+
+const mockOctokit = {} as Octokit;
 
 describe("createRepositoryOnGitHub", () => {
-	it("creates using a template when one is provided", async () => {
-		mockRequest.mockResolvedValue({ data: [{}] });
+	it("returns an error when owner is not a string-like", async () => {
+		const mockRunner = vi.fn();
 
-		const template = {
-			owner: "JoshuaKGoldberg",
-			repository: "create-typescript-app",
-		};
+		const actual = await createRepositoryOnGitHub(
+			display,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			{ owner: { invalid: true } as any, repository: "mock-repository" },
+			mockOctokit,
+			mockRunner,
+		);
 
-		await createRepositoryOnGitHub(options, createMockOctokit(), template);
+		expect(actual).toEqual(
+			new Error(
+				`To run with --mode setup, --owner must be a string-like, not object.`,
+			),
+		);
+		expect(mockRunner).not.toHaveBeenCalled();
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
+	});
 
-		expect(mockCreateForAuthenticatedUser).not.toHaveBeenCalled();
-		expect(mockCreateInOrg).not.toHaveBeenCalled();
-		expect(mockCreateUsingTemplate).toHaveBeenCalledWith({
-			name: options.repository,
-			owner: options.owner,
-			template_owner: template.owner,
-			template_repo: template.repository,
+	it("returns an error when repository is not a string-like", async () => {
+		const mockRunner = vi.fn();
+
+		const actual = await createRepositoryOnGitHub(
+			display,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			{ owner: "mock-owner", repository: { invalid: true } as any },
+			mockOctokit,
+			mockRunner,
+		);
+
+		expect(actual).toEqual(
+			new Error(
+				`To run with --mode setup, --repository must be a string-like, not object.`,
+			),
+		);
+		expect(mockRunner).not.toHaveBeenCalled();
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
+	});
+
+	it("returns a repository locator from a requested owner and repository when both are provided", async () => {
+		const owner = "mock-owner";
+		const repository = "mock-repository";
+		const mockRunner = vi.fn();
+
+		const actual = await createRepositoryOnGitHub(
+			display,
+			{ owner, repository },
+			mockOctokit,
+			mockRunner,
+		);
+
+		expect(actual).toEqual({ owner, repository });
+		expect(mockRunner).not.toHaveBeenCalled();
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
+			octokit: mockOctokit,
+			owner,
+			repository,
+			template: undefined,
 		});
 	});
 
-	it("creates under the user when the user is the owner", async () => {
-		mockGetAuthenticated.mockResolvedValueOnce({
-			data: {
-				login: options.owner,
-			},
-		});
-		mockRequest.mockResolvedValue({ data: [{}] });
+	it("returns a repository locator for the gh user when owner is undefined, gh retrieves a user, and creation succeeds", async () => {
+		const owner = "mock-owner";
+		const repository = "mock-repository";
+		const mockRunner = vi.fn().mockResolvedValue({ stdout: owner });
 
-		await createRepositoryOnGitHub(options, createMockOctokit());
+		const actual = await createRepositoryOnGitHub(
+			display,
+			{ owner: undefined, repository },
+			mockOctokit,
+			mockRunner,
+		);
 
-		expect(mockCreateForAuthenticatedUser).toHaveBeenCalledWith({
-			name: options.repository,
+		expect(actual).toEqual({ owner, repository });
+		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
+			octokit: mockOctokit,
+			owner,
+			repository,
+			template: undefined,
 		});
-		expect(mockCreateInOrg).not.toHaveBeenCalled();
-		expect(mockCreateUsingTemplate).not.toHaveBeenCalled();
 	});
 
-	it("creates under an org when the user is not the owner", async () => {
-		const login = "other-user";
-		mockGetAuthenticated.mockResolvedValueOnce({ data: { login } });
-		mockRequest.mockResolvedValue({ data: [{}] });
+	it("returns a repository locator for the prompted user when owner is undefined, gh errors, and creation succeeds", async () => {
+		const owner = "mock-owner";
+		const repository = "mock-repository";
+		const mockRunner = vi.fn().mockResolvedValue(new Error("Oh no!"));
+		mockPromptForOptionSchema.mockResolvedValueOnce(owner);
 
-		await createRepositoryOnGitHub(options, createMockOctokit());
+		const actual = await createRepositoryOnGitHub(
+			display,
+			{ owner: undefined, repository },
+			mockOctokit,
+			mockRunner,
+		);
 
-		expect(mockCreateForAuthenticatedUser).not.toHaveBeenCalled();
-		expect(mockCreateInOrg).toHaveBeenCalledWith({
-			name: options.repository,
-			org: options.owner,
+		expect(actual).toEqual({ owner, repository });
+		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
+		expect(mockPromptForOptionSchema).toHaveBeenCalledWith(
+			"owner",
+			expect.any(z.ZodString),
+			expect.any(String),
+			undefined,
+		);
+		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
+			octokit: mockOctokit,
+			owner,
+			repository,
+			template: undefined,
 		});
-		expect(mockCreateUsingTemplate).not.toHaveBeenCalled();
 	});
 
-	it("resolves only after labels have the same length thrice in a row when the repository does not have labels for fewer than 35 calls", async () => {
-		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
-		mockRequest
-			.mockResolvedValueOnce({ data: [] })
-			.mockResolvedValueOnce({ data: [] })
-			.mockResolvedValueOnce({ data: [{}] })
-			.mockResolvedValueOnce({ data: [{}] })
-			.mockResolvedValueOnce({ data: [{}] });
+	it("returns undefined when creating a repository errors", async () => {
+		const owner = "mock-owner";
+		const repository = "mock-repository";
+		mockNewGitHubRepository.mockRejectedValueOnce(new Error("Oh no!"));
 
-		await createRepositoryOnGitHub(options, createMockOctokit());
+		const actual = await createRepositoryOnGitHub(
+			display,
+			{ owner, repository },
+			mockOctokit,
+			vi.fn(),
+		);
 
-		expect(mockRequest).toHaveBeenCalledTimes(5);
-	});
-
-	it("resolves after 35 retries when the repository does not have labels for 35 calls", async () => {
-		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
-		mockRequest.mockResolvedValue({ data: [] });
-
-		await createRepositoryOnGitHub(options, createMockOctokit());
-
-		expect(mockRequest).toHaveBeenCalledTimes(35);
-	});
-
-	it("resolves after 35 retries when the repository labels keep increasing in count for 35 calls", async () => {
-		let callCount = 0;
-
-		mockGetAuthenticated.mockResolvedValueOnce({ data: {} });
-		mockRequest.mockImplementation(() => {
-			callCount += 1;
-			return Promise.resolve({ data: new Array(callCount).map(() => ({})) });
-		});
-
-		await createRepositoryOnGitHub(options, createMockOctokit());
-
-		expect(mockRequest).toHaveBeenCalledTimes(35);
+		expect(actual).toBeUndefined();
 	});
 });
