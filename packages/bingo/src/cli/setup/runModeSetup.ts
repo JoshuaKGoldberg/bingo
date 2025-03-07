@@ -127,7 +127,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 
 	if (!offline && !remote) {
 		prompts.log.warn(
-			"Running in local-only mode without a repository on GitHub.",
+			"Running in local-only mode without a repository on GitHub",
 		);
 	}
 
