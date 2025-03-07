@@ -74,6 +74,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 
 	const providedOptions = parseZodArgs(args, {
 		directory: z.string().optional(),
+		owner: z.string().optional(),
 		repository: z.string().optional(),
 		...template.options,
 	});

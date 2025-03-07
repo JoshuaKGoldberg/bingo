@@ -50,14 +50,16 @@ describe("prepareOptions", () => {
 
 	describe("prepare", () => {
 		const baseWithOptionalOption: HasOptionsAndMaybePrepare<{
-			value: z.ZodOptional<z.ZodString>;
+			explicit: z.ZodOptional<z.ZodString>;
+			inferred: z.ZodOptional<z.ZodString>;
 		}> = {
 			options: {
-				value: z.string().optional(),
+				explicit: z.string().optional(),
+				inferred: z.string().optional(),
 			},
 			prepare({ options }) {
 				return {
-					value: options.value ?? "default",
+					explicit: options.explicit ?? "explicit-default",
 				};
 			},
 		};
@@ -65,7 +67,7 @@ describe("prepareOptions", () => {
 		it("uses an option value from produce when settings do not have options", async () => {
 			const actual = await prepareOptions(baseWithOptionalOption, system);
 
-			expect(actual).toEqual({ value: "default" });
+			expect(actual).toEqual({ explicit: "explicit-default" });
 		});
 
 		it("uses an option value from produce when settings do not have the options value", async () => {
@@ -74,28 +76,32 @@ describe("prepareOptions", () => {
 				existing: {},
 			});
 
-			expect(actual).toEqual({ value: "default" });
+			expect(actual).toEqual({ explicit: "explicit-default" });
 		});
 
 		it("uses an option value from settings when settings have the options value", async () => {
 			const actual = await prepareOptions(baseWithOptionalOption, {
 				...system,
 				existing: {
-					value: "override",
+					explicit: "explicit-override",
+					inferred: "inferred-override",
 				},
 			});
 
-			expect(actual).toEqual({ value: "override" });
+			expect(actual).toEqual({
+				explicit: "explicit-override",
+				inferred: "inferred-override",
+			});
 		});
 
 		it("prepares options when given a template", async () => {
 			const template = createTemplate({
 				options: {
-					value: z.string(),
+					explicit: z.string(),
 				},
 				prepare() {
 					return {
-						value: () => Promise.resolve("default"),
+						explicit: () => Promise.resolve("default"),
 					};
 				},
 				produce() {
@@ -105,7 +111,7 @@ describe("prepareOptions", () => {
 
 			const actual = await prepareOptions(template);
 
-			expect(actual).toEqual({ value: "default" });
+			expect(actual).toEqual({ explicit: "default" });
 		});
 	});
 });
