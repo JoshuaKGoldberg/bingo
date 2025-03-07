@@ -1,5 +1,6 @@
 import * as prompts from "@clack/prompts";
 import chalk from "chalk";
+import { z } from "zod";
 
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
 import { prepareOptions } from "../../preparation/prepareOptions.js";
@@ -71,7 +72,11 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		offline,
 	});
 
-	const providedOptions = parseZodArgs(args, template.options);
+	const providedOptions = parseZodArgs(args, {
+		directory: z.string().optional(),
+		repository: z.string().optional(),
+		...template.options,
+	});
 
 	const preparedOptions = await runSpinnerTask(
 		display,
