@@ -166,6 +166,15 @@ This context object is provided to:
 
 - [`prepareOptions`](/build/apis/prepare-options)
 
+### `files` {#options-files}
+
+Existing directory of files on disk, if available.
+
+`files` will be populated if running in transition mode and the directory already files in it.
+It can be useful in cases when options are inferred from comparing production to existing files.
+
+For example, [Stratum](/engines/stratum/about) templates compute their `--preset` option by comparing the existing files to the template's output.
+
 ### `log` {#options-log}
 
 Logs a message to the running user.

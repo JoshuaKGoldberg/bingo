@@ -294,8 +294,37 @@ As with [`prepareOptions`](/build/apis/prepare-options), `testOptions` returns a
 `settings` and all its properties are optional.
 However, some properties will cause `testOptions` to throw an error if they're not provided and the template attempts to use them:
 
-- [`options`](#testoption-options): each property throws an error if accessed at all
+- [`log`](#testoption-log): by default, throws an error if called as a function
 - [`take`](#testoption-take): by default, throws an error if called as a function
+
+### `log` {#testoption-log}
+
+A mock function to act as the [context `log`](/build/details/contexts#options-log).
+
+This can be used to test whether templates log options information to the user as expected.
+
+For example, this test asserts that a template logs a message when it defaults its `name` option:
+
+```ts
+import { testOptions } from "bingo-testers";
+import { describe, expect, it, vi } from "vitest";
+import { z } from "zod";
+
+import { exampleTemplate } from "./exampleTemplate.js";
+
+describe("exampleTemplate", () => {
+	describe("name", () => {
+		it("logs when name is not provided", async () => {
+			const log = vi.fn();
+
+			const actual = await testOptions(exampleTemplate, { log });
+
+			expect(actual).toEqual({ name: "(anonymous)" });
+			expect(log).toHaveBeenCalledWith(`Defaulting to --name "(anonymous)".`);
+		});
+	});
+});
+```
 
 ### `options` {#testoption-options}
 
