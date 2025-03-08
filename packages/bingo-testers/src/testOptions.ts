@@ -15,7 +15,7 @@ export interface TestOptionsSettings<OptionsShape extends AnyShape>
 
 export async function testOptions<OptionsShape extends AnyShape>(
 	base: HasOptionsAndMaybePrepare<OptionsShape>,
-	context: Partial<OptionsContext<InferredObject<OptionsShape>>>,
+	context: Partial<OptionsContext<InferredObject<OptionsShape>>> = {},
 ) {
 	if (!base.prepare) {
 		return context.options;
@@ -24,9 +24,9 @@ export async function testOptions<OptionsShape extends AnyShape>(
 	return await awaitLazyProperties({
 		...base.prepare({
 			...context,
-			log: createFailingFunction("log", "prepare()"),
-			options: {},
-			take: createFailingFunction("take", "prepare()"),
+			log: context.log ?? createFailingFunction("log", "prepare()"),
+			options: context.options ?? {},
+			take: context.take ?? createFailingFunction("take", "prepare()"),
 		}),
 		...context.options,
 	});
