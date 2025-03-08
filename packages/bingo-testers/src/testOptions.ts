@@ -8,11 +8,6 @@ import {
 
 import { createFailingFunction } from "./utils.js";
 
-export interface TestOptionsSettings<OptionsShape extends AnyShape>
-	extends Partial<OptionsContext<InferredObject<OptionsShape>>> {
-	existing: Partial<InferredObject<OptionsShape>>;
-}
-
 export async function testOptions<OptionsShape extends AnyShape>(
 	base: HasOptionsAndMaybePrepare<OptionsShape>,
 	context: Partial<OptionsContext<InferredObject<OptionsShape>>> = {},
