@@ -30,7 +30,7 @@ Given a [Block](/engines/stratum/concepts/blocks), creates a [Creation](/build/c
 `produceBlock` allows up to two parameters:
 
 1. `block` _(required)_: a Block
-2. `context` _(required)_: any properties from a [Block Context](/engines/stratum/details/contexts#block-contexts)
+2. `context` _(optional)_: any properties from a [Block Context](/engines/stratum/details/contexts#block-contexts)
 
 For example, given this Block that produces the start of a README.md file, `produceBlock` can run its `produce()` with any provided options:
 
@@ -119,7 +119,7 @@ produceBlock(blockInstallDependencies, { offline: true });
 
 ### `options` {#produceblock-options}
 
-Any number of options defined by the Block's [Base](/engines/stratum/concepts/bases).
+Any number of options defined by the Block's [Base](/engines/stratum/concepts/bases), as well as `preset: string`.
 
 For example, this Block is run with one `repository` option:
 
@@ -146,6 +146,7 @@ const blockPackageJson = createBlock({
 // { files: { "package.json": `{repository":"my-app"}` } }
 produceBlock(block, {
 	options: {
+		preset: "test",
 		repository: "my-app",
 	},
 });
@@ -198,7 +199,9 @@ declare const preset: Preset;
 
 producePreset(preset, {
 	offline: true,
-	options: {},
+	options: {
+		preset: "test",
+	},
 	preset: "example"
 });
 ```
@@ -210,7 +213,7 @@ If you are finding your Preset still sends requests offline, file a bug on the P
 
 ### `options` {#preset-options}
 
-Any options defined by the Preset's [Base](/engines/stratum/concepts/bases).
+Any options defined by the Preset's [Base](/engines/stratum/concepts/bases), as well as `preset: string`.
 
 This must include all required options from the Base.
 It may also include any other optional Options.
@@ -226,6 +229,7 @@ declare const preset: Preset<{ name: z.ZodString }>;
 producePreset(preset, {
 	options: {
 		name: "My Production",
+		preset: "test",
 	},
 	preset: "example",
 });

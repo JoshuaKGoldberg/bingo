@@ -1,6 +1,7 @@
 import { AboutBase, AnyOptionalShape, InferredObject } from "bingo";
 
 import { BlockCreation, CreatedBlockAddons } from "./creations.js";
+import { StratumTemplateOptions } from "./templates.js";
 
 export type Block<
 	Addons extends object | undefined = object | undefined,
@@ -29,7 +30,6 @@ export interface BlockContextWithAddons<
 	Options extends object,
 > extends BlockContextWithoutAddons<Options> {
 	addons: Addons;
-	options: Options;
 }
 
 export interface BlockContextWithOptionalAddons<
@@ -37,12 +37,11 @@ export interface BlockContextWithOptionalAddons<
 	Options extends object,
 > extends BlockContextWithoutAddons<Options> {
 	addons?: Addons;
-	options: Options;
 }
 
 export interface BlockContextWithoutAddons<Options extends object> {
 	offline?: boolean;
-	options: Options;
+	options: Options & StratumTemplateOptions;
 }
 
 export type BlockDefinition<

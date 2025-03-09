@@ -15,17 +15,19 @@ describe("createBase", () => {
 					produce({ options }) {
 						return {
 							files: {
-								"name.txt": options.name,
+								"name.txt": `${options.name} (${options.preset})`,
 							},
 						};
 					},
 				});
 
-				const production = block.produce({ options: { name: "abc" } });
+				const production = block.produce({
+					options: { name: "abc", preset: "test" },
+				});
 
 				expect(production).toEqual({
 					files: {
-						"name.txt": "abc",
+						"name.txt": "abc (test)",
 					},
 				});
 			});
@@ -42,7 +44,9 @@ describe("createBase", () => {
 
 						return {
 							files: {
-								"names.txt": [options.name, ...names].join("\n"),
+								"names.txt": [options.preset, options.name, ...names].join(
+									"\n",
+								),
 							},
 						};
 					},
@@ -50,12 +54,12 @@ describe("createBase", () => {
 
 				const production = block.produce({
 					addons: { names: ["def"] },
-					options: { name: "abc" },
+					options: { name: "abc", preset: "test" },
 				});
 
 				expect(production).toEqual({
 					files: {
-						"names.txt": "abc\ndef",
+						"names.txt": "test\nabc\ndef",
 					},
 				});
 			});
