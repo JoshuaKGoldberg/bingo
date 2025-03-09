@@ -234,7 +234,7 @@ Requiring the `owner` and `repository` fields be string-like allows [Setup mode]
 ### `prepare`
 
 Sets up lazily loaded default values for options.
-Receives an [Options Context](/build/details/contexts#options-contexts) and returns a [`Creation`](/build/concepts/creations).
+Receives an [Options Context](/build/details/contexts#options-contexts) and returns values or lazy functions for options values.
 
 Templates can optionally define a `prepare()` function that provides fallback values for options.
 Those values will be used if the user doesn't provide explicit values during creation.

@@ -115,7 +115,7 @@ describe("blockPrettier", () => {
 
 ### `options` {#testblock-options}
 
-[Base Options](/engines/stratum/concepts/bases#options) may be provided under `options`.
+[Base Options](/engines/stratum/concepts/bases#options) may be provided under `options`, as well as `preset: string`.
 
 For example, this test asserts that a README.md uses the `title` defined under `options`:
 
@@ -129,7 +129,7 @@ const blockReadme = base.createBlock({
 	produce({ options }) {
 		return {
 			files: {
-				"README.md": `# ${options.title}`,
+				"README.md": `# ${options.title} (${options.preset})`,
 			},
 		};
 	},
@@ -139,13 +139,14 @@ describe("blockDocs", () => {
 	it("uses options.name for the README.md title", async () => {
 		const actual = await testBlock(blockReadme, {
 			options: {
+				preset: "test",
 				title: "My Project",
 			},
 		});
 
 		expect(actual).toEqual({
 			files: {
-				"README.md": `# My Project`,
+				"README.md": `# My Project (test)`,
 			},
 		});
 	});

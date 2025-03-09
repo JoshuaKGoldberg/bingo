@@ -37,7 +37,7 @@ export const base = createBase({
 ```
 
 :::tip
-Base `option` are directly used as a [Template `options`](/build/apis/create-template#options) when a Stratum Template is generated.
+Base `options` are used as [Stratum Template `options`](/build/apis/create-template#options).
 :::
 
 ### `prepare` {#createbase-prepare}
@@ -69,7 +69,7 @@ export const base = createBase({
 ```
 
 :::tip
-Base `prepare()` functions are directly used as [Template `prepare()`](/build/apis/create-template#prepare) when a Stratum Template is generated.
+Base `prepare()` functions are used as [Stratum Template `prepare()`](/build/apis/create-template#prepare).
 :::
 
 ## `createBlock`
@@ -266,6 +266,42 @@ Repositories generated from that template would indicate _generated from [Joshua
 This is the same `about` field as the general Bingo [`createTemplate` API](/build/apis/create-template#about).
 :::
 
+### `prepare` {#createtemplate-prepare}
+
+Sets up lazily loaded default values for options.
+Receives an [Options Context](/build/details/contexts#options-contexts) and returns values or lazy functions for options values.
+
+Templates can optionally define a `prepare()` function that provides fallback values for options.
+Those values will be used if the user doesn't provide explicit values during creation.
+
+For example, this template defaults its `value` option to `"default"` if not provided:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Running that template without an explicit `--value` would be equivalent to running with `--value "default"`.
+
+#### Preset Inference
+
+During transition mode, Stratum will attempt to infer a default value for `--preset` based using files on disk.
+That default value is computed by comparing existing files on disk to the files that would be produced by the Blocks.
+If Preset with the greatest percentage matches 35% or more of its created files, it will be used as the default.
+
 ### `presets` {#createtemplate-presets}
 
 The Presets users can choose from with the Template, in order of how they should be listed.
@@ -295,9 +331,9 @@ export const templateTypeScriptApp = base.createTemplate({
 
 ### `suggested` {#createtemplate-suggested}
 
-The suggested Preset to select for users, if not the first in the array.
+The suggested Preset to select for users by default, if not the first in the array.
 
-This should be the same string as one of the `labels` under [`presets`](#createtemplate-presets).
+This should be the same values as under [`presets`](#createtemplate-presets).
 
 For example, this Template defaults to the `"Common"` Preset:
 

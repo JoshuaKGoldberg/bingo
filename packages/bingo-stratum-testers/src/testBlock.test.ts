@@ -47,7 +47,7 @@ describe("testBlock", () => {
 			},
 		});
 
-		it("does not throws an error when addons isn't provided and a block uses addons", () => {
+		it("does not throw an error when addons isn't provided and a block uses addons", () => {
 			const actual = testBlock(blockUsingAddons, {});
 
 			expect(actual).toMatchInlineSnapshot(`
@@ -73,7 +73,7 @@ describe("testBlock", () => {
 			produce({ options }) {
 				return {
 					files: {
-						"value.txt": options.value,
+						"value.txt": `${options.value} (${options.preset})`,
 					},
 				};
 			},
@@ -89,10 +89,12 @@ describe("testBlock", () => {
 
 		it("passes options to the block when provided", () => {
 			const actual = testBlock(blockUsingOptions, {
-				options: { value: "abc" },
+				options: { preset: "test", value: "abc" },
 			});
 
-			expect(actual).toEqual({ files: { "value.txt": "abc" } });
+			expect(actual).toEqual({
+				files: { "value.txt": "abc (test)" },
+			});
 		});
 	});
 });

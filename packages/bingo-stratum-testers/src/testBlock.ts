@@ -6,6 +6,7 @@ import {
 	ProduceBlockSettingsWithAddons,
 } from "bingo-stratum";
 import { BlockCreation } from "bingo-stratum/lib/types/creations.js";
+import { StratumTemplateOptions } from "bingo-stratum/lib/types/templates.js";
 
 import { createFailingObject } from "./utils.js";
 
@@ -19,7 +20,7 @@ export interface BlockContextSettingsWithOptionalAddons<
 export interface BlockContextSettingsWithoutAddons<Options extends object> {
 	mode?: ProductionMode;
 	offline?: boolean;
-	options?: Options;
+	options?: Options & StratumTemplateOptions;
 }
 
 export function testBlock<Addons extends object, Options extends object>(
