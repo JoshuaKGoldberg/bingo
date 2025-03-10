@@ -1,7 +1,19 @@
-import { CreatedEntry } from "bingo-fs";
+import { CreatedDirectory, CreatedEntry, CreatedFileEntry } from "bingo-fs";
 
 import { executeTemplate } from "./executeTemplate.js";
 
+export function executeTemplatesRecursive(
+	source: CreatedFileEntry | undefined,
+	options: object | undefined,
+): CreatedFileEntry | undefined;
+export function executeTemplatesRecursive(
+	source: CreatedDirectory | undefined,
+	options: object | undefined,
+): CreatedDirectory | undefined;
+export function executeTemplatesRecursive(
+	source: CreatedEntry | undefined,
+	options: object | undefined,
+): CreatedEntry | undefined;
 export function executeTemplatesRecursive(
 	source: CreatedEntry | undefined,
 	options: object | undefined,
