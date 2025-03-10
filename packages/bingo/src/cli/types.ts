@@ -8,7 +8,7 @@ export interface ModeResultsBase {
 }
 
 export interface ModeResultsError extends ModeResultsBase {
-	error: Error;
+	error?: Error;
 	status: CLIStatus.Error;
 }
 

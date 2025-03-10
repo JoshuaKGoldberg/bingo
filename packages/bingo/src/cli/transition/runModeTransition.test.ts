@@ -141,7 +141,7 @@ const templateWithRepository = createTemplate({
 	produce: vi.fn(),
 });
 
-const args = ["bingo-my-app"];
+const argv = ["npx", "bingo-my-app"];
 
 const from = "create-example";
 
@@ -152,7 +152,7 @@ const promptedOptions = {
 describe("runModeTransition", () => {
 	it("logs help text instead of running when help is true", async () => {
 		await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -169,7 +169,7 @@ describe("runModeTransition", () => {
 		mockReadConfigSettings.mockResolvedValueOnce(error);
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: "example.config.ts",
 			display,
 			from,
@@ -180,7 +180,7 @@ describe("runModeTransition", () => {
 			error,
 			status: CLIStatus.Error,
 		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, {});
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, {});
 	});
 
 	it("returns the error when prepareOptions throws an error", async () => {
@@ -188,18 +188,15 @@ describe("runModeTransition", () => {
 		mockPrepareOptions.mockRejectedValueOnce(error);
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
 			template,
 		});
 
-		expect(actual).toEqual({
-			error,
-			status: CLIStatus.Error,
-		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, {});
+		expect(actual).toEqual({ status: CLIStatus.Error });
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, {});
 	});
 
 	it("returns the cancellation when promptForOptions is cancelled", async () => {
@@ -209,7 +206,7 @@ describe("runModeTransition", () => {
 		});
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -219,7 +216,7 @@ describe("runModeTransition", () => {
 		expect(actual).toEqual({
 			status: CLIStatus.Cancelled,
 		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, promptedOptions);
 	});
 
 	it("returns the error when runTemplate resolves with an error", async () => {
@@ -231,7 +228,7 @@ describe("runModeTransition", () => {
 		mockRunTemplate.mockRejectedValueOnce(error);
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -239,11 +236,10 @@ describe("runModeTransition", () => {
 		});
 
 		expect(actual).toEqual({
-			error,
 			outro: `Leaving changes to the local directory on disk. 👋`,
 			status: CLIStatus.Error,
 		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, promptedOptions);
 	});
 
 	it("doesn't clear the existing repository when the template does not have a repository locator", async () => {
@@ -252,7 +248,7 @@ describe("runModeTransition", () => {
 		});
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -265,7 +261,7 @@ describe("runModeTransition", () => {
 		});
 		expect(mockClearTemplateFiles).not.toHaveBeenCalled();
 		expect(mockClearLocalGitTags).not.toHaveBeenCalled();
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, promptedOptions);
 	});
 
 	it("clears the existing repository online when a forked repository locator is available and offline is falsy", async () => {
@@ -278,7 +274,7 @@ describe("runModeTransition", () => {
 		});
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -301,7 +297,7 @@ describe("runModeTransition", () => {
 			amend: true,
 			push: true,
 		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, promptedOptions);
 	});
 
 	it("clears the existing repository offline when a forked repository locator is available and offline is true", async () => {
@@ -314,7 +310,7 @@ describe("runModeTransition", () => {
 		});
 
 		const actual = await runModeTransition({
-			args,
+			argv,
 			configFile: undefined,
 			display,
 			from,
@@ -338,6 +334,6 @@ describe("runModeTransition", () => {
 			amend: true,
 			push: false,
 		});
-		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(args, promptedOptions);
+		expect(mockLogRerunSuggestion).toHaveBeenCalledWith(argv, promptedOptions);
 	});
 });

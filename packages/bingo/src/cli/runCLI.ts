@@ -21,7 +21,7 @@ const valuesSchema = z.object({
 });
 
 export interface RunCLISettings<OptionsShape extends AnyShape, Refinements> {
-	args: string[];
+	argv: string[];
 	display: ClackDisplay;
 	from: string;
 	template: Template<OptionsShape, Refinements>;
@@ -29,7 +29,7 @@ export interface RunCLISettings<OptionsShape extends AnyShape, Refinements> {
 }
 
 export async function runCLI<OptionsShape extends AnyShape, Refinements>({
-	args,
+	argv,
 	display,
 	from,
 	template,
@@ -47,7 +47,7 @@ export async function runCLI<OptionsShape extends AnyShape, Refinements>({
 
 	const sharedSettings = {
 		...validatedValues,
-		args,
+		argv,
 		display,
 		from,
 		template,
