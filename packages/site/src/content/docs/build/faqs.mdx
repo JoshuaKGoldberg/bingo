@@ -81,8 +81,6 @@ This is for two reasons:
 - Long-term, the engine should not be locked into any one schema engine.
   Adopting Zod-specific features will make it harder to swap between other implementers of [standard-schema](https://github.com/standard-schema/standard-schema) in the future if needed.
 
-{/* TODO: add link to create-stratum-example's base, once it exists! */}
-
 ### Why is the template `prepare()` function synchronous?
 
 > Or: why must options defaults be provided as asynchronous functions, rather than having `prepare()` itself `await` for their values?
