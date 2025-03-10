@@ -34,9 +34,19 @@ For example, given a structure like:
 }
 ```
 
+## Directories
+
+> TypeScript type name: `CreatedDirectory`
+
+Directories in a `files` object are represented as objects.
+Property keys are the names of children.
+Values are the file or directory underneath that key.
+
 ## Files
 
-Each property in a `files` object may be one of the following:
+> TypeScript type name: `CreatedFileEntry`
+
+Each property value in a directory object may be one of the following:
 
 - `false` or `undefined`: Ignored
 - `object`: A directory, whose properties recursively are file creations
