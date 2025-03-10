@@ -443,8 +443,8 @@ import { describe, expect, it } from "vitest";
 import { exampleTemplate } from "./exampleTemplate.js";
 
 describe("exampleTemplate", () => {
-	it("creates an .nvmrc file", () => {
-		const actual = testTemplate(exampleTemplate);
+	it("creates an .nvmrc file", async () => {
+		const actual = await testTemplate(exampleTemplate);
 
 		expect(actual).toEqual({
 			files: { ".nvmrc": "20.12.2" },
@@ -474,8 +474,8 @@ import { describe, expect, it } from "vitest";
 import { exampleTemplate } from "./exampleTemplate.js";
 
 describe("exampleTemplate", () => {
-	it("returns an .nvmrc", () => {
-		const actual = testTemplate(exampleTemplate, {
+	it("returns an .nvmrc", async () => {
+		const actual = await testTemplate(exampleTemplate, {
 			options: { version: "20.12.2" },
 		});
 
