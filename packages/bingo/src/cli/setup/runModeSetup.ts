@@ -14,6 +14,7 @@ import { runSpinnerTask } from "../display/runSpinnerTask.js";
 import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
+import { CLIMessage } from "../messages.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForDirectory } from "../prompts/promptForDirectory.js";
 import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
@@ -27,7 +28,7 @@ export interface RunModeSetupSettings<
 	OptionsShape extends AnyShape,
 	Refinements,
 > {
-	args: string[];
+	argv: string[];
 	directory?: string;
 	display: ClackDisplay;
 	from: string;
@@ -38,7 +39,7 @@ export interface RunModeSetupSettings<
 }
 
 export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
-	args,
+	argv,
 	display,
 	from,
 	help,
@@ -72,7 +73,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		offline,
 	});
 
-	const providedOptions = parseZodArgs(args, {
+	const providedOptions = parseZodArgs(argv, {
 		directory: z.string().optional(),
 		owner: z.string().optional(),
 		repository: z.string().optional(),
@@ -92,8 +93,8 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		},
 	);
 	if (preparedOptions instanceof Error) {
-		logRerunSuggestion(args, providedOptions);
-		return { error: preparedOptions, status: CLIStatus.Error };
+		logRerunSuggestion(argv, providedOptions);
+		return { status: CLIStatus.Error };
 	}
 
 	const repository = requestedRepository ?? directory;
@@ -107,7 +108,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		system,
 	});
 	if (baseOptions.cancelled) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return { status: CLIStatus.Cancelled };
 	}
 
@@ -122,7 +123,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 			);
 
 	if (remote instanceof Error) {
-		logRerunSuggestion(args, baseOptions.completed);
+		logRerunSuggestion(argv, baseOptions.completed);
 		return { error: remote, status: CLIStatus.Error };
 	}
 
@@ -148,15 +149,14 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 			}),
 	);
 	if (creation instanceof Error) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			error: creation,
-			outro: `Leaving changes to the local directory on disk. 👋`,
+			outro: CLIMessage.Leaving,
 			status: CLIStatus.Error,
 		};
 	}
 
-	await runSpinnerTask(
+	const prepared = await runSpinnerTask(
 		display,
 		"Preparing local repository",
 		"Prepared local repository",
@@ -167,20 +167,27 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		},
 	);
 
-	logRerunSuggestion(args, baseOptions.prompted);
-	prompts.log.message(
-		[
-			"Great, you've got a new repository ready to use in:",
-			`  ${chalk.green(makeRelative(directory))}`,
-			...(remote
-				? [
-						"",
-						"It's also pushed to GitHub on:",
-						`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
-					]
-				: []),
-		].join("\n"),
-	);
+	logRerunSuggestion(argv, baseOptions.prompted);
+
+	if (!prepared) {
+		prompts.log.message(
+			[
+				"Great, you've got a new repository ready to use in:",
+				`  ${chalk.green(makeRelative(directory))}`,
+				...(remote
+					? [
+							"",
+							"It's also pushed to GitHub on:",
+							`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
+						]
+					: []),
+			].join("\n"),
+		);
+		return {
+			outro: CLIMessage.Leaving,
+			status: CLIStatus.Error,
+		};
+	}
 
 	return {
 		outro: `Thanks for using ${chalk.bgGreenBright.black(from)}! 💝`,

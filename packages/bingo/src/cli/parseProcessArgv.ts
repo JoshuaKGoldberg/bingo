@@ -39,11 +39,10 @@ export interface RunCLIRawValues {
 }
 
 export function parseProcessArgv() {
-	const args = process.argv.slice(2);
 	return {
-		args,
+		argv: process.argv,
 		...parseArgs({
-			args,
+			args: process.argv.slice(2),
 			options: cliArgsOptions,
 			strict: false,
 		}),

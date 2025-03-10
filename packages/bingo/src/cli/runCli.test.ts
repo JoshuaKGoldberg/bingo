@@ -42,13 +42,15 @@ const template = createTemplate({
 	produce: vi.fn(),
 });
 
+const argv = ["npx", "bingo-example"];
+
 describe("runCli", () => {
 	it("logs the error when readProductionSettings resolves an error", async () => {
 		const error = new Error("Oh no!");
 		mockReadProductionSettings.mockResolvedValueOnce(error);
 
 		const actual = await runCLI({
-			args: [],
+			argv,
 			display: createClackDisplay(),
 			from: "",
 			template,
@@ -65,7 +67,7 @@ describe("runCli", () => {
 		});
 
 		await runCLI({
-			args: [],
+			argv,
 			display: createClackDisplay(),
 			from: "",
 			template,
@@ -83,7 +85,7 @@ describe("runCli", () => {
 		});
 
 		await runCLI({
-			args: [],
+			argv,
 			display: createClackDisplay(),
 			from: "",
 			template,

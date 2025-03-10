@@ -14,19 +14,21 @@ vi.mock("@clack/prompts", () => ({
 
 describe("logRerunSuggestion", () => {
 	it("does not log when there are no prompted entries", () => {
-		logRerunSuggestion(["my-app"], {});
+		logRerunSuggestion([".../node", ".../my-app"], {});
 
 		expect(mockLog.info).not.toHaveBeenCalled();
 	});
 
-	it("logs when there are no prompted entries", () => {
-		logRerunSuggestion(["my-app"], { abc: "def" });
+	it("logs when there are prompted entries", () => {
+		logRerunSuggestion([".../node", ".../my-app"], {
+			abc: "def",
+		});
 
 		expect(mockLog.info).toHaveBeenCalled();
 	});
 
 	test("value stringification", () => {
-		logRerunSuggestion(["my-app"], {
+		logRerunSuggestion([".../node", ".../my-app"], {
 			"is-false": false,
 			"is-true": true,
 			multiple: ["def", 456],
@@ -38,7 +40,7 @@ describe("logRerunSuggestion", () => {
 		expect(mockLog.info.mock.calls).toMatchInlineSnapshot(`
 			[
 			  [
-			    "Tip: to run again with the same input values, use: npx bingo my-app --is-false false --is-true --multiple def --multiple 456 --numeric 123 --spaced "a bb ccc" --stringy abc",
+			    "Tip: to run again with the same input values, use: npx my-app --is-false false --is-true --multiple def --multiple 456 --numeric 123 --spaced "a bb ccc" --stringy abc",
 			  ],
 			]
 		`);

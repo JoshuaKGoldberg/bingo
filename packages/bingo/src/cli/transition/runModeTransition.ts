@@ -10,6 +10,7 @@ import { runSpinnerTask } from "../display/runSpinnerTask.js";
 import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
+import { CLIMessage } from "../messages.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
 import { CLIStatus } from "../status.js";
@@ -22,7 +23,7 @@ export interface RunModeTransitionSettings<
 	OptionsShape extends AnyShape,
 	Refinements,
 > {
-	args: string[];
+	argv: string[];
 	configFile: string | undefined;
 	directory?: string;
 	display: ClackDisplay;
@@ -36,7 +37,7 @@ export async function runModeTransition<
 	OptionsShape extends AnyShape,
 	Refinements,
 >({
-	args,
+	argv,
 	configFile,
 	directory = ".",
 	display,
@@ -75,7 +76,7 @@ export async function runModeTransition<
 		);
 	}
 
-	const providedOptions = parseZodArgs(args, template.options);
+	const providedOptions = parseZodArgs(argv, template.options);
 
 	const loadedConfig = await readConfigSettings(
 		configFile,
@@ -83,7 +84,7 @@ export async function runModeTransition<
 		template,
 	);
 	if (loadedConfig instanceof Error) {
-		logRerunSuggestion(args, providedOptions);
+		logRerunSuggestion(argv, providedOptions);
 		return { error: loadedConfig, status: CLIStatus.Error };
 	}
 
@@ -104,8 +105,8 @@ export async function runModeTransition<
 		},
 	);
 	if (preparedOptions instanceof Error) {
-		logRerunSuggestion(args, providedOptions);
-		return { error: preparedOptions, status: CLIStatus.Error };
+		logRerunSuggestion(argv, providedOptions);
+		return { status: CLIStatus.Error };
 	}
 
 	const baseOptions = await promptForOptionSchemas(template, {
@@ -113,7 +114,7 @@ export async function runModeTransition<
 		system,
 	});
 	if (baseOptions.cancelled) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return { status: CLIStatus.Cancelled };
 	}
 
@@ -132,37 +133,42 @@ export async function runModeTransition<
 			}),
 	);
 	if (creation instanceof Error) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			error: creation,
-			outro: `Leaving changes to the local directory on disk. 👋`,
+			outro: CLIMessage.Leaving,
 			status: CLIStatus.Error,
 		};
 	}
 
-	if (repositoryLocator) {
-		await runSpinnerTask(
-			display,
-			"Creating initial commit",
-			"Created initial commit",
-			async () => {
-				await createInitialCommit(system.runner, {
-					amend: true,
-					push: !offline,
-				});
-			},
-		);
-
-		logRerunSuggestion(args, baseOptions.prompted);
+	if (!repositoryLocator) {
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			outro: `Done. Enjoy your new repository! 💝`,
+			outro: CLIMessage.Done,
 			status: CLIStatus.Success,
 		};
 	}
 
-	logRerunSuggestion(args, baseOptions.prompted);
-	return {
-		outro: `Done. Enjoy your updated repository! 💝`,
-		status: CLIStatus.Success,
-	};
+	const commit = await runSpinnerTask(
+		display,
+		"Creating initial commit",
+		"Created initial commit",
+		async () => {
+			await createInitialCommit(system.runner, {
+				amend: true,
+				push: !offline,
+			});
+		},
+	);
+
+	logRerunSuggestion(argv, baseOptions.prompted);
+
+	return commit instanceof Error
+		? {
+				outro: CLIMessage.Leaving,
+				status: CLIStatus.Error,
+			}
+		: {
+				outro: CLIMessage.New,
+				status: CLIStatus.Success,
+			};
 }

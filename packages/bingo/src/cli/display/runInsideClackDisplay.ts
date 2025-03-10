@@ -33,7 +33,7 @@ export async function runInsideClackDisplay(
 		return results;
 	}
 
-	if (results.status === CLIStatus.Error) {
+	if (results.status === CLIStatus.Error && results.error) {
 		prompts.log.error(chalk.red(`Error: ${results.error.message}`));
 	}
 
