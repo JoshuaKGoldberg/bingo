@@ -119,17 +119,17 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 				{ repository, ...baseOptions.completed },
 				system.fetchers.octokit,
 				system.runner,
-				template.about?.repository,
+				template,
 			);
 
 	if (remote instanceof Error) {
-		logRerunSuggestion(argv, baseOptions.completed);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return { error: remote, status: CLIStatus.Error };
 	}
 
 	if (!offline && !remote) {
 		prompts.log.warn(
-			"Running in local-only mode without a repository on GitHub",
+			"Running in local-only mode without a repository on GitHub. To push to GitHub, log in with the GitHub CLI (cli.github.com) or run with a GH_TOKEN process environment variable.",
 		);
 	}
 
@@ -156,7 +156,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		};
 	}
 
-	const prepared = await runSpinnerTask(
+	const preparationError = await runSpinnerTask(
 		display,
 		"Preparing local repository",
 		"Prepared local repository",
@@ -167,22 +167,23 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		},
 	);
 
+	prompts.log.message(
+		[
+			"You've got a new repository ready to use in:",
+			`  ${chalk.green(makeRelative(directory))}`,
+			...(remote
+				? [
+						"",
+						"It's also pushed to GitHub on:",
+						`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
+					]
+				: []),
+		].join("\n"),
+	);
+
 	logRerunSuggestion(argv, baseOptions.prompted);
 
-	if (!prepared) {
-		prompts.log.message(
-			[
-				"Great, you've got a new repository ready to use in:",
-				`  ${chalk.green(makeRelative(directory))}`,
-				...(remote
-					? [
-							"",
-							"It's also pushed to GitHub on:",
-							`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
-						]
-					: []),
-			].join("\n"),
-		);
+	if (preparationError) {
 		return {
 			outro: CLIMessage.Leaving,
 			status: CLIStatus.Error,
