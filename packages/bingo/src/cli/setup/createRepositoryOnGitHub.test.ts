@@ -2,10 +2,19 @@ import { Octokit } from "octokit";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
+import { createTemplate } from "../../creators/createTemplate.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 
 vi.mock("@clack/prompts");
+
+const mockGetGitHubAuthToken = vi.fn();
+
+vi.mock("get-github-auth-token", () => ({
+	get getGitHubAuthToken() {
+		return mockGetGitHubAuthToken;
+	},
+}));
 
 const mockNewGitHubRepository = vi.fn();
 
@@ -36,23 +45,70 @@ const display: ClackDisplay = {
 
 const mockOctokit = {} as Octokit;
 
+const options = {
+	owner: "mock-owner",
+	repository: "mock-repository",
+};
+
+const templateWithoutOptions = createTemplate({
+	produce: vi.fn(),
+});
+
+const templateWithOwnerAndRepository = createTemplate({
+	options: { owner: z.string(), repository: z.string() },
+	produce: vi.fn(),
+});
+
+const templateWithOwner = createTemplate({
+	options: { owner: z.string() },
+	produce: vi.fn(),
+});
+
+const templateWithRepository = createTemplate({
+	options: { repository: z.string() },
+	produce: vi.fn(),
+});
+
 describe("createRepositoryOnGitHub", () => {
+	it("returns an error when both owner and repository are not string-likes", async () => {
+		const mockRunner = vi.fn();
+
+		const actual = await createRepositoryOnGitHub(
+			display,
+			options,
+			mockOctokit,
+			mockRunner,
+			templateWithoutOptions,
+		);
+
+		expect(actual).toEqual(
+			new Error(
+				`To run with --mode setup and not --offline, options.owner and options.repository must be string-like schemas.`,
+			),
+		);
+		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
+		expect(mockRunner).not.toHaveBeenCalled();
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
+	});
+
 	it("returns an error when owner is not a string-like", async () => {
 		const mockRunner = vi.fn();
 
 		const actual = await createRepositoryOnGitHub(
 			display,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			{ owner: { invalid: true } as any, repository: "mock-repository" },
+			options,
 			mockOctokit,
 			mockRunner,
+			templateWithRepository,
 		);
 
 		expect(actual).toEqual(
 			new Error(
-				`To run with --mode setup, --owner must be a string-like, not object.`,
+				`To run with --mode setup and not --offline, options.owner must be a string-like schema.`,
 			),
 		);
+		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
@@ -63,17 +119,37 @@ describe("createRepositoryOnGitHub", () => {
 
 		const actual = await createRepositoryOnGitHub(
 			display,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			{ owner: "mock-owner", repository: { invalid: true } as any },
+			options,
 			mockOctokit,
 			mockRunner,
+			templateWithOwner,
 		);
 
 		expect(actual).toEqual(
 			new Error(
-				`To run with --mode setup, --repository must be a string-like, not object.`,
+				`To run with --mode setup and not --offline, options.repository must be a string-like schema.`,
 			),
 		);
+		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
+		expect(mockRunner).not.toHaveBeenCalled();
+		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
+		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
+	});
+
+	it("returns undefined when getGitHubAuthToken does not retrieve a token", async () => {
+		const mockRunner = vi.fn();
+
+		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: false });
+
+		const actual = await createRepositoryOnGitHub(
+			display,
+			options,
+			mockOctokit,
+			mockRunner,
+			templateWithOwnerAndRepository,
+		);
+
+		expect(actual).toBeUndefined();
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
@@ -84,14 +160,17 @@ describe("createRepositoryOnGitHub", () => {
 		const repository = "mock-repository";
 		const mockRunner = vi.fn();
 
+		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: true });
+
 		const actual = await createRepositoryOnGitHub(
 			display,
-			{ owner, repository },
+			options,
 			mockOctokit,
 			mockRunner,
+			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual({ owner, repository });
+		expect(actual).toEqual(options);
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
@@ -107,14 +186,17 @@ describe("createRepositoryOnGitHub", () => {
 		const repository = "mock-repository";
 		const mockRunner = vi.fn().mockResolvedValue({ stdout: owner });
 
+		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: true });
+
 		const actual = await createRepositoryOnGitHub(
 			display,
 			{ owner: undefined, repository },
 			mockOctokit,
 			mockRunner,
+			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual({ owner, repository });
+		expect(actual).toEqual(options);
 		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
@@ -129,6 +211,8 @@ describe("createRepositoryOnGitHub", () => {
 		const owner = "mock-owner";
 		const repository = "mock-repository";
 		const mockRunner = vi.fn().mockResolvedValue(new Error("Oh no!"));
+
+		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: true });
 		mockPromptForOptionSchema.mockResolvedValueOnce(owner);
 
 		const actual = await createRepositoryOnGitHub(
@@ -136,9 +220,10 @@ describe("createRepositoryOnGitHub", () => {
 			{ owner: undefined, repository },
 			mockOctokit,
 			mockRunner,
+			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual({ owner, repository });
+		expect(actual).toEqual(options);
 		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
 		expect(mockPromptForOptionSchema).toHaveBeenCalledWith(
 			"owner",
@@ -154,18 +239,20 @@ describe("createRepositoryOnGitHub", () => {
 		});
 	});
 
-	it("returns undefined when creating a repository errors", async () => {
-		const owner = "mock-owner";
-		const repository = "mock-repository";
-		mockNewGitHubRepository.mockRejectedValueOnce(new Error("Oh no!"));
+	it("returns the error when creating a repository errors", async () => {
+		const error = new Error("Oh no!");
+
+		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: true });
+		mockNewGitHubRepository.mockRejectedValueOnce(error);
 
 		const actual = await createRepositoryOnGitHub(
 			display,
-			{ owner, repository },
+			options,
 			mockOctokit,
 			vi.fn(),
+			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toBeUndefined();
+		expect(actual).toBe(error);
 	});
 });

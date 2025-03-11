@@ -1,18 +1,9 @@
 import * as prompts from "@clack/prompts";
 import * as z from "zod";
 
+import { isZodDefaultDef } from "../schemas/isZodDefaultDef.js";
+import { PromptFriendlyZodDef } from "../schemas/types.js";
 import { validateNumber, validatorFromSchema } from "./validators.js";
-
-type ZodDef =
-	| z.ZodBooleanDef
-	| (z.ZodDefault<z.ZodTypeAny> & {
-			innerType: z.ZodTypeAny;
-			typeName: z.ZodFirstPartyTypeKind.ZodDefault;
-	  })
-	| z.ZodUnionDef
-	| ZodStringLikeDef;
-
-type ZodStringLikeDef = z.ZodNumberDef | z.ZodStringDef;
 
 export async function promptForOptionSchema(
 	key: string,
@@ -20,8 +11,8 @@ export async function promptForOptionSchema(
 	description: string | undefined,
 	defaultValue: unknown,
 ) {
-	const def = schema._def as ZodDef;
-	if (def.typeName === z.ZodFirstPartyTypeKind.ZodDefault) {
+	const def = schema._def as PromptFriendlyZodDef;
+	if (isZodDefaultDef(def)) {
 		return await promptForOptionSchema(
 			key,
 			def.innerType,
@@ -29,6 +20,7 @@ export async function promptForOptionSchema(
 			defaultValue,
 		);
 	}
+
 	const message = description
 		? `What will the ${description} be? (--${key})`
 		: `What will the --${key} be?`;
@@ -42,6 +34,17 @@ export async function promptForOptionSchema(
 					message,
 				});
 				break;
+			}
+
+			case z.ZodFirstPartyTypeKind.ZodEnum: {
+				const options = def.values.map((value) => ({ value }));
+				const text = await prompts.select({
+					initialValue: defaultValue as string,
+					message,
+					options,
+				});
+
+				return cancelOrParse(schema, text);
 			}
 
 			case z.ZodFirstPartyTypeKind.ZodNumber:
@@ -66,11 +69,7 @@ export async function promptForOptionSchema(
 					options,
 				});
 
-				if (prompts.isCancel(text)) {
-					return text;
-				}
-
-				return schema.parse(text) as unknown;
+				return cancelOrParse(schema, text);
 			}
 
 			default: {
@@ -80,14 +79,14 @@ export async function promptForOptionSchema(
 					validate: validatorFromSchema(schema),
 				});
 
-				if (prompts.isCancel(text)) {
-					return text;
-				}
-
-				return schema.parse(text) as unknown;
+				return cancelOrParse(schema, text);
 			}
 		}
 	}
 
 	return value;
+}
+
+function cancelOrParse(schema: z.ZodTypeAny, text: unknown) {
+	return prompts.isCancel(text) ? text : (schema.parse(text) as unknown);
 }
