@@ -55,56 +55,79 @@ The merged result would be:
 
 ## Requests
 
-[Requests](/build/concepts/creations#requests) are deduplicated based on their `id`.
-Later-created requests will override any previously created requests with the same `id`.
+[Requests](/build/concepts/creations#requests) are merged base on their `id` and `type`:
+_ If two requests have different `id` values, they are always considered separate
+_ Otherwise, requests are merged based on their `type`:
+_ `fetch` requests have `init` merged with `Object.assign()` if they contain the same `url`
+_ `octokit` requests have `parameters` merged with `Object.assign()` if they contain the same `endpoint`
 
-For example, given the following two `requests` Creations to be merged:
+For example, the following two `requests` Creations would not be merged, because they have different endpoints:
 
 ```ts
 [
 	{
-		id: "branch-protection",
-		async send({ octokit }) {
-			console.log("TODO: Set up branch protection");
-		},
+		endpoint: "POST /repos/{owner}/{repo}/autolinks",
+		parameters: {
+			key_prefix: "TICKET-",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+			url_template: "https://example.com/TICKET?query=<num>",
+		}
+		type: "octokit",
 	},
-];
+	{
+		endpoint: "POST /repos/{owner}/{repo}/issues",
+		parameters: {
+			name: "good first issue",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		}
+		type: "octokit",
+	}
+]
 ```
 
+However, the following two `requests` Creations would be merged into one with the same endpoint:
+
 ```ts
 [
 	{
-		id: "branch-protection",
-		async send({ octokit }) {
-			await octokit.request(
-				`PUT /repos/{owner}/{repository}/branches/{branch}/protection`,
-				{
-					branch: "main",
-					// ...
-				},
-			);
-		},
+		endpoint: "POST /repos/{owner}/{repo}/issues",
+		parameters: {
+			color: "#ffcc00",
+			name: "good first issue (pending color)",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		}
+		type: "octokit",
 	},
-];
+	{
+		endpoint: "POST /repos/{owner}/{repo}/issues",
+		parameters: {
+			name: "good first issue",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		}
+		type: "octokit",
+	}
+]
 ```
 
-The merged result would be just the latter Creation:
+The merged result would be:
 
 ```ts
 [
 	{
-		id: "branch-protection",
-		async send({ octokit }) {
-			await octokit.request(
-				`PUT /repos/{owner}/{repository}/branches/{branch}/protection`,
-				{
-					branch: "main",
-					// ...
-				},
-			);
-		},
-	},
-];
+		endpoint: "POST /repos/{owner}/{repo}/issues",
+		parameters: {
+			color: "#ffcc00",
+			name: "good first issue",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		}
+		type: "octokit",
+	}
+]
 ```
 
 ## Scripts

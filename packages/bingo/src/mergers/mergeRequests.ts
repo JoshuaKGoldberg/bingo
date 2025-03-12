@@ -1,14 +1,36 @@
-import { CreatedRequest } from "../types/creations.js";
+import {
+	CreatedFetchRequest,
+	CreatedOctokitRequest,
+	CreatedRequest,
+} from "bingo-requests";
+
+import { groupBy } from "../utils/groupBy.js";
+import { mergeFetchRequests } from "./mergeFetchRequests.js";
+import { mergeOctokitRequests } from "./mergeOctokitRequests.js";
 
 export function mergeRequests(
 	firsts: CreatedRequest[],
 	seconds: CreatedRequest[],
 ) {
-	const byId = new Map<string, CreatedRequest>();
+	const byType = groupBy(firsts, (request) => request.type);
 
-	for (const request of [...firsts, ...seconds]) {
-		byId.set(request.id, request);
+	for (const added of seconds) {
+		switch (added.type) {
+			case "fetch":
+				byType.fetch = mergeFetchRequests(
+					byType.fetch as CreatedFetchRequest[],
+					added,
+				);
+				break;
+
+			case "octokit":
+				byType.octokit = mergeOctokitRequests(
+					byType.octokit as CreatedOctokitRequest[],
+					added,
+				);
+				break;
+		}
 	}
 
-	return Array.from(byId.values());
+	return Object.values(byType).flat();
 }

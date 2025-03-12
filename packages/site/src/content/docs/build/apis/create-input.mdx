@@ -59,7 +59,7 @@ import { createInput } from "bingo";
 
 export const inputFromExampleURL = createInput({
 	async produce({ fetchers }) {
-		return await (await fetchers.fetch("https://example.com")).text();
+		return await (await fetchers.fetch("https://create.bingo")).text();
 	},
 });
 ```

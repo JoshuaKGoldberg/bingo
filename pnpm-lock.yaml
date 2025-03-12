@@ -110,6 +110,9 @@ importers:
       bingo-fs:
         specifier: workspace:^
         version: link:../bingo-fs
+      bingo-requests:
+        specifier: workspace:^
+        version: link:../bingo-requests
       bingo-systems:
         specifier: workspace:^
         version: link:../bingo-systems
@@ -189,6 +192,12 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
+
+  packages/bingo-requests:
+    dependencies:
+      '@octokit/types':
+        specifier: ^13.8.0
+        version: 13.8.0
 
   packages/bingo-stratum:
     dependencies:

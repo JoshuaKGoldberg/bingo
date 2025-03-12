@@ -1,0 +1,149 @@
+---
+description: The virtual file system used by Bingo. 🗄️
+title: bingo-requests
+---
+
+import { PackageManagers } from "starlight-package-managers";
+
+Descriptions of network requests as used by Bingo. 📠
+
+<PackageManagers type="add" pkg="bingo-requests" dev />
+
+The separate `bingo-requests` package includes types for the serialized request objects used in [Concepts > Creations > `requests`](/build/concepts/creations#requests).
+
+These requests are type-safe when possible, most notably with GitHub Octokit endpoints.
+
+## Requests
+
+All request objects may contain the following properties:
+
+- `id` _(optional)_: Unique ID for logging and to differentiate between requests to the same endpoint.
+  - See [Merging> `requests`](/build/details/merging#requests) for how requests are merged
+- `type` _(required)_: Which type of request this is, as either:
+  - `"fetch"`: A [`CreatedFetchRequest`](#createdfetchrequest)
+  - `"octokit"`: A [`CreatedOctokitRequest`](#createdoctokitrequest)
+
+### `CreatedFetchRequest`
+
+Description of a request to send with [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+These additionally contain:
+
+- `init` _(optional)_: Any [`RequestInit`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit) options to be sent as the second parameter to `fetch()`
+- `url` _(required)_: URL to send the request to
+
+For example, this object describes a `GET` request to `https://create.bingo`:
+
+```ts
+import { CreatedFetchRequest } from "bingo-requests";
+
+export const request: CreatedFetchRequest = {
+	type: "fetch",
+	url: "https://create.bingo",
+};
+```
+
+The `id` field can be useful to disambiguate two requests to the same URL.
+Bingo by default merges fetch requests that have the same `url` data into one request.
+If you need to send two requests to the same URL, you can give them different `id` values.
+
+For example, these two objects describe separate `POST` requests to `https://create.bingo`:
+
+```ts
+import { CreatedFetchRequest } from "bingo-requests";
+
+export const requests: CreatedFetchRequest[] = [
+	{
+		id: "first",
+		init: {
+			body: "(first)",
+			method: "POST",
+		},
+		type: "fetch",
+		url: "https://create.bingo",
+	},
+	{
+		id: "second",
+		init: {
+			body: "(second)",
+			method: "POST",
+		},
+		type: "fetch",
+		url: "https://create.bingo",
+	},
+];
+```
+
+:::tip
+Fetch requests are generally not type-safe.
+If you would like `bingo-requests` to allow type-safe requests to a type of endpoint other than Octokit, please [file a feature request on GitHub](https://github.com/JoshuaKGoldberg/bingo/issues/new?template=03-feature.yml).
+See also: [bingo/77 🚀 Feature: Allow auth and repository hosts other than GitHub](https://github.com/JoshuaKGoldberg/bingo/issues/77).
+:::
+
+### `CreatedOctokitRequest`
+
+Description of a request to send with [Octokit](https://octokit.github.io/rest.js).
+
+These additionally contain:
+
+- `endpoint`: Octokit endpoint to send to
+- `parameters`: Parameter data to attach to the request
+
+For example, this object describes a request to add a label to a repository:
+
+```ts
+import { CreatedOctokitRequest } from "bingo-requests";
+
+export const request: CreatedOctokitRequest = {
+	endpoint: "POST /repos/{owner}/{repo}/labels",
+	parameters: {
+		name: "good first issue",
+		owner: "JoshuaKGoldberg",
+		repo: "create-typescript-app",
+	},
+	type: "octokit",
+};
+```
+
+The `id` field can be useful to disambiguate two requests to the same endpoint.
+Bingo by default merges Octokit requests that have the same `url` data into one request.
+If you need to send two requests to the same endpoint, you can give them different `id` values.
+
+For example, these two objects describe separate requests to add labels to a repository:
+
+```ts
+import { CreatedFetchRequest } from "bingo-requests";
+
+export const requests: CreatedFetchRequest[] = [
+	{
+		endpoint: "POST /repos/{owner}/{repo}/labels",
+		id: "first",
+		parameters: {
+			name: "good first issue",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		},
+		type: "octokit",
+	},
+	{
+		endpoint: "POST /repos/{owner}/{repo}/labels",
+		id: "second",
+		parameters: {
+			name: "wontfix",
+			owner: "JoshuaKGoldberg",
+			repo: "create-typescript-app",
+		},
+		type: "octokit",
+	},
+];
+```
+
+Octokit requests are generally type-safe, in that their types are generated from [`@octokit/types`](https://www.npmjs.com/package/@octokit/types):
+
+- `endpoint` is typed as the keys of [`Endpoints`](https://octokit.github.io/types.ts/interfaces/Endpoints.html)
+- `parameters` is typed as the parameters for the endpoint `&` [`RequestParameters`](https://octokit.github.io/types.ts/types/RequestParameters.html)
+
+:::tip
+If you would like `bingo-requests` to allow type-safe requests to a type of endpoint other than Octokit, such as a different common repository host, please [file a feature request on GitHub](https://github.com/JoshuaKGoldberg/bingo/issues/new?template=03-feature.yml).
+See also: [bingo/77 🚀 Feature: Allow auth and repository hosts other than GitHub](https://github.com/JoshuaKGoldberg/bingo/issues/77).
+:::
