@@ -96,6 +96,10 @@ export default defineConfig({
 									{ label: "bingo", link: "build/packages/bingo" },
 									{ label: "bingo-fs", link: "build/packages/bingo-fs" },
 									{
+										label: "bingo-requests",
+										link: "build/packages/bingo-requests",
+									},
+									{
 										label: "bingo-systems",
 										link: "build/packages/bingo-systems",
 									},

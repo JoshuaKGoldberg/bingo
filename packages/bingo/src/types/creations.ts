@@ -1,15 +1,6 @@
 import { CreatedDirectory } from "bingo-fs";
+import { CreatedRequest } from "bingo-requests";
 import { SystemFetchers } from "bingo-systems";
-
-/**
- * A request to make to set up part of a repository's tooling.
- * @todo This will eventually become a serializable format:
- * https://github.com/JoshuaKGoldberg/bingo/issues/65
- */
-export interface CreatedRequest {
-	id: string;
-	send: CreatedRequestSender;
-}
 
 export type CreatedRequestSender = (fetchers: SystemFetchers) => Promise<void>;
 

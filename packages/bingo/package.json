@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@clack/prompts": "^0.10.0",
 		"bingo-fs": "workspace:^",
+		"bingo-requests": "workspace:^",
 		"bingo-systems": "workspace:^",
 		"cached-factory": "^0.1.0",
 		"call-id": "^0.1.0",
