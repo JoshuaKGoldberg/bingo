@@ -63,7 +63,7 @@ export async function createRepositoryOnGitHub<
 		(await promptForOptionSchema(
 			"owner",
 			template.options.owner,
-			"GitHub organization or user the repository is underneath",
+			"organization or username owning the repository",
 			undefined,
 		));
 

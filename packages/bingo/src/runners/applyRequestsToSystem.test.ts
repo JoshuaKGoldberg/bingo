@@ -29,6 +29,24 @@ function createStubSystem() {
 }
 
 describe("applyRequestsToSystem", () => {
+	it("does not do anything when getRequestSender returns undefined", async () => {
+		mockGetRequestSender.mockReturnValueOnce(undefined);
+
+		const act = async () => {
+			await applyRequestsToSystem(
+				[
+					{
+						type: "fetch",
+						url: "https://example.com",
+					},
+				],
+				createStubSystem(),
+			);
+		};
+
+		await expect(act()).resolves.toBeUndefined();
+	});
+
 	it("does not display an error when a request  does not reject", async () => {
 		const id = "abc";
 		const send = vi.fn();

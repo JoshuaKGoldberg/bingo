@@ -112,15 +112,16 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { status: CLIStatus.Cancelled };
 	}
 
-	const remote = offline
-		? undefined
-		: await createRepositoryOnGitHub(
-				display,
-				{ repository, ...baseOptions.completed },
-				system.fetchers.octokit,
-				system.runner,
-				template,
-			);
+	const remote =
+		offline || !system.fetchers.octokit
+			? undefined
+			: await createRepositoryOnGitHub(
+					display,
+					{ repository, ...baseOptions.completed },
+					system.fetchers.octokit,
+					system.runner,
+					template,
+				);
 
 	if (remote instanceof Error) {
 		logRerunSuggestion(argv, baseOptions.prompted);

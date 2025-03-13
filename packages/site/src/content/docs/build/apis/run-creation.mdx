@@ -66,15 +66,22 @@ await runCration(
 
 File, network, and shell wrapper APIs.
 
-By default, these are provided by [`bingo-systems`](/build/packages/bingo-systems).
+`system` may contain the following properties, which have the following defaults:
+
+- `fetchers`: [`createSystemFetchers`](/build/packages/bingo-systems#fetchers)
+- `fs`: [`createWritingFileSystem`](/build/packages/bingo-systems#files)
+- `runner`: [`createSystemRunner`](/build/packages/bingo-systems#runner)
+- `take`: a function that passes those properties to the Input
+
 They can be swapped out if you want to change or otherwise intercept system calls.
 
 For example, this adds a log to every shell command:
 
 ```ts
-import { createSystemContext } from "bingo-systems";
+import { runCreation } from "bingo";
+import { createSystemRunner } from "bingo-systems";
 
-const defaultSystem = createSystemContext();
+const defaultRunner = createSystemRunner();
 
 await runCreation(
 	{
@@ -82,10 +89,9 @@ await runCreation(
 	},
 	{
 		system: {
-			...createSystemContext(),
 			runner: async (...args) => {
 				console.log("Running:", args);
-				return await defaultSystem.runner(args);
+				return await defaultRunner(args);
 			},
 		},
 	},

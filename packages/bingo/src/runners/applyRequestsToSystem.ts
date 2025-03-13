@@ -9,12 +9,17 @@ export async function applyRequestsToSystem(
 ) {
 	await Promise.all(
 		requests.map(async (request) => {
-			const { id, send } = getRequestSender(request);
+			const sender = getRequestSender(system.fetchers, request);
+			if (!sender) {
+				return;
+			}
+
+			const { id, send } = sender;
 
 			system.display.item("request", id, { start: Date.now() });
 
 			try {
-				await send(system.fetchers);
+				await send();
 			} catch (error) {
 				system.display.item("request", id, { error });
 			}

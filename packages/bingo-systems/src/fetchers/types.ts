@@ -11,8 +11,8 @@ export interface SystemFetchers {
 	fetch: typeof fetch;
 
 	/**
-	 * Octokit.js instance wrapping the same `fetch` function.
+	 * Octokit.js instance wrapping the same `fetch` function, if authenticated.
 	 * @see {@link https://octokit.github.io/rest.js}
 	 */
-	octokit: Octokit;
+	octokit: Octokit | undefined;
 }

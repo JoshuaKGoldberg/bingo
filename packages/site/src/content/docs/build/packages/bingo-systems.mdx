@@ -41,12 +41,12 @@ import { Octokit } from "octokit";
 
 export interface SystemFetchers {
 	fetch: typeof fetch;
-	octokit: Octokit;
+	octokit: Octokit | undefined;
 }
 ```
 
-The `octokit` property is also available as a convenience for sending GitHub API requests.
-This is typically used to populate repository settings via the API.
+The `octokit` property is optionally available for sending GitHub API requests.
+This is typically used to populate repository settings via GitHub's API.
 
 ### `createSystemFetchers`
 
@@ -62,7 +62,7 @@ await fetchers.fetch("...");
 
 Takes in an optional object parameter with up to two properties:
 
-- `auth` (`string`): a GitHub auth token to pass to the `octokit`
+- `auth` (`string`): a GitHub auth token create the [`octokit`](#octokit) property with
 - `fetch`: a function to use in place of the global [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
   - This is used both for the `fetch` property and in the `octokit`
 

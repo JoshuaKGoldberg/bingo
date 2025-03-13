@@ -21,7 +21,10 @@ describe("getRequestSender", () => {
 			url: "https://create.bingo",
 		};
 
-		const actual = getRequestSender(request);
+		const actual = getRequestSender(
+			createMockSystemFetchers() as unknown as SystemFetchers,
+			request,
+		);
 
 		expect(actual).toEqual({
 			id: request.url,
@@ -36,7 +39,10 @@ describe("getRequestSender", () => {
 			url: "https://create.bingo",
 		};
 
-		const actual = getRequestSender(request);
+		const actual = getRequestSender(
+			createMockSystemFetchers() as unknown as SystemFetchers,
+			request,
+		);
 
 		expect(actual).toEqual({
 			id: request.id,
@@ -44,7 +50,7 @@ describe("getRequestSender", () => {
 		});
 	});
 
-	it("sends a request with fetchers.request sending a fetch request", async () => {
+	it("sends a request with fetchers.request when sending a fetch request", async () => {
 		const fetchers = createMockSystemFetchers();
 
 		const request: CreatedFetchRequest = {
@@ -53,10 +59,29 @@ describe("getRequestSender", () => {
 			url: "https://create.bingo",
 		};
 
-		await getRequestSender(request).send(fetchers as unknown as SystemFetchers);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		await getRequestSender(
+			fetchers as unknown as SystemFetchers,
+			request,
+		)!.send();
 
 		expect(fetchers.fetch).toHaveBeenCalledWith(request.url, request.init);
 		expect(fetchers.octokit.request).not.toHaveBeenCalled();
+	});
+
+	it("returns undefined when given an Octokit request and fetchers.octokit is defined", async () => {
+		const request: CreatedOctokitRequest = {
+			endpoint: "POST /repos/{owner}/{repo}/labels",
+			parameters: { name: "...", owner, repo },
+			type: "octokit",
+		};
+
+		const actual = getRequestSender(
+			{ fetch: vi.fn(), octokit: undefined } as SystemFetchers,
+			request,
+		);
+
+		expect(actual).toBeUndefined();
 	});
 
 	it("returns a sender with url for id when given an Octokit request without id", () => {
@@ -66,7 +91,10 @@ describe("getRequestSender", () => {
 			type: "octokit",
 		};
 
-		const actual = getRequestSender(request);
+		const actual = getRequestSender(
+			createMockSystemFetchers() as unknown as SystemFetchers,
+			request,
+		);
 
 		expect(actual).toEqual({
 			id: request.endpoint,
@@ -82,7 +110,10 @@ describe("getRequestSender", () => {
 			type: "octokit",
 		};
 
-		const actual = getRequestSender(request);
+		const actual = getRequestSender(
+			createMockSystemFetchers() as unknown as SystemFetchers,
+			request,
+		);
 
 		expect(actual).toEqual({
 			id: request.id,
@@ -90,7 +121,7 @@ describe("getRequestSender", () => {
 		});
 	});
 
-	it("sends a request with fetchers.octokit.request sending an Octokit request", async () => {
+	it("sends a request with the Octokit when sending an Octokit request and fetchers.octokit is defined", async () => {
 		const fetchers = createMockSystemFetchers();
 
 		const request: CreatedOctokitRequest = {
@@ -99,7 +130,11 @@ describe("getRequestSender", () => {
 			type: "octokit",
 		};
 
-		await getRequestSender(request).send(fetchers as unknown as SystemFetchers);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		await getRequestSender(
+			fetchers as unknown as SystemFetchers,
+			request,
+		)!.send();
 
 		expect(fetchers.fetch).not.toHaveBeenCalled();
 		expect(fetchers.octokit.request).toHaveBeenCalledWith(
