@@ -13,9 +13,11 @@ export function createSystemFetchers({
 }: SystemFetchersSettings): SystemFetchers {
 	return {
 		fetch,
-		octokit: new Octokit({
-			auth,
-			request: { fetch },
-		}),
+		octokit: auth
+			? new Octokit({
+					auth,
+					request: { fetch },
+				})
+			: undefined,
 	};
 }
