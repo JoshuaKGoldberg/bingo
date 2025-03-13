@@ -69,7 +69,7 @@ describe("getRequestSender", () => {
 		expect(fetchers.octokit.request).not.toHaveBeenCalled();
 	});
 
-	it("returns undefined when given an Octokit request and fetchers.octokit is defined", async () => {
+	it("returns undefined when given an Octokit request and fetchers.octokit is defined", () => {
 		const request: CreatedOctokitRequest = {
 			endpoint: "POST /repos/{owner}/{repo}/labels",
 			parameters: { name: "...", owner, repo },
