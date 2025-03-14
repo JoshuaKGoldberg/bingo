@@ -27,6 +27,7 @@
 	},
 	"dependencies": {
 		"@clack/prompts": "^0.10.0",
+		"all-properties-lazy": "^0.1.0",
 		"bingo-fs": "workspace:^",
 		"bingo-requests": "workspace:^",
 		"bingo-systems": "workspace:^",

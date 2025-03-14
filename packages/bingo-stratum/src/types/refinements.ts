@@ -21,6 +21,7 @@ export interface StratumRefinements<Options extends object = object> {
 	 * Any extra addon values to merge in and pass to blocks.
 	 */
 	// TODO: Get this to work with object or never...
+	// https://github.com/JoshuaKGoldberg/bingo/issues/283
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	addons?: CreatedBlockAddons<any, Options>[];
 

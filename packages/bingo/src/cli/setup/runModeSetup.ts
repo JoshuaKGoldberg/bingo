@@ -44,13 +44,12 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	from,
 	help,
 	offline,
+	repository: requestedRepository,
 	template,
 
-	// TODO: File or find an issue on eslint-plugin-perfectionist?
-	/* eslint-disable perfectionist/sort-objects */
-	repository: requestedRepository,
+	// TODO: See if this gets fixed in eslint-plugin-perfectionist?
+	// https://github.com/azat-io/eslint-plugin-perfectionist/issues/491
 	directory: requestedDirectory = requestedRepository,
-	/* eslint-enable perfectionist/sort-objects */
 }: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("setup", from, template);

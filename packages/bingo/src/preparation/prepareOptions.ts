@@ -1,3 +1,4 @@
+import { allPropertiesLazy } from "all-properties-lazy";
 import { CreatedDirectory, intake } from "bingo-fs";
 import { BingoSystem } from "bingo-systems";
 
@@ -5,7 +6,6 @@ import { Display } from "../contexts/createDisplay.js";
 import { createSystemContextWithAuth } from "../contexts/createSystemContextWithAuth.js";
 import { LazyOptionalOptions, OptionsContext } from "../types/options.js";
 import { AnyShape, InferredObject } from "../types/shapes.js";
-import { awaitLazyProperties } from "../utils/awaitLazyProperties.js";
 
 /**
  * Any object that has options, and optionally a prepare function.
@@ -55,7 +55,7 @@ export async function prepareOptions<OptionsShape extends AnyShape>(
 			exclude: /node_modules|^\.git$/,
 		})) as CreatedDirectory);
 
-	return await awaitLazyProperties({
+	return await allPropertiesLazy({
 		...base.prepare({
 			files,
 			log: system.display.log,

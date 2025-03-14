@@ -25,6 +25,7 @@
 		"build": "tsc"
 	},
 	"dependencies": {
+		"all-properties-lazy": "^0.1.0",
 		"diff": "^7.0.0",
 		"octokit": "^4.1.2",
 		"without-undefined-properties": "^0.1.1"

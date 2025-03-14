@@ -1,3 +1,5 @@
+import hashObject from "hash-object";
+
 export function mergeAddonsIfUpdated<T extends object>(
 	existingAddons: T,
 	newAddons: T,
@@ -22,10 +24,12 @@ export function mergeAddonsIfUpdated<T extends object>(
 				return new Error("Mismatched merging addons (Array.isArray).");
 			}
 
-			const existingElementKeys = new Set(result[key].map(createKey));
+			const existingElementKeys = new Set(
+				result[key].map((value) => createHash(value)),
+			);
 
 			for (const newElement of value) {
-				const newElementKey = createKey(newElement);
+				const newElementKey = createHash(newElement);
 				if (!existingElementKeys.has(newElementKey)) {
 					existingElementKeys.add(newElementKey);
 					result[key].push(newElement);
@@ -64,7 +68,8 @@ export function mergeAddonsIfUpdated<T extends object>(
 	return updated ? result : undefined;
 }
 
-// TODO: In the future, this could be a more quick and intelligent hash...
-function createKey(value: unknown) {
-	return JSON.stringify(value);
+function createHash(value: unknown) {
+	return typeof value === "object"
+		? hashObject(value as Record<string, unknown>)
+		: String(value as boolean | null | number | string | undefined);
 }

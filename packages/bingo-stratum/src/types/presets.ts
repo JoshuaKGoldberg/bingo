@@ -17,6 +17,7 @@ export interface PresetDefinition<Options extends object = object> {
 	about: PresetAbout;
 	// TODO: Figure out how to replace this with ... never? object?
 	// Note it needs to pass tsc both in this repo and in create-typescript-app.
+	// https://github.com/JoshuaKGoldberg/bingo/issues/283
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	blocks: (BlockWithAddons<any, Options> | BlockWithoutAddons<Options>)[];
 }
