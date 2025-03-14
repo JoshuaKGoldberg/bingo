@@ -143,30 +143,6 @@ function diffCreatedDirectoryWorker(
 	return undefinedIfEmpty(withoutUndefinedProperties(result));
 }
 
-function diffCreatedFileText(
-	actual: string,
-	created: string,
-	pathToFile: string,
-	processText: ProcessText,
-) {
-	const actualProcessed = processText(created, pathToFile);
-	const createdProcessed = processText(actual, pathToFile);
-
-	return actualProcessed === createdProcessed
-		? undefined
-		: createTwoFilesPatch(
-				pathToFile,
-				pathToFile,
-				createdProcessed,
-				actualProcessed,
-			).replace(/^Index: .+\n=+\n-{3} .+\n\+{3} .+\n/gmu, "");
-}
-
-/**
- * @todo
- * Unclear yet how to represent a diff in the mode...
- * Should a DiffedFileEntry type replace CreatedFileMetadata.mode with string?
- */
 function diffCreatedFileMetadata(
 	actual: CreatedFileMetadata | undefined,
 	created: CreatedFileMetadata | undefined,
@@ -188,6 +164,25 @@ function diffCreatedFileMetadata(
 			(text) => text,
 		),
 	};
+}
+
+function diffCreatedFileText(
+	actual: string,
+	created: string,
+	pathToFile: string,
+	processText: ProcessText,
+) {
+	const actualProcessed = processText(created, pathToFile);
+	const createdProcessed = processText(actual, pathToFile);
+
+	return actualProcessed === createdProcessed
+		? undefined
+		: createTwoFilesPatch(
+				pathToFile,
+				pathToFile,
+				createdProcessed,
+				actualProcessed,
+			).replace(/^Index: .+\n=+\n-{3} .+\n\+{3} .+\n/gmu, "");
 }
 function undefinedIfEmpty<T>(value: T) {
 	return !!value &&

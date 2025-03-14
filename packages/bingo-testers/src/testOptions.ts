@@ -1,6 +1,6 @@
+import { allPropertiesLazy } from "all-properties-lazy";
 import {
 	AnyShape,
-	awaitLazyProperties,
 	HasOptionsAndMaybePrepare,
 	InferredObject,
 	OptionsContext,
@@ -16,7 +16,7 @@ export async function testOptions<OptionsShape extends AnyShape>(
 		return context.options;
 	}
 
-	return await awaitLazyProperties({
+	return await allPropertiesLazy({
 		...base.prepare({
 			...context,
 			log: context.log ?? createFailingFunction("log", "prepare()"),

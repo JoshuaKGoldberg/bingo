@@ -60,6 +60,7 @@ export async function promptForOptionSchema(
 			case z.ZodFirstPartyTypeKind.ZodUnion: {
 				const options = def.options.map((option) => ({
 					// TODO: Handle non-string-like schema data types
+					// https://github.com/JoshuaKGoldberg/bingo/issues/285
 					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 					value: `${(option._def as { value: number | string }).value}`,
 				}));

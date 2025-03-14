@@ -1,9 +1,9 @@
 // TODO: Split out into standalone package
+// https://github.com/JoshuaKGoldberg/bingo/issues/285
 /* eslint-disable @eslint-community/eslint-comments/disable-enable-pair */
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-// TODO: Add fancy TS types to convert from Zod to parseArgs
 
 import { parseArgs, ParseArgsConfig } from "node:util";
 import {
@@ -17,6 +17,7 @@ import {
 import { AnyShape, InferredObject } from "../../types/shapes.js";
 
 // TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
+// https://github.com/JoshuaKGoldberg/bingo/issues/284
 
 type ParseArgsOptionsConfig = NonNullable<ParseArgsConfig["options"]>;
 

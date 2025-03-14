@@ -28,6 +28,7 @@ export function getRequestSender(
 						await octokit.request(
 							request.endpoint,
 							// TODO: I have no idea how to get this to type-check without the any.
+							// https://github.com/JoshuaKGoldberg/bingo/issues/286
 							// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
 							request.parameters as any,
 						);

@@ -1,4 +1,4 @@
-import { awaitLazyProperties } from "bingo";
+import { allPropertiesLazy } from "all-properties-lazy";
 import chalk from "chalk";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
@@ -75,7 +75,7 @@ describe("createStratumTemplate", () => {
 					take: vi.fn(),
 				});
 
-				const options = await awaitLazyProperties(lazyOptions);
+				const options = await allPropertiesLazy(lazyOptions);
 
 				expect(mockInferPreset).not.toHaveBeenCalled();
 				expect(options).toEqual({});
@@ -86,11 +86,12 @@ describe("createStratumTemplate", () => {
 				const lazyOptions = templateWithPreset.prepare({
 					log: mockLog,
 					// TODO: why is this type assertion necessary?
+					// https://github.com/JoshuaKGoldberg/bingo/issues/287
 					options: { ...mockOptions, preset } as BaseOptionsFor<typeof base>,
 					take: vi.fn(),
 				});
 
-				const options = await awaitLazyProperties(lazyOptions);
+				const options = await allPropertiesLazy(lazyOptions);
 
 				expect(mockInferPreset).not.toHaveBeenCalled();
 				expect(options).toEqual({ preset });
@@ -108,7 +109,7 @@ describe("createStratumTemplate", () => {
 					take: vi.fn(),
 				});
 
-				const options = await awaitLazyProperties(lazyOptions);
+				const options = await allPropertiesLazy(lazyOptions);
 
 				expect(mockLog).not.toHaveBeenCalled();
 				expect(options).toEqual({});
@@ -127,7 +128,7 @@ describe("createStratumTemplate", () => {
 					take: vi.fn(),
 				});
 
-				const options = await awaitLazyProperties(lazyOptions);
+				const options = await allPropertiesLazy(lazyOptions);
 
 				expect(mockLog).toHaveBeenCalledWith(
 					`Detected ${chalk.blue(`--preset example`)} from existing files on disk.`,

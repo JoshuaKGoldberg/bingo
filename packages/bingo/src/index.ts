@@ -22,7 +22,6 @@ export * from "./contexts/createSystemContext.js";
 export * from "./contexts/createSystemContextWithAuth.js";
 export * from "./mergers/mergeCreations.js";
 export * from "./runners/applyFilesToSystem.js";
-export * from "./utils/awaitLazyProperties.js";
 
 // Types
 export type * from "./types/about.js";

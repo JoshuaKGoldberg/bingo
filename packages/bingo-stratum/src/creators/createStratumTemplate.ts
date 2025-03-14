@@ -47,7 +47,7 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			//   instead use imported Blocks in `refinements.blocks.exclude`.
 			//
 			// TODO: It would be nice to have labeled groups of options.
-			// That way these don't get logged alongside the more normal options...
+			// https://github.com/JoshuaKGoldberg/bingo/issues/288
 			...Object.fromEntries(
 				Array.from(
 					new Set(
@@ -71,15 +71,16 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			),
 		},
 		prepare(context) {
+			// TODO: Why are these type assertions necessary?
+			// https://github.com/JoshuaKGoldberg/bingo/issues/287
 			return {
 				preset: () => {
 					if (context.options.preset) {
-						// TODO: why is this type assertion necessary?
 						return context.options.preset as string;
 					}
 
 					// TODO: It would be better to run the base.prepare first to generate option defaults.
-					// ...
+					// https://github.com/JoshuaKGoldberg/bingo/issues/289
 					const preset =
 						context.files && inferPreset(context, templateDefinition.presets);
 
@@ -92,12 +93,11 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 					return preset;
 				},
 				...(base.prepare?.(context) ?? {}),
-			} as LazyOptionalOptions<Partial<Options>>; // TODO: Why is this type assertion necessary?
+			} as LazyOptionalOptions<Partial<Options>>;
 		},
 		produce(context) {
 			return produceStratumTemplate(
 				template,
-				// TODO: Why is this type assertion necessary?
 				context as ProduceStratumTemplateSettings<OptionsShape>,
 			);
 		},
