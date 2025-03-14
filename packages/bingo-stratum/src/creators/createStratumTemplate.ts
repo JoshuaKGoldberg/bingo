@@ -71,7 +71,7 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			),
 		},
 		prepare(context) {
-			// TODO: Why are these type assertions necessary?
+			// TODO: Why are these type assertions necessary?
 			// https://github.com/JoshuaKGoldberg/bingo/issues/287
 			return {
 				preset: () => {
