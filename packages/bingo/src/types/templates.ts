@@ -149,16 +149,19 @@ export interface TemplatePrepareContext<Options extends object, Refinements>
 	extends TemplateContext<Options, Refinements> {
 	/**
 	 * Logs a message to the running user.
+	 * @see {@link https://www.create.bingo/build/details/contexts#options-log}
 	 */
 	log: ContextLog;
 
 	/**
 	 * Existing directory of files on disk, if available.
+	 * @see {@link https://www.create.bingo/build/details/contexts#options-files}
 	 */
 	files?: CreatedDirectory;
 
 	/**
 	 * Runs an Input.
+	 * @see {@link https://www.create.bingo/build/details/contexts#options-take}
 	 */
 	take: TakeInput;
 }

@@ -44,9 +44,6 @@ For example, this configuration file adds the word `"arethetypeswrong"` to a CSp
 import { blockCSpell, createConfig } from "create-typescript-app";
 
 export default createConfig({
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		addons: [
 			blockCSpell({
@@ -73,9 +70,6 @@ For example, this configuration file adds in an "arethetypeswrong" Block alongsi
 import { blockAreTheTypesWrong, createConfig } from "create-typescript-app";
 
 export default createConfig({
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		blocks: {
 			add: [blockAreTheTypesWrong],
@@ -96,9 +90,6 @@ For example, this configuration file omits the default _"This package was templa
 import { blockTemplatedBy, createConfig } from "create-typescript-app";
 
 export default createConfig({
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		blocks: {
 			exclude: [blockTemplatedBy],
@@ -146,9 +137,6 @@ import { createConfig } from "create-typescript-app";
 import { blockWallabyConfig } from "./blockWallabyConfig.js";
 
 export default createConfig({
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		blocks: {
 			add: [blockWallabyConfig],
@@ -197,9 +185,6 @@ import { createConfig } from "create-typescript-app";
 import { blockLintAreTheTypesWrong } from "./blockLintAreTheTypesWrong.js";
 
 export default createConfig({
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		blocks: {
 			add: [blockLintAreTheTypesWrong],

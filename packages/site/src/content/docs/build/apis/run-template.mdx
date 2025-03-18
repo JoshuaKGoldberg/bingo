@@ -230,9 +230,6 @@ import { blockAreTheTypesWrong, template } from "create-typescript-app";
 import { runTemplate } from "bingo";
 
 await runTemplate(template, {
-	options: {
-		preset: "everything",
-	},
 	refinements: {
 		blocks: {
 			add: [blockAreTheTypesWrong],
