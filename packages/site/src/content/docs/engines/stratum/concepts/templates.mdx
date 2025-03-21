@@ -79,9 +79,9 @@ During transition mode, Stratum will attempt to infer a default value for `--pre
 That default value is computed by comparing existing files on disk to the files that would be produced by the Blocks.
 If Preset with the greatest percentage matches 35% or more of its created files, it will be used as the default.
 
-### Exclusion Options
+### Refinement Options
 
-Stratum Templates also add `--exclude-*` CLI options for each of their named Blocks.
+Stratum Templates also generate `--add-*` and `--exclude-*` CLI options for each of their named Blocks.
 Each Block name is transformed to kebab-cases boolean option that defaults to `false`.
 
 For example, given the following named `ESLint` Block:
@@ -103,13 +103,16 @@ export const blockESLint = base.createBlock({
 });
 ```
 
-If a Stratum Template includes that Block, it will have an `--exclude-eslint` option available on the CLI:
+If a Stratum Template includes that Block, it will generate two options available on the CLI:
+
+- `--add-eslint`: to add the Block if not already present in the selected Preset
+- `--exclude-eslint`: to exclude the Block if already present in the selected Preset
 
 ```shell
 npx create-stratum-example --exclude-eslint
 ```
 
 :::note
-Exclusion options are not added to the TypeScript types of `createConfig` functions in configuration files.
-See [Details > Configurations > Refinements > `exclude`](/engines/stratum/details/configurations#exclude) for excluding Blocks in configuration files.
+Refinement options are not added to the TypeScript types of `createConfig` functions in configuration files.
+See [Details > Configurations > Refinements](/engines/stratum/details/configurations#refinements) for modifying Blocks with configuration files.
 :::

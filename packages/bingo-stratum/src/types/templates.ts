@@ -8,6 +8,7 @@ import {
 import { z } from "zod";
 
 import { Base } from "./bases.js";
+import { Block } from "./blocks.js";
 import { Preset } from "./presets.js";
 import { StratumRefinements } from "./refinements.js";
 
@@ -26,6 +27,11 @@ export interface StratumTemplate<OptionsShape extends AnyShape>
 	 * @see {@link https://www.create.bingo/engines/stratum/concepts/bases}
 	 */
 	base: Base<OptionsShape>;
+
+	/**
+	 * All the Blocks available in any of the Template's Presets.
+	 */
+	blocks: Block<object | undefined, InferredObject<OptionsShape>>[];
 
 	/**
 	 * Sets up lazily load default options values.

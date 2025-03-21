@@ -3,6 +3,7 @@ import { AnyShape, InferredObject, ProduceTemplateSettings } from "bingo";
 import { BlockCreation } from "../types/creations.js";
 import { Preset } from "../types/presets.js";
 import { StratumRefinements } from "../types/refinements.js";
+import { StratumTemplate } from "../types/templates.js";
 import { applyBlockRefinements } from "./applyBlockRefinements.js";
 import { produceBlocks } from "./produceBlocks.js";
 
@@ -21,6 +22,11 @@ export interface ProducePresetSettings<OptionsShape extends AnyShape>
 	 * @see {@link https://create.bingo/engines/stratum/details/configurations#refinements}
 	 */
 	refinements?: StratumRefinements<InferredObject<OptionsShape>>;
+
+	/**
+	 * Parent Template, if more Blocks may be needed.
+	 */
+	template?: StratumTemplate<OptionsShape>;
 }
 
 /**
@@ -35,9 +41,11 @@ export function producePreset<OptionsShape extends AnyShape>(
 		offline,
 		options,
 		refinements = {},
+		template,
 	}: ProducePresetSettings<OptionsShape>,
 ): BlockCreation<InferredObject<OptionsShape>> {
 	const blocks = applyBlockRefinements(
+		template?.blocks ?? preset.blocks,
 		preset.blocks,
 		options,
 		refinements.blocks,
