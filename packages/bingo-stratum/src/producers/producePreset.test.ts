@@ -98,4 +98,61 @@ describe("producePreset", () => {
 			},
 		});
 	});
+
+	it("uses the template's blocks for refinement if a template is provided", () => {
+		const baseWithoutOption = createBase({
+			options: {},
+		});
+
+		const blockA = baseWithoutOption.createBlock({
+			about: { name: "A" },
+			produce() {
+				return {
+					files: {
+						"a.txt": "a",
+					},
+				};
+			},
+		});
+
+		const blockB = baseWithoutOption.createBlock({
+			about: { name: "B" },
+			produce() {
+				return {
+					files: {
+						"b.txt": "b",
+					},
+				};
+			},
+		});
+
+		const presetA = baseWithoutOption.createPreset({
+			about: { name: "A" },
+			blocks: [blockA],
+		});
+		const presetAB = baseWithoutOption.createPreset({
+			about: { name: "AB" },
+			blocks: [blockA, blockB],
+		});
+
+		const template = baseWithoutOption.createStratumTemplate({
+			presets: [presetA, presetAB],
+		});
+
+		const actual = producePreset(presetA, {
+			...system,
+			options: {
+				"add-b": true,
+			},
+			template,
+		});
+
+		expect(actual).toEqual({
+			...emptyCreation,
+			files: {
+				"a.txt": "a",
+				"b.txt": "b",
+			},
+		});
+	});
 });

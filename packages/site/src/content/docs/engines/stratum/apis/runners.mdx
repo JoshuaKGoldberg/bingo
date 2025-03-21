@@ -337,3 +337,26 @@ await runPreset(preset, {
 ```
 
 See [Configurations > `blocks`](/engines/stratum/details/configurations#blocks) for how this is used.
+
+### `template` {#preset-template}
+
+Parent Template that contains the Preset.
+This is used to resolve any [Block Refinements](/engines/stratum/concepts/templates#refinement-options) that add blocks.
+
+For example, this production runs a Preset that includes an "Extra Fun" Block from its parent Template:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+declare const preset: Preset;
+declare const template: Template;
+
+producePreset(preset, {
+	options: {
+		"add-extra-fun": true,
+		name: "My Production",
+	},
+	preset: "example",
+});
+```

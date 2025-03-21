@@ -59,6 +59,7 @@ describe("createStratumTemplate", () => {
 			expect(Object.keys(template.options)).toEqual([
 				"name",
 				"preset",
+				"add-example-block",
 				"exclude-example-block",
 			]);
 		});

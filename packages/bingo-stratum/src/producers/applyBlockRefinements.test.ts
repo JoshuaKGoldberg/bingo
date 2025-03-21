@@ -25,11 +25,15 @@ const blockC = base.createBlock({
 	produce: vi.fn(),
 });
 
+const blocksAvailable = [blockA, blockB, blockC];
+
 describe("applyBlockRefinements", () => {
 	it("returns the initial blocks when no exclusion options or refinements are provided", () => {
 		const initial = [blockA, blockB];
 
-		const actual = applyBlockRefinements(initial, { value: "" });
+		const actual = applyBlockRefinements(blocksAvailable, initial, {
+			value: "",
+		});
 
 		expect(actual).toBe(initial);
 	});
@@ -38,6 +42,7 @@ describe("applyBlockRefinements", () => {
 		const initial = [blockA, blockB];
 
 		const actual = applyBlockRefinements(
+			blocksAvailable,
 			initial,
 			{ value: "" },
 			{ add: [], exclude: [] },
@@ -46,10 +51,27 @@ describe("applyBlockRefinements", () => {
 		expect(actual).toBe(initial);
 	});
 
-	it("returns modified blocks when only exclusion options are provided", () => {
+	it("returns added and initial blocks when only addition options are provided", () => {
+		const blocksInitial = [blockB];
+
+		const actual = applyBlockRefinements(
+			blocksAvailable,
+			blocksInitial,
+			{ "add-a": true, value: "" },
+			{
+				add: [],
+				exclude: [],
+			},
+		);
+
+		expect(actual).toEqual([blockB, blockA]);
+	});
+
+	it("returns non-excluded blocks when only exclusion options are provided", () => {
 		const initial = [blockA, blockB];
 
 		const actual = applyBlockRefinements(
+			blocksAvailable,
 			initial,
 			{ "exclude-a": true, value: "" },
 			{
@@ -61,10 +83,80 @@ describe("applyBlockRefinements", () => {
 		expect(actual).toEqual([blockB]);
 	});
 
-	it("returns modified blocks when only refinements are provided", () => {
+	it("returns added and non-excluded blocks when addition and exclusion options are provided", () => {
+		const initial = [blockB, blockC];
+
+		const actual = applyBlockRefinements(
+			blocksAvailable,
+			initial,
+			{ "add-a": true, "exclude-b": true, value: "" },
+			{
+				add: [],
+				exclude: [],
+			},
+		);
+
+		expect(actual).toEqual([blockC, blockA]);
+	});
+
+	it("throws an error when options both add and remove a block", () => {
+		const initial = [blockB, blockC];
+
+		const act = () =>
+			applyBlockRefinements(
+				blocksAvailable,
+				initial,
+				{ "add-a": true, "exclude-a": true, value: "" },
+				{
+					add: [],
+					exclude: [],
+				},
+			);
+
+		expect(act).toThrow(
+			"Cannot both add and exclude the same block: --add-a, --exclude-a",
+		);
+	});
+
+	it("throws an error when options add an unknown block", () => {
+		const initial = [blockB, blockC];
+
+		const act = () =>
+			applyBlockRefinements(
+				blocksAvailable,
+				initial,
+				{ "add-d": true, value: "" },
+				{
+					add: [],
+					exclude: [],
+				},
+			);
+
+		expect(act).toThrow("Unknown Block refinement option: --add-d");
+	});
+
+	it("throws an error when options exclude an unknown block", () => {
+		const initial = [blockB, blockC];
+
+		const act = () =>
+			applyBlockRefinements(
+				blocksAvailable,
+				initial,
+				{ "exclude-d": true, value: "" },
+				{
+					add: [],
+					exclude: [],
+				},
+			);
+
+		expect(act).toThrow("Unknown Block refinement option: --exclude-d");
+	});
+
+	it("returns non-excluded blocks when only exclusion refinements are provided", () => {
 		const initial = [blockA, blockB];
 
 		const actual = applyBlockRefinements(
+			blocksAvailable,
 			initial,
 			{ value: "" },
 			{
@@ -77,10 +169,11 @@ describe("applyBlockRefinements", () => {
 	});
 
 	it("returns modified blocks when both exclusion options and refinements are provided", () => {
-		const initial = [blockA, blockB, blockC];
+		const blocksInitial = [blockA, blockB, blockC];
 
 		const actual = applyBlockRefinements(
-			initial,
+			blocksAvailable,
+			blocksInitial,
 			{ "exclude-a": true, value: "" },
 			{
 				add: [],

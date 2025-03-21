@@ -12,7 +12,7 @@ import {
 	StratumTemplateDefinition,
 	ZodPresetNameLiterals,
 } from "../types/templates.js";
-import { createBlockExclusionOption } from "../utils/createBlockExclusionOption.js";
+import { createBlockRefinementOption } from "../utils/createBlockRefinementOption.js";
 import { slugifyName } from "../utils/slugifyName.js";
 import { inferPreset } from "./inferPreset.js";
 
@@ -22,9 +22,20 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 ): StratumTemplate<OptionsShape> {
 	type Options = InferredObject<OptionsShape>;
 
+	const namedBlocks = Array.from(
+		new Set(
+			templateDefinition.presets
+				.flatMap((preset) => preset.blocks.map((block) => block.about?.name))
+				.filter((blockName) => typeof blockName === "string"),
+		),
+	);
+
 	const template: StratumTemplate<OptionsShape> = {
 		...templateDefinition,
 		base,
+		blocks: Array.from(
+			new Set(templateDefinition.presets.flatMap((preset) => preset.blocks)),
+		),
 		createConfig: (config) => ({ ...config, template }),
 		options: {
 			...base.options,
@@ -41,26 +52,33 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 							.about.name,
 					),
 				),
-			// Exclusion options are not present in the types, because:
+			// Block refinement options are not present in the types, because:
 			// * It'd be a lot of types plumbing to know the full list of Blocks.
 			// * We want to discourage using them in config files: it's better to
-			//   instead use imported Blocks in `refinements.blocks.exclude`.
+			//   instead use imported Blocks in `refinements.blocks`.
 			//
 			// TODO: It would be nice to have labeled groups of options.
 			// https://github.com/JoshuaKGoldberg/bingo/issues/288
 			...Object.fromEntries(
-				Array.from(
-					new Set(
-						templateDefinition.presets.flatMap((preset) =>
-							preset.blocks.map((block) => block.about?.name),
-						),
-					),
-				)
-					.filter((blockName) => typeof blockName === "string")
+				namedBlocks
 					.map(
 						(blockName) =>
 							[
-								createBlockExclusionOption(blockName),
+								createBlockRefinementOption("add", blockName),
+								z
+									.boolean()
+									.describe(`whether to add the ${blockName} block`)
+									.optional(),
+							] as const,
+					)
+					.sort(([a], [b]) => a.localeCompare(b)),
+			),
+			...Object.fromEntries(
+				namedBlocks
+					.map(
+						(blockName) =>
+							[
+								createBlockRefinementOption("exclude", blockName),
 								z
 									.boolean()
 									.describe(`whether to exclude the ${blockName} block`)

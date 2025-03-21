@@ -30,6 +30,7 @@ export function produceStratumTemplate<
 	}
 
 	const blocks = applyBlockRefinements(
+		template.blocks,
 		preset.blocks,
 		options,
 		refinements.blocks,
