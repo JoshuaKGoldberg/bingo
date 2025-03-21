@@ -27,6 +27,31 @@ const mockLog = vi.fn();
 const mockOptions = { name: "Test Name" };
 
 describe("createStratumTemplate", () => {
+	describe("blocks", () => {
+		it("adds extra blocks alongside those from presets when the template definition includes them", () => {
+			const blockInsidePreset = base.createBlock({
+				about: { name: "Block From Preset" },
+				produce: vi.fn(),
+			});
+			const blockOutsidePreset = base.createBlock({
+				about: { name: "Block Outside Preset" },
+				produce: vi.fn(),
+			});
+
+			const template = base.createStratumTemplate({
+				blocks: [blockOutsidePreset],
+				presets: [
+					base.createPreset({
+						about: { name: "Example Preset" },
+						blocks: [blockInsidePreset],
+					}),
+				],
+			});
+
+			expect(template.blocks).toEqual([blockOutsidePreset, blockInsidePreset]);
+		});
+	});
+
 	describe("options", () => {
 		it("does not add block exclusion options when no blocks are named", () => {
 			const template = base.createStratumTemplate({

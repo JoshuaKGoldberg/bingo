@@ -2,6 +2,7 @@ import { CachedFactory } from "cached-factory";
 
 import { Block } from "../types/blocks.js";
 import { BlockRefinements } from "../types/refinements.js";
+import { slugifyName } from "../utils/slugifyName.js";
 
 interface BlockRefinement {
 	add?: boolean;
@@ -24,7 +25,7 @@ export function applyBlockRefinements<Options extends object>(
 	const allBlocksByName = new Map(
 		blocksAvailable
 			.filter((block): block is BlockWithName => !!block.about?.name)
-			.map((block) => [block.about.name.toLowerCase(), block]),
+			.map((block) => [slugifyName(block.about.name), block]),
 	);
 	const refinementsByBlock = new CachedFactory<string, BlockRefinement>(
 		() => ({}),
@@ -37,7 +38,8 @@ export function applyBlockRefinements<Options extends object>(
 			continue;
 		}
 
-		const [, action, blockName] = matches;
+		const [, action, blockNameRaw] = matches;
+		const blockName = slugifyName(blockNameRaw);
 		if (!allBlocksByName.has(blockName)) {
 			throw new Error(`Unknown Block refinement option: --${optionKey}`);
 		}

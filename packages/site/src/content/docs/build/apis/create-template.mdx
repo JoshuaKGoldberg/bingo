@@ -12,6 +12,7 @@ A template definition must contain:
 A template definition may optionally contain:
 
 - [`about`](#about): documentation metadata about the template
+- [`blocks`](#about): any additional blocks to make available for options-based refinements
 - [`options`](#options): an object with Zod schemas for any options the template takes in
 - [`prepare`](#prepare): sets up lazily load default options values
 - [`setup`](#setup): additional production function for initializing a new repository with the template
@@ -166,6 +167,34 @@ export default createTemplate({
 ```
 
 Repositories generated from that template would indicate _generated from [JoshuaKGoldberg/create-typescript-app](https://github.com/JoshuaKGoldberg/create-typescript-app)_ under their name on the GitHub website.
+
+### `blocks`
+
+Any additional Blocks to make available for [Block Refinements](/engines/stratum/concepts/templates#refinement-options) that add blocks.
+
+For example, this template adds an off-by-default "Extra Fun" Block that can be opted into in the CLI:
+
+```ts
+import { createTemplate } from "bingo";
+
+import { blockExtraFrom } from "./blockExtraFun";
+
+export default createTemplate({
+	about: {
+		description:
+			"One-stop shop for the latest and greatest TypeScript tooling.",
+		name: "Example Template",
+	},
+	blocks: [blockExtraFun],
+	produce() {
+		// ...
+	},
+});
+```
+
+```shell
+npx example-template --add-extra-fun
+```
 
 ### `options`
 
