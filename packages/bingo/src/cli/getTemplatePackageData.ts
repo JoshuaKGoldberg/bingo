@@ -2,6 +2,8 @@ import { getCallId } from "call-id";
 import path from "path";
 import { readPackageUp } from "read-package-up";
 
+import { resolveFilePath } from "./utils.js";
+
 export async function getTemplatePackageData() {
 	const callId = getCallId(2);
 
@@ -11,7 +13,7 @@ export async function getTemplatePackageData() {
 		);
 	}
 
-	const directory = path.dirname(callId.file);
+	const directory = path.dirname(resolveFilePath(callId.file));
 	const result = await readPackageUp({ cwd: directory });
 
 	return (
