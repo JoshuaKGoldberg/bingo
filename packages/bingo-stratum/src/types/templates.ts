@@ -63,6 +63,11 @@ export interface StratumTemplateDefinition<OptionsShape extends AnyShape> {
 	about?: TemplateAbout;
 
 	/**
+	 * Any additional Blocks to make available for Block refinements that add Blocks.
+	 */
+	blocks?: Block<object | undefined, InferredObject<OptionsShape>>[];
+
+	/**
 	 * Sets up lazily load default options values.
 	 * @see {@link https://www.create.bingo/engines/stratum/apis/create-base#createtemplate-prepare}
 	 */

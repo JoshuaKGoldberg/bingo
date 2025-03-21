@@ -34,7 +34,10 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 		...templateDefinition,
 		base,
 		blocks: Array.from(
-			new Set(templateDefinition.presets.flatMap((preset) => preset.blocks)),
+			new Set([
+				...(templateDefinition.blocks ?? []),
+				...templateDefinition.presets.flatMap((preset) => preset.blocks),
+			]),
 		),
 		createConfig: (config) => ({ ...config, template }),
 		options: {
