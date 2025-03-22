@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { getTemplatePackageData } from "./getTemplatePackageData.js";
-import { resolveFilePath } from "./utils.js";
 
 const mockGetCallId = vi.fn();
 
@@ -19,29 +18,53 @@ vi.mock("read-package-up", () => ({
 	},
 }));
 
-let isWindows = false;
+let isWindowsPaths = false;
 
 vi.mock("node:url", async () => {
 	const nodeUrl = await vi.importActual<typeof import("node:url")>("node:url");
 	return {
 		...nodeUrl,
+		default: {
+			...nodeUrl,
+			fileURLToPath: (url: string | URL) =>
+				nodeUrl.fileURLToPath(url, { windows: isWindowsPaths }),
+		},
 		fileURLToPath: (url: string | URL) =>
-			nodeUrl.fileURLToPath(url, { windows: isWindows }),
+			nodeUrl.fileURLToPath(url, { windows: isWindowsPaths }),
 	};
 });
 
-vi.mock("./utils.ts", { spy: true });
+vi.mock("node:path", async () => {
+	const nodePath =
+		await vi.importActual<typeof import("node:path")>("node:path");
+	const nodePathWindows =
+		await vi.importActual<typeof import("node:path/win32")>("node:path/win32");
+	const nodePathPosix =
+		await vi.importActual<typeof import("node:path/posix")>("node:path/posix");
+	return {
+		...nodePath,
+		default: {
+			...nodePath,
+			dirname: (path: string) =>
+				isWindowsPaths
+					? nodePathWindows.dirname(path)
+					: nodePathPosix.dirname(path),
+		},
+		dirname: (path: string) =>
+			isWindowsPaths
+				? nodePathWindows.dirname(path)
+				: nodePathPosix.dirname(path),
+	};
+});
 
 const testPaths = {
 	posix: {
 		input: "/home/user/project/file.js",
-		output: "/home/user/project/file.js",
-		outputDir: "/home/user/project",
+		output: "/home/user/project",
 	},
 	windows: {
 		input: "/C:/Users/User/file.js",
-		output: "C:\\Users\\User\\file.js",
-		outputDir: "C:\\Users\\User",
+		output: "C:\\Users\\User",
 	},
 };
 
@@ -59,8 +82,6 @@ describe("getTemplatePackageData", () => {
 	});
 
 	it("returns an error when readPackageUp returns undefined on POSIX", async () => {
-		isWindows = false;
-
 		mockGetCallId.mockReturnValueOnce({ file: testPaths.posix.input });
 		mockReadPackageUp.mockResolvedValueOnce(undefined);
 
@@ -68,15 +89,13 @@ describe("getTemplatePackageData", () => {
 
 		expect(actual).toEqual(
 			new Error(
-				`Could not find a package.json relative to '${testPaths.posix.outputDir}'.`,
+				`Could not find a package.json relative to '${testPaths.posix.output}'.`,
 			),
 		);
-		expect(resolveFilePath).toHaveBeenCalledWith(testPaths.posix.input);
-		expect(resolveFilePath).toHaveReturnedWith(testPaths.posix.output);
 	});
 
 	it("returns an error when readPackageUp returns undefined on Windows", async () => {
-		isWindows = true;
+		isWindowsPaths = true;
 
 		mockGetCallId.mockReturnValueOnce({ file: testPaths.windows.input });
 		mockReadPackageUp.mockResolvedValueOnce(undefined);
@@ -85,16 +104,14 @@ describe("getTemplatePackageData", () => {
 
 		expect(actual).toEqual(
 			new Error(
-				`Could not find a package.json relative to '${testPaths.windows.outputDir}'.`,
+				`Could not find a package.json relative to '${testPaths.windows.output}'.`,
 			),
 		);
-		expect(resolveFilePath).toHaveBeenCalledWith(testPaths.windows.input);
-		expect(resolveFilePath).toHaveReturnedWith(testPaths.windows.output);
+
+		isWindowsPaths = false;
 	});
 
-	it("returns packageJson when readPackageUp finds a package.json on POSIX", async () => {
-		isWindows = false;
-
+	it("returns packageJson when readPackageUp finds a package.json", async () => {
 		const mockPackageJson = { name: "test-package" };
 		mockGetCallId.mockReturnValueOnce({ file: testPaths.posix.input });
 		mockReadPackageUp.mockResolvedValueOnce({ packageJson: mockPackageJson });
@@ -102,22 +119,6 @@ describe("getTemplatePackageData", () => {
 		const actual = await getTemplatePackageData();
 
 		expect(actual).toBe(mockPackageJson);
-		expect(resolveFilePath).toHaveBeenCalledWith(testPaths.posix.input);
-		expect(resolveFilePath).toHaveReturnedWith(testPaths.posix.output);
-	});
-
-	it("returns packageJson when readPackageUp finds a package.json on Windows", async () => {
-		isWindows = true;
-
-		const mockPackageJson = { name: "test-package" };
-		mockGetCallId.mockReturnValueOnce({ file: testPaths.windows.input });
-		mockReadPackageUp.mockResolvedValueOnce({ packageJson: mockPackageJson });
-
-		const actual = await getTemplatePackageData();
-
-		expect(actual).toBe(mockPackageJson);
-		expect(resolveFilePath).toHaveBeenCalledWith(testPaths.windows.input);
-		expect(resolveFilePath).toHaveReturnedWith(testPaths.windows.output);
 	});
 });
 
