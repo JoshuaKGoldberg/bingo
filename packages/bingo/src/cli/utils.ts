@@ -5,9 +5,5 @@ export function makeRelative(item: string) {
 }
 
 export function resolveFilePath(filePath: string) {
-	const fileUrl = filePath.startsWith("file://")
-		? new URL(filePath)
-		: new URL(filePath, "file://");
-
-	return fileURLToPath(fileUrl);
+	return fileURLToPath(new URL(filePath, "file://"));
 }
