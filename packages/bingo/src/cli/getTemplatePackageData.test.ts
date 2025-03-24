@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getTemplatePackageData } from "./getTemplatePackageData.js";
 
@@ -24,11 +24,6 @@ vi.mock("node:url", async () => {
 	const nodeUrl = await vi.importActual<typeof import("node:url")>("node:url");
 	return {
 		...nodeUrl,
-		default: {
-			...nodeUrl,
-			fileURLToPath: (url: string | URL) =>
-				nodeUrl.fileURLToPath(url, { windows: isWindowsPaths }),
-		},
 		fileURLToPath: (url: string | URL) =>
 			nodeUrl.fileURLToPath(url, { windows: isWindowsPaths }),
 	};
@@ -42,7 +37,6 @@ vi.mock("node:path", async () => {
 	const nodePathPosix =
 		await vi.importActual<typeof import("node:path/posix")>("node:path/posix");
 	return {
-		...nodePath,
 		default: {
 			...nodePath,
 			dirname: (path: string) =>
@@ -50,10 +44,6 @@ vi.mock("node:path", async () => {
 					? nodePathWindows.dirname(path)
 					: nodePathPosix.dirname(path),
 		},
-		dirname: (path: string) =>
-			isWindowsPaths
-				? nodePathWindows.dirname(path)
-				: nodePathPosix.dirname(path),
 	};
 });
 
@@ -69,6 +59,11 @@ const testPaths = {
 };
 
 describe("getTemplatePackageData", () => {
+	beforeEach(() => {
+		isWindowsPaths = false;
+		vi.resetAllMocks();
+	});
+
 	it("returns an error when getCallId returns undefined", async () => {
 		mockGetCallId.mockReturnValueOnce(undefined);
 
@@ -107,8 +102,6 @@ describe("getTemplatePackageData", () => {
 				`Could not find a package.json relative to '${testPaths.windows.output}'.`,
 			),
 		);
-
-		isWindowsPaths = false;
 	});
 
 	it("returns packageJson when readPackageUp finds a package.json", async () => {
