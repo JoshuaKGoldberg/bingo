@@ -1,14 +1,21 @@
 import { Endpoints, RequestParameters } from "@octokit/types";
 
-/**
- * Request to be send with fetch().
- */
-export interface CreatedFetchRequest {
+export interface CreatedRequestBase {
 	/**
 	 * Unique ID for logging and to differentiate between requests to the same url.
 	 */
 	id?: string;
 
+	/**
+	 * Whether to skip logging errors if the request fails.
+	 */
+	silent?: boolean;
+}
+
+/**
+ * Request to be send with fetch().
+ */
+export interface CreatedFetchRequest extends CreatedRequestBase {
 	/**
 	 * Any options to be sent as the second parameter to fetch().
 	 */
@@ -33,11 +40,6 @@ export interface CreatedOctokitRequest<
 	 * Octokit endpoint to send to.
 	 */
 	endpoint: TargetEndpoint;
-
-	/**
-	 * Unique ID for logging and to differentiate between requests to the same endpoint.
-	 */
-	id?: string;
 
 	/**
 	 * Parameter data to attach to the request.

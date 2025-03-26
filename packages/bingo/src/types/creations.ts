@@ -14,8 +14,19 @@ export type CreatedScript = CreatedScriptWithOptions | string;
  * Commands to run to set up part of a repository's tooling.
  */
 export interface CreatedScriptWithOptions {
+	/**
+	 * Shell scripts to run within the phase, in order.
+	 */
 	commands: string[];
+
+	/**
+	 * What order, relative to any other command groups, to run in.
+	 */
 	phase?: number;
+
+	/**
+	 * Whether to skip logging errors if the script fails.
+	 */
 	silent?: boolean;
 }
 
