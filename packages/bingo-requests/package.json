@@ -1,6 +1,6 @@
 {
 	"name": "bingo-requests",
-	"version": "0.5.4",
+	"version": "0.5.5",
 	"description": "Abstracted network requests as used by Bingo. 📠",
 	"homepage": "https://www.create.bingo/build/packages/bingo-requests",
 	"repository": {
