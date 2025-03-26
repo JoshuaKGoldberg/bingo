@@ -17,8 +17,9 @@ These requests are type-safe when possible, most notably with GitHub Octokit end
 
 All request objects may contain the following properties:
 
-- `id` _(optional)_: Unique ID for logging and to differentiate between requests to the same endpoint.
-  - See [Merging> `requests`](/build/details/merging#requests) for how requests are merged
+- `id` _(optional)_: Unique ID for logging and to differentiate between requests to the same endpoint
+  - See [Merging > `requests`](/build/details/merging#requests) for how requests are merged
+- `silent` _(optional)_: Whether to skip logging errors if the request fails
 - `type` _(required)_: Which type of request this is, as either:
   - `"fetch"`: A [`CreatedFetchRequest`](#createdfetchrequest)
   - `"octokit"`: A [`CreatedOctokitRequest`](#createdoctokitrequest)

@@ -21,7 +21,9 @@ export async function applyRequestsToSystem(
 			try {
 				await send();
 			} catch (error) {
-				system.display.item("request", id, { error });
+				if (!request.silent) {
+					system.display.item("request", id, { error });
+				}
 			}
 
 			system.display.item("request", id, { end: Date.now() });
