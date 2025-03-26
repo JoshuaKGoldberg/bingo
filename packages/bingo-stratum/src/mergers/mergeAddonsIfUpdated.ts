@@ -4,6 +4,15 @@ export function mergeAddonsIfUpdated<T extends object>(
 	existingAddons: T,
 	newAddons: T,
 ): Error | T | undefined {
+	if (Array.isArray(existingAddons)) {
+		if (!Array.isArray(newAddons)) {
+			return new Error("Mismatched merging addons (Array.isArray).");
+		}
+		return mergeAddonsArraysIfUpdated(existingAddons, newAddons) as T;
+	} else if (Array.isArray(newAddons)) {
+		return new Error("Mismatched merging addons (Array.isArray).");
+	}
+
 	const newEntries = Object.entries(newAddons) as [keyof T, unknown][];
 	const result = { ...existingAddons };
 	let updated = newEntries.length !== Object.keys(existingAddons).length;
@@ -72,4 +81,26 @@ function createHash(value: unknown) {
 	return typeof value === "object"
 		? hashObject(value as Record<string, unknown>)
 		: String(value as boolean | null | number | string | undefined);
+}
+
+function mergeAddonsArraysIfUpdated<T extends object>(
+	existingAddons: T[],
+	newAddons: T[],
+) {
+	const result = [...existingAddons];
+	const hashes = new Set(existingAddons.map(createHash));
+	let updated = false;
+
+	for (const newAddon of newAddons) {
+		const newHash = createHash(newAddon);
+		if (hashes.has(newHash)) {
+			continue;
+		}
+
+		hashes.add(newHash);
+		result.push(newAddon);
+		updated = true;
+	}
+
+	return updated ? result : undefined;
 }
