@@ -35,7 +35,7 @@ export interface CreatedFetchRequest extends CreatedRequestBase {
  */
 export interface CreatedOctokitRequest<
 	TargetEndpoint extends GitHubEndpoint = GitHubEndpoint,
-> {
+> extends CreatedRequestBase {
 	/**
 	 * Octokit endpoint to send to.
 	 */

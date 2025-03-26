@@ -47,7 +47,7 @@ describe("applyRequestsToSystem", () => {
 		await expect(act()).resolves.toBeUndefined();
 	});
 
-	it("does not display an error when a request  does not reject", async () => {
+	it("does not display an error when a request does not reject", async () => {
 		const id = "abc";
 		const send = vi.fn();
 		const system = createStubSystem();
@@ -57,6 +57,30 @@ describe("applyRequestsToSystem", () => {
 		await applyRequestsToSystem(
 			[
 				{
+					type: "fetch",
+					url: "https://example.com",
+				},
+			],
+			system,
+		);
+
+		expect(system.display.item.mock.calls).toEqual([
+			["request", id, { start: expect.any(Number) }],
+			["request", id, { end: expect.any(Number) }],
+		]);
+	});
+
+	it("does not display an error when a silent request rejects", async () => {
+		const id = "abc";
+		const send = vi.fn();
+		const system = createStubSystem();
+
+		mockGetRequestSender.mockReturnValueOnce({ id, send });
+
+		await applyRequestsToSystem(
+			[
+				{
+					silent: true,
 					type: "fetch",
 					url: "https://example.com",
 				},
