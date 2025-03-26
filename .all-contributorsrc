@@ -76,6 +76,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "yashsaxena9",
+      "name": "Yash Saxena",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50399404?v=4",
+      "profile": "https://github.com/YashSaxena9",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
