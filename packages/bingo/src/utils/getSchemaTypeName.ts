@@ -23,7 +23,7 @@ export function getSchemaTypeName(schema: z.ZodTypeAny): string {
 				.map((constituent) => getSchemaTypeName(constituent))
 				// TODO: Once these can be parsed as args, reuse that here...
 				// https://github.com/JoshuaKGoldberg/bingo/issues/285
-				.filter((typeName) => typeName !== "object")
+				.filter((typeName) => !["object", "record"].includes(typeName))
 				.join(" | ")
 		);
 	}
