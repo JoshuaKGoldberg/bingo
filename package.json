@@ -36,7 +36,7 @@
 	},
 	"devDependencies": {
 		"@eslint-community/eslint-plugin-eslint-comments": "4.4.1",
-		"@eslint/js": "9.22.0",
+		"@eslint/js": "9.23.0",
 		"@types/eslint-plugin-markdown": "2.0.2",
 		"@types/node": "22.13.9",
 		"@vitest/coverage-v8": "3.0.7",
