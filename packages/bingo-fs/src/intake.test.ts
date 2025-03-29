@@ -1,3 +1,4 @@
+import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
 import { intake } from "./intake.js";
@@ -17,6 +18,10 @@ vi.mock("node:fs/promises", () => ({
 		return mockStat;
 	},
 }));
+
+const normalizeCallsPaths = (calls: string[][]) => {
+	return calls.map((call) => call.map((arg) => path.normalize(arg)));
+};
 
 describe("intake", () => {
 	it("returns undefined when nothing exists under the path", async () => {
@@ -79,11 +84,13 @@ describe("intake", () => {
 			"included-b": ["contents-b", { executable: true }],
 		});
 		expect(mockReaddir.mock.calls).toEqual([["from"]]);
-		expect(mockStat.mock.calls).toEqual([
+
+		const normalizedStatCalls = normalizeCallsPaths([
 			["from"],
 			["from/included-a"],
 			["from/included-b"],
 		]);
+		expect(mockStat.mock.calls).toEqual(normalizedStatCalls);
 	});
 
 	it("returns non-excluded files when given a path to a directory with files and excludes is provided", async () => {
@@ -111,11 +118,13 @@ describe("intake", () => {
 			"included-b": ["contents-b", { executable: true }],
 		});
 		expect(mockReaddir.mock.calls).toEqual([["from"]]);
-		expect(mockStat.mock.calls).toEqual([
+
+		const normalizedStatCalls = normalizeCallsPaths([
 			["from"],
 			["from/included-a"],
 			["from/included-b"],
 		]);
+		expect(mockStat.mock.calls).toEqual(normalizedStatCalls);
 	});
 
 	it("returns a nested file when given a path to a directory with a nested directory", async () => {
@@ -140,11 +149,18 @@ describe("intake", () => {
 				included: ["contents", { executable: false }],
 			},
 		});
-		expect(mockReaddir.mock.calls).toEqual([["from"], ["from/middle"]]);
-		expect(mockStat.mock.calls).toEqual([
+
+		const normalizedReaddirCalls = normalizeCallsPaths([
+			["from"],
+			["from/middle"],
+		]);
+		expect(mockReaddir.mock.calls).toEqual(normalizedReaddirCalls);
+
+		const normalizedStatCalls = normalizeCallsPaths([
 			["from"],
 			["from/middle"],
 			["from/middle/included"],
 		]);
+		expect(mockStat.mock.calls).toEqual(normalizedStatCalls);
 	});
 });
