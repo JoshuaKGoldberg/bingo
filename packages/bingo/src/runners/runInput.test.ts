@@ -11,7 +11,10 @@ const input = createInput({
 	},
 	async produce({ args, runner }) {
 		return {
-			directory: (await runner("pwd")).stdout,
+			directory:
+				process.platform === "win32"
+					? (await runner("cd")).stdout
+					: (await runner("pwd")).stdout,
 			doubled: args.value * 2,
 		};
 	},
