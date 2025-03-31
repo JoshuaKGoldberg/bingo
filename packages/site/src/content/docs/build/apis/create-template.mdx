@@ -376,7 +376,7 @@ For example, this template creates a starter `index.js` file when first run:
 import { createTemplate } from "bingo";
 
 export default createTemplate({
-	setup({ addons }) {
+	setup() {
 		return {
 			files: {
 				"index.js": `console.log("Hello, world!");`,

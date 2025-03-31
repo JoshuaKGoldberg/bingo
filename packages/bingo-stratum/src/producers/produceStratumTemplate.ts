@@ -1,4 +1,5 @@
 import { AnyShape, InferredObject, ProductionMode } from "bingo";
+import { IntakeDirectory } from "bingo-fs";
 
 import { StratumRefinements } from "../types/refinements.js";
 import { StratumTemplate } from "../types/templates.js";
@@ -7,6 +8,7 @@ import { applyBlockRefinements } from "./applyBlockRefinements.js";
 import { produceBlocks } from "./produceBlocks.js";
 
 export interface ProduceStratumTemplateSettings<OptionsShape extends AnyShape> {
+	files?: IntakeDirectory;
 	mode?: ProductionMode;
 	offline?: boolean;
 	options: InferredObject<OptionsShape> & { preset: string };
@@ -18,6 +20,7 @@ export function produceStratumTemplate<
 >(
 	template: StratumTemplate<OptionsShape>,
 	{
+		files,
 		mode,
 		offline,
 		options,
@@ -37,7 +40,8 @@ export function produceStratumTemplate<
 	);
 
 	return produceBlocks(blocks, {
-		addons: refinements.addons,
+		blockAddons: refinements.addons,
+		files,
 		mode,
 		offline,
 		options,

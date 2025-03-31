@@ -10,12 +10,13 @@ Some Stratum constructs reuse the same contexts as described in [Details > Conte
 
 Other Stratum constructs do not reuse Bingo's existing contexts:
 
-- [Blocks](/engines/stratum/concepts/blocks) receive a [Block Context](#block-contexts)
+- [Blocks](/engines/stratum/concepts/blocks) generally receive a [Block Context](#block-contexts)
+  - A specialized [Intake Context](#intake-contexts) is used for specific intake APIs
 - [Presets](/engines/stratum/concepts/presets) don't have their own contexts
 
 ## Block Contexts
 
-The Context object provided to the `produce` object of [Blocks](/engines/stratum/concepts/blocks).
+The Context object provided to the [`produce`](/engines/stratum/apis/create-base#createblock-produce), [`setup`](/engines/stratum/apis/create-base#createblock-)setup, and [`transition`](/engines/stratum/apis/create-base#createblock-transition) properties of [Blocks](/engines/stratum/concepts/blocks).
 
 ### `addons`
 
@@ -63,6 +64,42 @@ export const blockPackageJson = createBlock({
 		return {
 			files: {
 				"package.json": JSON.stringify({ name: options.repository }),
+			},
+		};
+	},
+});
+```
+
+## Intake Contexts
+
+The Context object provided to the [`intake`](/engines/stratum/apis/create-base#createblock-intake) properties of [Blocks](/engines/stratum/concepts/blocks).
+
+### `files` {#intake-files}
+
+Any existing files on disk as a [bingo-fs `CreatedDirectory`](/build/packages/bingo-fs#directories), if running in [transition mode](/execution#transition-mode).
+
+Files in the directory are stored as [`[string, CreatedFileMetatdata?]` tuples](/build/packages/bingo-fs#files)
+
+For example, this Block reads in existing npm ignore lines from an `.npmignore` file if it exists:
+
+```ts
+import { z } from "zod";
+
+import { base } from "./base";
+
+export const blockNpmignore = base.createBlock({
+	addons: {
+		ignores: z.array(z.string()).optional(),
+	},
+	intake({ files }) {
+		return {
+			ignores: files[".npmignore"]?.split("\n").filter(Boolean),
+		};
+	},
+	async produce({ addons }) {
+		return {
+			files: {
+				".npmignore": [...addons.ignores, ""].join("\n"),
 			},
 		};
 	},
