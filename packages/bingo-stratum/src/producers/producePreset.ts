@@ -1,4 +1,5 @@
 import { AnyShape, InferredObject, ProduceTemplateSettings } from "bingo";
+import { IntakeDirectory } from "bingo-fs";
 
 import { BlockCreation } from "../types/creations.js";
 import { Preset } from "../types/presets.js";
@@ -17,6 +18,11 @@ export interface ProducePresetSettings<OptionsShape extends AnyShape>
 		OptionsShape,
 		StratumRefinements<InferredObject<OptionsShape>>
 	> {
+	/**
+	 * Existing file creations to be used for Blocks that can intake Addons.
+	 */
+	files?: IntakeDirectory;
+
 	/**
 	 * Any optional Stratum customizations.
 	 * @see {@link https://create.bingo/engines/stratum/details/configurations#refinements}
@@ -37,6 +43,7 @@ export interface ProducePresetSettings<OptionsShape extends AnyShape>
 export function producePreset<OptionsShape extends AnyShape>(
 	preset: Preset<OptionsShape>,
 	{
+		files,
 		mode,
 		offline,
 		options,
@@ -52,7 +59,8 @@ export function producePreset<OptionsShape extends AnyShape>(
 	);
 
 	const creation = produceBlocks(blocks, {
-		addons: refinements.addons,
+		blockAddons: refinements.addons,
+		files,
 		mode,
 		offline,
 		options,

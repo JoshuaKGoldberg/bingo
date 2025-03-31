@@ -7,7 +7,7 @@ import { StratumTemplateOptions } from "../types/templates.js";
 
 /**
  * Settings to run a Block with {@link produceBlock} that might have addons.
- * @template Addons Schema of Block-specific args defined by the Block, if defined.
+ * @template Addons Block-specific extensions, if defined by the Block's schema.
  * @template Options Options values as described by the Block's Base's options schema, as well as preset.
  * @see {@link https://www.create.bingo/engines/stratum/apis/producers#produceblock}
  */
@@ -20,7 +20,7 @@ export type ProduceBlockSettings<
 
 /**
  * Settings to run a Block with {@link produceBlock} that defines addons.
- * @template Addons Schema of Block-specific args defined by the Block.
+ * @template Addons Block-specific extensions as defined by the Block's schema.
  * @template Options Options values as described by the Block's Base's options schema, as well as preset.
  * @see {@link https://www.create.bingo/engines/stratum/apis/producers#produceblock}
  */
@@ -28,6 +28,9 @@ export interface ProduceBlockSettingsWithAddons<
 	Addons extends object,
 	Options extends object,
 > extends ProduceBlockSettingsWithoutAddons<Options> {
+	/**
+	 * Addon values to provide to the Block.
+	 */
 	addons?: Addons;
 }
 
@@ -44,7 +47,7 @@ export interface ProduceBlockSettingsWithoutAddons<Options extends object> {
 
 /**
  * Produces a single Block that defines addons.
- * @template Addons Schema of Block-specific args defined by the Block, if defined.
+ * @template Addons Block-specific extensions, if defined by the Block's schema.
  * @template Options Options values as described by the Block's Base's options schema, as well as preset.
  * @see {@link https://www.create.bingo/engines/stratum/apis/producers#produceblock}
  */
@@ -52,6 +55,7 @@ export function produceBlock<Addons extends object, Options extends object>(
 	block: BlockWithAddons<Addons, Options>,
 	settings: ProduceBlockSettingsWithAddons<Addons, Options>,
 ): Partial<BlockCreation<Options>>;
+
 /**
  * Produces a single Block that does not define addons.
  * @template Options Options values as described by the Block's Base's options schema, as well as preset.
@@ -61,9 +65,10 @@ export function produceBlock<Options extends object>(
 	block: BlockWithoutAddons<Options>,
 	settings: ProduceBlockSettingsWithoutAddons<Options>,
 ): Partial<BlockCreation<Options>>;
+
 /**
  * Produces a single Block.
- * @template Addons Schema of Block-specific args defined by the Block, if defined.
+ * @template Addons Block-specific extensions, if defined by the Block's schema.
  * @template Options Options values as described by the Block's Base's options schema, as well as preset.
  * @see {@link https://www.create.bingo/engines/stratum/apis/producers#produceblock}
  */
