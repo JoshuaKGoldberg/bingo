@@ -30,15 +30,13 @@ vi.mock("node:url", async () => {
 });
 
 vi.mock("node:path", async () => {
-	const nodePath =
-		await vi.importActual<typeof import("node:path")>("node:path");
 	const nodePathWindows =
 		await vi.importActual<typeof import("node:path/win32")>("node:path/win32");
 	const nodePathPosix =
 		await vi.importActual<typeof import("node:path/posix")>("node:path/posix");
 	return {
 		default: {
-			...nodePath,
+			...(await vi.importActual("node:path")),
 			dirname: (path: string) =>
 				isWindowsPaths
 					? nodePathWindows.dirname(path)
