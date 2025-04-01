@@ -3,14 +3,13 @@ import chalk from "chalk";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import { BaseOptionsFor } from "../types/bases.js";
 import { createBase } from "./createBase.js";
 
-const mockInferPreset = vi.fn();
+const mockInferExistingBlocks = vi.fn();
 
-vi.mock("./inferPreset.js", () => ({
-	get inferPreset() {
-		return mockInferPreset;
+vi.mock("./inferExistingBlocks.js", () => ({
+	get inferExistingBlocks() {
+		return mockInferExistingBlocks;
 	},
 }));
 
@@ -22,6 +21,7 @@ const preset = base.createPreset({
 	about: { name: "Example" },
 	blocks: [],
 });
+
 const mockLog = vi.fn();
 
 const mockOptions = { name: "Test Name" };
@@ -89,12 +89,12 @@ describe("createStratumTemplate", () => {
 			]);
 		});
 
-		describe("--preset", () => {
+		describe("inference", () => {
 			const templateWithPreset = base.createStratumTemplate({
 				presets: [preset],
 			});
 
-			it("does not call inferPreset when context.files is not provided", async () => {
+			it("does not call inferExistingBlocks when context.files is not provided", async () => {
 				const lazyOptions = templateWithPreset.prepare({
 					log: mockLog,
 					options: mockOptions,
@@ -103,28 +103,15 @@ describe("createStratumTemplate", () => {
 
 				const options = await allPropertiesLazy(lazyOptions);
 
-				expect(mockInferPreset).not.toHaveBeenCalled();
+				expect(mockInferExistingBlocks).not.toHaveBeenCalled();
 				expect(options).toEqual({});
 			});
 
-			it("does not call inferPreset when a preset option is manually provided", async () => {
-				const preset = "example";
-				const lazyOptions = templateWithPreset.prepare({
-					log: mockLog,
-					// TODO: why is this type assertion necessary?
-					// https://github.com/JoshuaKGoldberg/bingo/issues/287
-					options: { ...mockOptions, preset } as BaseOptionsFor<typeof base>,
-					take: vi.fn(),
+			it("does not display a log when inferExistingBlocks returns no blocks or preset", async () => {
+				mockInferExistingBlocks.mockReturnValueOnce({
+					blocks: [],
+					preset: undefined,
 				});
-
-				const options = await allPropertiesLazy(lazyOptions);
-
-				expect(mockInferPreset).not.toHaveBeenCalled();
-				expect(options).toEqual({ preset });
-			});
-
-			it("does not display a log when inferPreset returns undefined", async () => {
-				mockInferPreset.mockReturnValueOnce(undefined);
 
 				const lazyOptions = templateWithPreset.prepare({
 					files: {
@@ -141,9 +128,97 @@ describe("createStratumTemplate", () => {
 				expect(options).toEqual({});
 			});
 
-			it("displays a log when inferPreset returns a preset", async () => {
+			it("does not display a log when inferExistingBlocks infers a block that was explicitly excluded", async () => {
+				mockInferExistingBlocks.mockReturnValueOnce({
+					blocks: [],
+					preset: undefined,
+				});
+
+				const lazyOptions = templateWithPreset.prepare({
+					files: {
+						"README.md": "...",
+					},
+					log: mockLog,
+					options: {
+						...mockOptions,
+						"exclude-a": true,
+					} as typeof mockOptions,
+					take: vi.fn(),
+				});
+
+				const options = await allPropertiesLazy(lazyOptions);
+
+				expect(mockLog).not.toHaveBeenCalled();
+				expect(options).toEqual({});
+			});
+
+			it("displays a log when inferExistingBlocks infers one block", async () => {
+				const blockA = base.createBlock({
+					about: { name: "A" },
+					produce: vi.fn(),
+				});
+				mockInferExistingBlocks.mockReturnValueOnce({
+					blocks: [blockA],
+					preset: undefined,
+				});
+
+				const lazyOptions = templateWithPreset.prepare({
+					files: {
+						"README.md": "...",
+					},
+					log: mockLog,
+					options: mockOptions,
+					take: vi.fn(),
+				});
+
+				const options = await allPropertiesLazy(lazyOptions);
+
+				expect(mockLog).toHaveBeenCalledWith(
+					`Detected ${chalk.blue(`--add-a`)} from existing files on disk.`,
+				);
+				expect(options).toEqual({ "add-a": true });
+			});
+
+			it("displays a log when inferExistingBlocks infers two blocks", async () => {
+				const blockA = base.createBlock({
+					about: { name: "A" },
+					produce: vi.fn(),
+				});
+				const blockB = base.createBlock({
+					about: { name: "B" },
+					produce: vi.fn(),
+				});
+				mockInferExistingBlocks.mockReturnValueOnce({
+					blocks: [blockA, blockB],
+					preset: undefined,
+				});
+
+				const lazyOptions = templateWithPreset.prepare({
+					files: {
+						"README.md": "...",
+					},
+					log: mockLog,
+					options: mockOptions,
+					take: vi.fn(),
+				});
+
+				const options = await allPropertiesLazy(lazyOptions);
+
+				expect(mockLog).toHaveBeenCalledWith(
+					`Detected ${chalk.blue(`--add-a`)} ${chalk.blue(`--add-b`)} from existing files on disk.`,
+				);
+				expect(options).toEqual({
+					"add-a": true,
+					"add-b": true,
+				});
+			});
+
+			it("displays a log when inferExistingBlocks infers a preset", async () => {
 				const presetName = "example";
-				mockInferPreset.mockReturnValueOnce(presetName);
+				mockInferExistingBlocks.mockReturnValueOnce({
+					blocks: [],
+					preset: presetName,
+				});
 
 				const lazyOptions = templateWithPreset.prepare({
 					files: {

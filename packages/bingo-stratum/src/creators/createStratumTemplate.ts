@@ -14,7 +14,8 @@ import {
 } from "../types/templates.js";
 import { createBlockRefinementOption } from "../utils/createBlockRefinementOption.js";
 import { slugifyName } from "../utils/slugifyName.js";
-import { inferPreset } from "./inferPreset.js";
+import { inferExistingBlocks } from "./inferExistingBlocks.js";
+import { isBlockWithName } from "./utils.js";
 
 export function createStratumTemplate<OptionsShape extends AnyShape>(
 	base: Base<OptionsShape>,
@@ -92,29 +93,50 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			),
 		},
 		prepare(context) {
-			// TODO: Why are these type assertions necessary?
-			// https://github.com/JoshuaKGoldberg/bingo/issues/287
+			const fromBase =
+				base.prepare?.(context) ??
+				// TODO: Why is this type assertion necessary?
+				// https://github.com/JoshuaKGoldberg/bingo/issues/287
+				({} as LazyOptionalOptions<Partial<Options>>);
+
+			// TODO: It would be better to run the base.prepare first to generate option defaults.
+			// https://github.com/JoshuaKGoldberg/bingo/issues/289
+			const existing = context.files && inferExistingBlocks(context, template);
+
+			if (!existing) {
+				return fromBase;
+			}
+
+			// Enable --add-* options for any inferred existing Block not matched with an explicit --exclude-*
+			const blockAdds = (existing.blocks ?? [])
+				.filter(isBlockWithName)
+				.filter(
+					(block) =>
+						!context.options[
+							createBlockRefinementOption("exclude", block.about.name)
+						],
+				)
+				.map((block) => createBlockRefinementOption("add", block.about.name));
+
+			if (blockAdds.length) {
+				context.log(
+					`Detected ${blockAdds.map((add) => `--${chalk.blue(add)}`).join(" ")} from existing files on disk.`,
+				);
+			}
+
 			return {
+				...fromBase,
+				...Object.fromEntries(blockAdds.map((add) => [add, true])),
 				preset: () => {
-					if (context.options.preset) {
-						return context.options.preset as string;
-					}
-
-					// TODO: It would be better to run the base.prepare first to generate option defaults.
-					// https://github.com/JoshuaKGoldberg/bingo/issues/289
-					const preset =
-						context.files && inferPreset(context, templateDefinition.presets);
-
-					if (preset) {
+					if (existing.preset) {
 						context.log(
-							`Detected ${chalk.blue(`--preset ${preset}`)} from existing files on disk.`,
+							`Detected ${chalk.blue(`--preset ${existing.preset}`)} from existing files on disk.`,
 						);
 					}
 
-					return preset;
+					return existing.preset;
 				},
-				...(base.prepare?.(context) ?? {}),
-			} as LazyOptionalOptions<Partial<Options>>;
+			};
 		},
 		produce(context) {
 			return produceStratumTemplate(

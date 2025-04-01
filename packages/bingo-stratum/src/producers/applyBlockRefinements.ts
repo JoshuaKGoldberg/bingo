@@ -1,5 +1,6 @@
 import { CachedFactory } from "cached-factory";
 
+import { isBlockWithName } from "../creators/utils.js";
 import { Block } from "../types/blocks.js";
 import { BlockRefinements } from "../types/refinements.js";
 import { slugifyName } from "../utils/slugifyName.js";
@@ -8,8 +9,6 @@ interface BlockRefinement {
 	add?: boolean;
 	exclude?: boolean;
 }
-
-type BlockWithName = Block & { about: { name: string } };
 
 export function applyBlockRefinements<Options extends object>(
 	blocksAvailable: Block<object | undefined, Options>[],
@@ -24,7 +23,7 @@ export function applyBlockRefinements<Options extends object>(
 	);
 	const allBlocksByName = new Map(
 		blocksAvailable
-			.filter((block): block is BlockWithName => !!block.about?.name)
+			.filter(isBlockWithName)
 			.map((block) => [slugifyName(block.about.name), block]),
 	);
 	const refinementsByBlock = new CachedFactory<string, BlockRefinement>(
