@@ -161,6 +161,11 @@ It takes in two arguments:
 1. `block` _(required)_: a [Block](/engines/stratum/concepts/blocks)
 2. `settings` _(optional)_: an [Intake Context](/engines/stratum/details/contexts#intake-contexts)
 
+### `files` {#testintake-files}
+
+A [bingo-fs directory](/build/packages/bingo-fs) may be provided under `files`.
+Files in the directory must be stored as [`[string, CreatedFileMetatdata?]` tuples](/build/packages/bingo-fs#files)
+
 For example, this test asserts that an nvmrc Block intakes a `version` Addon from an existing `.nvmrc` file on disk, if it exists:
 
 ```ts
@@ -175,7 +180,7 @@ describe("intake", () => {
 
 		const actual = testIntake(blockNvmrc, {
 			files: {
-				".nvmrc": `${version}\n`,
+				".nvmrc": [`${version}\n`],
 			},
 		});
 
