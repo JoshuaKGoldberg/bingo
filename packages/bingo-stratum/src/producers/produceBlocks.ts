@@ -39,10 +39,11 @@ export function produceBlocks<Options extends object>(
 
 	// 1.1. Run any intake methods to generate default Addons values
 	for (const block of blocks) {
-		if (isBlockWithAddons(block) && block.intake) {
-			blockProductions.set(block, {
-				addons: block.intake({ files }),
-			});
+		if (isBlockWithAddons(block)) {
+			const addons = block.intake?.({ files });
+			if (addons) {
+				blockProductions.set(block, { addons });
+			}
 		}
 	}
 	// 2.2. Apply all provided refinements on top of those

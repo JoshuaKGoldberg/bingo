@@ -40,8 +40,21 @@ export interface ProduceBlockSettingsWithAddons<
  * @see {@link https://www.create.bingo/engines/stratum/apis/producers#produceblock}
  */
 export interface ProduceBlockSettingsWithoutAddons<Options extends object> {
+	/**
+	 * Which repository mode Bingo is being run in.
+	 * @see {@link https://create.bingo/build/concepts/modes}
+	 */
 	mode?: ProductionMode;
+
+	/**
+	 * Whether Bingo is being run in an "offline" mode.
+	 * @see {@link http://create.bingo/build/details/contexts#options-offline}
+	 */
 	offline?: boolean;
+
+	/**
+	 * Options values as described by the Block's Base's options schema.
+	 */
 	options: Options;
 }
 

@@ -44,8 +44,8 @@ import { describe, expect, it } from "vitest";
 import { blockNvmrc } from "./blockNvmrc";
 
 describe("blockNvmrc", () => {
-	it("returns an .nvmrc", async () => {
-		const actual = await testBlock(blockNvmrc);
+	it("returns an .nvmrc", () => {
+		const actual = testBlock(blockNvmrc);
 
 		expect(actual).toEqual({
 			files: { ".nvmrc": "20.12.2" },
@@ -92,8 +92,8 @@ const blockPrettier = base.createBlock({
 });
 
 describe("blockPrettier", () => {
-	it("creates a .prettierrc.json when provided options", async () => {
-		const actual = await testBlock(blockPrettier, {
+	it("creates a .prettierrc.json when provided options", () => {
+		const actual = testBlock(blockPrettier, {
 			addons: {
 				config: {
 					useTabs: true,
@@ -136,8 +136,8 @@ const blockReadme = base.createBlock({
 });
 
 describe("blockDocs", () => {
-	it("uses options.name for the README.md title", async () => {
-		const actual = await testBlock(blockReadme, {
+	it("uses options.name for the README.md title", () => {
+		const actual = testBlock(blockReadme, {
 			options: {
 				preset: "test",
 				title: "My Project",

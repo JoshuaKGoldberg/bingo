@@ -199,7 +199,7 @@ export interface BlockDefinitionWithoutAddons<Options extends object>
  */
 export type BlockIntake<Addons extends object> = (
 	context: BlockIntakeContext,
-) => Partial<Addons>;
+) => Partial<Addons> | undefined;
 
 /**
  * Generates the creations describing a portion of a repository with addons.
