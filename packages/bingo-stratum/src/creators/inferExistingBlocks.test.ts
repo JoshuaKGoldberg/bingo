@@ -43,10 +43,10 @@ const blockAB = base.createBlock({
 
 describe("inferPreset", () => {
 	describe("blocks", () => {
-		it("returns no blocks when no blocks match", () => {
-			const presetA = base.createPreset({
-				about: { name: "A" },
-				blocks: [blockA],
+		it("returns no blocks when no blocks match and a preset is inferred", () => {
+			const presetAB = base.createPreset({
+				about: { name: "AB" },
+				blocks: [blockA, blockB],
 			});
 
 			const context = {
@@ -59,7 +59,7 @@ describe("inferPreset", () => {
 			};
 
 			const template = base.createStratumTemplate({
-				presets: [presetA],
+				presets: [presetAB],
 			});
 
 			const actual = inferExistingBlocks(context, template);
@@ -67,7 +67,7 @@ describe("inferPreset", () => {
 			expect(actual.blocks).toEqual([]);
 		});
 
-		it("returns no blocks when a block only partially matches", () => {
+		it("returns no blocks when a block only partially matches and a preset is inferred", () => {
 			const presetAB = base.createPreset({
 				about: { name: "AB" },
 				blocks: [blockAB],
@@ -91,7 +91,7 @@ describe("inferPreset", () => {
 			expect(actual.blocks).toEqual([]);
 		});
 
-		it("returns the block when one block from a preset matches", () => {
+		it("returns no blocks when one block in the inferred preset matches", () => {
 			const presetA = base.createPreset({
 				about: { name: "A" },
 				blocks: [blockA],
@@ -107,15 +107,16 @@ describe("inferPreset", () => {
 			};
 
 			const template = base.createStratumTemplate({
+				blocks: [blockB],
 				presets: [presetA],
 			});
 
 			const actual = inferExistingBlocks(context, template);
 
-			expect(actual.blocks).toEqual([blockA]);
+			expect(actual.blocks).toEqual([]);
 		});
 
-		it("returns the block when one block out of a preset matches", () => {
+		it("returns only inferred blocks not in the preset when blocks in and out of the inferred preset match", () => {
 			const presetA = base.createPreset({
 				about: { name: "A" },
 				blocks: [blockA],
@@ -123,6 +124,7 @@ describe("inferPreset", () => {
 
 			const context = {
 				files: {
+					a: "...",
 					b: "...",
 				},
 				options: {
@@ -138,32 +140,6 @@ describe("inferPreset", () => {
 			const actual = inferExistingBlocks(context, template);
 
 			expect(actual.blocks).toEqual([blockB]);
-		});
-
-		it("returns the blocks when two blocks match", () => {
-			const presetA = base.createPreset({
-				about: { name: "A" },
-				blocks: [blockA],
-			});
-
-			const context = {
-				files: {
-					a: "...",
-					b: "...",
-				},
-				options: {
-					name: "...",
-				},
-			};
-
-			const template = base.createStratumTemplate({
-				blocks: [blockB],
-				presets: [presetA],
-			});
-
-			const actual = inferExistingBlocks(context, template);
-
-			expect(actual.blocks).toEqual([blockB, blockA]);
 		});
 	});
 
