@@ -13,14 +13,15 @@ import {
 } from "../producers/produceBlock.js";
 import { Block } from "../types/blocks.js";
 import { Preset } from "../types/presets.js";
+import { StratumTemplate } from "../types/templates.js";
 import { slugifyName } from "../utils/slugifyName.js";
 
-export function inferPreset<OptionsShape extends AnyShape, Refinements>(
+export function inferExistingBlocks<OptionsShape extends AnyShape, Refinements>(
 	context: Pick<
 		TemplatePrepareContext<Partial<InferredObject<OptionsShape>>, Refinements>,
 		"files" | "options"
 	>,
-	presets: Preset<OptionsShape>[],
+	template: StratumTemplate<OptionsShape>,
 ) {
 	const blockSettings: ProduceBlockSettings<undefined, Options> = {
 		...context,
@@ -32,17 +33,28 @@ export function inferPreset<OptionsShape extends AnyShape, Refinements>(
 
 	let record: undefined | { percentage: number; preset: Preset<OptionsShape> };
 
-	for (const preset of presets) {
-		const allProduced = preset.blocks.map((block) => {
+	const existingProductions = new Map(
+		template.blocks.map((block) => {
 			try {
-				return produceBlock(block as Block<undefined, Options>, blockSettings);
+				return [
+					block,
+					produceBlock(block as Block<undefined, Options>, blockSettings),
+				];
 			} catch {
-				return {};
+				return [block, {}];
 			}
-		});
+		}),
+	);
 
-		const produced = allProduced.reduce(mergeCreations);
-		const counted = countMatchedFilePaths(context.files, produced.files);
+	for (const preset of template.presets) {
+		const existingPresetProduction = preset.blocks
+			.map((block) => existingProductions.get(block))
+			.filter((x) => !!x)
+			.reduce(mergeCreations, {});
+		const counted = countMatchedFilePaths(
+			context.files,
+			existingPresetProduction.files,
+		);
 		const percentage = counted.matched / counted.created;
 
 		if (record) {
@@ -54,13 +66,27 @@ export function inferPreset<OptionsShape extends AnyShape, Refinements>(
 		}
 	}
 
-	return (
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		record!.percentage >= 0.35
-			? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				slugifyName(record!.preset.about.name)
-			: undefined
-	);
+	const existingPreset =
+		record && record.percentage >= 0.35 ? record.preset : undefined;
+
+	if (!existingPreset) {
+		return {};
+	}
+
+	const existingBlocks = Array.from(existingProductions)
+		.filter(([, production]) => {
+			const counted = countMatchedFilePaths(context.files, production.files);
+
+			return !!counted.matched && !counted.missed;
+		})
+		.map(([block]) => block);
+
+	const blocksInPreset = new Set(existingPreset.blocks);
+
+	return {
+		blocks: existingBlocks.filter((block) => !blocksInPreset.has(block)),
+		preset: slugifyName(existingPreset.about.name),
+	};
 }
 
 function countMatchedFilePaths(
@@ -70,6 +96,7 @@ function countMatchedFilePaths(
 	const found = {
 		created: 0,
 		matched: 0,
+		missed: 0,
 	};
 
 	const queue: [CreatedEntry | undefined, CreatedEntry | undefined][] = [
@@ -88,13 +115,18 @@ function countMatchedFilePaths(
 			}
 
 			continue;
+		} else if (isCreatedFile(currentProduced)) {
+			found.missed += 1;
 		}
 
 		if (
 			isCreatedDirectory(currentCreated) &&
 			isCreatedDirectory(currentProduced)
 		) {
-			for (const key of Object.keys(currentCreated)) {
+			for (const key of new Set([
+				...Object.keys(currentCreated),
+				...Object.keys(currentProduced),
+			])) {
 				queue.push([currentCreated[key], currentProduced[key]]);
 			}
 		}
