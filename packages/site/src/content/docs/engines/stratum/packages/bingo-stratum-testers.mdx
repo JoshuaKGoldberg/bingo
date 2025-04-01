@@ -166,7 +166,7 @@ It takes in two arguments:
 A [bingo-fs directory](/build/packages/bingo-fs) may be provided under `files`.
 Files in the directory must be stored as [`[string, CreatedFileMetatdata?]` tuples](/build/packages/bingo-fs#files)
 
-For example, this test asserts that an nvmrc Block intakes a `version` Addon from an existing `.nvmrc` file on disk, if it exists:
+For example, this test asserts that an nvmrc Block intakes a `version` Addon from an existing `.nvmrc` file on disk:
 
 ```ts
 import { testIntake } from "create-testers";
