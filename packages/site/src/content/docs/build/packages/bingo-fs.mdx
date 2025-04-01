@@ -44,7 +44,7 @@ Values are the file or directory underneath that key.
 
 ### `IntakeDirectory`
 
-Directories read in from [`intake`](#intake) or [`intakeDirectory`](#intake-directory) are represented as `IntakeDirectory` objects.
+Directories read in from [`intake`](#intake) or [`intakeDirectory`](#intakedirectory) are represented as `IntakeDirectory` objects.
 `IntakeDirectory` objects represent files as `[string, CreatedFileMetadata?]` tuples.
 
 ## Files
@@ -128,10 +128,10 @@ Returns the directory or file if it existed, or `undefined` if it didn't.
 For example, retrieving all files in a `src/` directory:
 
 ```ts
-import { intake } from "bingo-fs";
+import { intakeDirectory } from "bingo-fs";
 
 // { "index.ts": "..." }
-await intake("src");
+await intakeDirectory("src");
 ```
 
 #### `exclude` {#intakedirectory-exclude}
@@ -141,10 +141,10 @@ An optional regular expression to filter out directory children.
 For example, you may want to avoid `.git` and `node_modules` directories:
 
 ```ts
-import { intake } from "bingo-fs";
+import { intakeDirectory } from "bingo-fs";
 
 // Result: { README.md: "...", src: { "index.ts": "..." }, ... }
-await intake(".", {
+await intakeDirectory(".", {
 	exclude: /node_modules|^\.git$/,
 });
 ```
