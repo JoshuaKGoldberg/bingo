@@ -3,7 +3,6 @@ import chalk from "chalk";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import { BaseOptionsFor } from "../types/bases.js";
 import { createBase } from "./createBase.js";
 
 const mockInferExistingBlocks = vi.fn();

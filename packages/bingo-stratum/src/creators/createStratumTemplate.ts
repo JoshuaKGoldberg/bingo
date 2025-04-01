@@ -124,8 +124,6 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 				);
 			}
 
-			// TODO: Why is this type assertion necessary?
-			// https://github.com/JoshuaKGoldberg/bingo/issues/287
 			return {
 				...fromBase,
 				...Object.fromEntries(blockAdds.map((add) => [add, true])),
@@ -138,7 +136,7 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 
 					return existing.preset;
 				},
-			} as LazyOptionalOptions<Partial<Options>>;
+			};
 		},
 		produce(context) {
 			return produceStratumTemplate(
