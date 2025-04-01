@@ -1,3 +1,4 @@
+import { IntakeDirectory } from "bingo-fs";
 import { BingoSystem } from "bingo-systems";
 import fs from "node:fs/promises";
 
@@ -21,6 +22,11 @@ export interface RunTemplateSettings<OptionsShape extends AnyShape, Refinements>
 	 * Current working directory ("cwd") path to use for the file system and running scripts.
 	 */
 	directory?: string;
+
+	/**
+	 * Existing file creations, if in transition mode.
+	 */
+	files?: IntakeDirectory;
 
 	/**
 	 * Which repository mode Bingo is being run in.

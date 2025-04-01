@@ -20,6 +20,8 @@ vi.mock("@clack/prompts", () => ({
 	spinner: vi.fn(),
 }));
 
+vi.mock("bingo-fs");
+
 const mockPrepareOptions = vi.fn();
 
 vi.mock("../../preparation/prepareOptions.js", () => ({

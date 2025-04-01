@@ -1,3 +1,4 @@
+import { IntakeDirectory } from "bingo-fs";
 import { BingoSystem } from "bingo-systems";
 
 import { createSystemContext } from "../contexts/createSystemContext.js";
@@ -17,6 +18,11 @@ export interface ProduceTemplateSettings<
 	OptionsShape extends AnyShape,
 	Refinements,
 > extends Partial<BingoSystem> {
+	/**
+	 * Existing file creations, if in transition mode.
+	 */
+	files?: IntakeDirectory;
+
 	/**
 	 * Which repository mode Bingo is being run in.
 	 * @see {@link https://create.bingo/build/concepts/modes}

@@ -1,3 +1,5 @@
+import { intakeDirectory } from "bingo-fs";
+
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
 import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { runTemplate } from "../../runners/runTemplate.js";
@@ -118,6 +120,10 @@ export async function runModeTransition<
 		return { status: CLIStatus.Cancelled };
 	}
 
+	const files = await intakeDirectory(directory, {
+		exclude: /node_modules|^\.git$/,
+	});
+
 	const creation = await runSpinnerTask(
 		display,
 		`Running ${from}`,
@@ -126,6 +132,7 @@ export async function runModeTransition<
 			await runTemplate(template, {
 				...system,
 				directory,
+				files,
 				mode: "transition",
 				offline,
 				options: baseOptions.completed,

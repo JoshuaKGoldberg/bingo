@@ -33,15 +33,15 @@ export async function intake(rootPath: string, settings: IntakeSettings = {}) {
 		: await intakeFile(rootPath, stats.mode);
 }
 
-async function intakeDirectory(
+export async function intakeDirectory(
 	directoryPath: string,
-	settings: IntakeSettings,
+	settings?: IntakeSettings,
 ): Promise<IntakeDirectory> {
 	const directory: IntakeDirectory = {};
 	const children = await fs.readdir(directoryPath);
 
 	for (const child of children) {
-		if (!settings.exclude?.test(child)) {
+		if (!settings?.exclude?.test(child)) {
 			directory[child] = await intake(
 				path.join(directoryPath, child),
 				settings,

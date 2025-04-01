@@ -8,6 +8,9 @@ import { applyBlockRefinements } from "./applyBlockRefinements.js";
 import { produceBlocks } from "./produceBlocks.js";
 
 export interface ProduceStratumTemplateSettings<OptionsShape extends AnyShape> {
+	/**
+	 * Existing file creations to be used for Blocks that can intake Addons.
+	 */
 	files?: IntakeDirectory;
 	mode?: ProductionMode;
 	offline?: boolean;
