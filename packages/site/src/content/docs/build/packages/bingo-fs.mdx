@@ -42,6 +42,11 @@ Directories in a `files` object are represented as objects.
 Property keys are the names of children.
 Values are the file or directory underneath that key.
 
+### `IntakeDirectory`
+
+Directories read in from [`intake`](#intake) or [`intakeDirectory`](#intakedirectory) are represented as `IntakeDirectory` objects.
+`IntakeDirectory` objects represent files as `[string, CreatedFileMetadata?]` tuples.
+
 ## Files
 
 > TypeScript type name: `CreatedFileEntry`
@@ -51,7 +56,7 @@ Each property value in a directory object may be one of the following:
 - `false` or `undefined`: Ignored
 - `object`: A directory, whose properties recursively are file creations
 - `string`: A file to be created
-- `[string, CreatedFileMetadata]`: A file to be created with options:
+- `[string, CreatedFileMetadata?]`: A file to be created with options:
   - `executable`: Whether to add permissions to make the file executable
 
 For example, this Bingo template produces an executable `.husky/pre-commit` file:
@@ -78,7 +83,7 @@ Given a directory or file path, reads it in as a `bingo-fs` directory structure 
 
 Parameters:
 
-1. `directoryPath: string` _(required)_
+1. `rootPath: string` _(required)_
 2. `settings: IntakeSettings` _(optional)_:
    - [`exclude: RegExp`](#intake-exclude)
 
@@ -104,6 +109,42 @@ import { intake } from "bingo-fs";
 
 // Result: { README.md: "...", src: { "index.ts": "..." }, ... }
 await intake(".", {
+	exclude: /node_modules|^\.git$/,
+});
+```
+
+### `intakeDirectory`
+
+Given a directory path, reads it in as a `bingo-fs` directory structure.
+
+Parameters:
+
+1. `directoryPath: string` _(required)_
+2. `settings: IntakeSettings` _(optional)_:
+   - [`exclude: RegExp`](#intake-exclude)
+
+Returns the directory or file if it existed, or `undefined` if it didn't.
+
+For example, retrieving all files in a `src/` directory:
+
+```ts
+import { intakeDirectory } from "bingo-fs";
+
+// { "index.ts": "..." }
+await intakeDirectory("src");
+```
+
+#### `exclude` {#intakedirectory-exclude}
+
+An optional regular expression to filter out directory children.
+
+For example, you may want to avoid `.git` and `node_modules` directories:
+
+```ts
+import { intakeDirectory } from "bingo-fs";
+
+// Result: { README.md: "...", src: { "index.ts": "..." }, ... }
+await intakeDirectory(".", {
 	exclude: /node_modules|^\.git$/,
 });
 ```

@@ -22,6 +22,8 @@ vi.mock("@clack/prompts", () => ({
 	}),
 }));
 
+vi.mock("bingo-fs");
+
 vi.mock("../packageData.js", () => ({
 	packageData: {
 		name: "bingo",
