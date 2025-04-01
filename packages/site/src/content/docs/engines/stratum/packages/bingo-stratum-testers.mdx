@@ -24,7 +24,7 @@ Stratum generally reuses existing Bingo tester APIs when possible:
 
 Other Stratum constructs behave differently:
 
-- [Blocks](/engines/stratum/concepts/blocks): may be tested directly with [`testBlock`](#testblock)
+- [Blocks](/engines/stratum/concepts/blocks): may be tested directly with [`testBlock`](#testblock) and [`testIntake`](#testintake)
 - [Presets](/engines/stratum/concepts/presets): do not have a corresponding API, as they can be tested by passing the `preset` option to a Template that includes them
 
 ## `testBlock`
@@ -149,6 +149,42 @@ describe("blockDocs", () => {
 				"README.md": `# My Project (test)`,
 			},
 		});
+	});
+});
+```
+
+## `testIntake`
+
+For [Blocks with `intake`](/engines/stratum/apis/create-base#createblock-intake), a `testIntake` function is exported that is analogous to [`testOptions`](/build/packages/bingo-testers#testoptions).
+It takes in two arguments:
+
+1. `block` _(required)_: a [Block](/engines/stratum/concepts/blocks)
+2. `settings` _(optional)_: an [Intake Context](/engines/stratum/details/contexts#intake-contexts)
+
+### `files` {#testintake-files}
+
+A [bingo-fs directory](/build/packages/bingo-fs) may be provided under `files`.
+Files in the directory must be stored as [`[string, CreatedFileMetatdata?]` tuples](/build/packages/bingo-fs#files)
+
+For example, this test asserts that an nvmrc Block intakes a `version` Addon from an existing `.nvmrc` file on disk:
+
+```ts
+import { testIntake } from "create-testers";
+import { describe, expect, it } from "vitest";
+
+import { blockNvmrc } from "./blockNvmrc";
+
+describe("intake", () => {
+	it("returns an .nvmrc", () => {
+		const version = "20.12.2";
+
+		const actual = testIntake(blockNvmrc, {
+			files: {
+				".nvmrc": [`${version}\n`],
+			},
+		});
+
+		expect(actual).toEqual({ version });
 	});
 });
 ```
