@@ -25,6 +25,7 @@ export function createClackDisplay(): ClackDisplay {
 			Object.assign(groups.get(group).get(id), item);
 		},
 		log(message) {
+			process.stdout.moveCursor(0, -1);
 			prompts.log.step(message + "\n");
 		},
 	} satisfies Display;
