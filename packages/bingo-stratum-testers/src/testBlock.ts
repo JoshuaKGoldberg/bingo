@@ -55,9 +55,11 @@ export function testBlock<Addons extends object, Options extends object>(
 	return produceBlock(
 		block as BlockWithAddons<Addons, Options>,
 		{
-			addons: {},
-			options: createFailingObject("options", "the Block") as Options,
 			...settings,
+			addons: settings.addons ?? {},
+			options:
+				settings.options ??
+				(createFailingObject("options", "the Block") as Options),
 		} as ProduceBlockSettingsWithAddons<Addons, Options>,
 	);
 }

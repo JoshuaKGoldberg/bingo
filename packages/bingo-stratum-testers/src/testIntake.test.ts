@@ -52,4 +52,41 @@ describe("testIntake", () => {
 
 		expect(actual).toEqual({ value });
 	});
+
+	describe("options", () => {
+		const blockUsingOptions = base.createBlock({
+			addons: {
+				extra: z.string().optional(),
+			},
+			intake({ options }) {
+				return {
+					extra: options.value + "!",
+				};
+			},
+			produce() {
+				return {};
+			},
+		});
+
+		it("throws an error when options isn't provided and a block uses options", () => {
+			expect(() =>
+				testIntake(blockUsingOptions, {
+					files: {},
+				}),
+			).toThrowErrorMatchingInlineSnapshot(
+				`[Error: Context property 'options' was used by the Block but not provided.]`,
+			);
+		});
+
+		it("passes options to the block when provided", () => {
+			const actual = testIntake(blockUsingOptions, {
+				files: {},
+				options: { preset: "test", value: "abc" },
+			});
+
+			expect(actual).toEqual({
+				extra: "abc!",
+			});
+		});
+	});
 });

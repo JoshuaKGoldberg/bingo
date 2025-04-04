@@ -61,11 +61,16 @@ export interface BlockContextWithAddons<
 /**
  * Shared helper functions and information passed to Block intake()s.
  */
-export interface BlockIntakeContext {
+export interface BlockIntakeContext<Options extends object> {
 	/**
 	 * Any existing files on disk.
 	 */
 	files: IntakeDirectory;
+
+	/**
+	 * Options values as described by the Base's options schema.
+	 */
+	options: Options;
 }
 
 /**
@@ -139,7 +144,7 @@ export interface BlockDefinitionWithAddons<
 	 * Infers Addons from existing files in the repository.
 	 * @see {@link https://www.create.bingo/engines/stratum/apis/create-base#createblock-intake}
 	 */
-	intake?: BlockIntake<InferredObject<AddonsShape>>;
+	intake?: BlockIntake<InferredObject<AddonsShape>, Options>;
 
 	/**
 	 * Generates the creations describing a portion of a repository.
@@ -196,9 +201,10 @@ export interface BlockDefinitionWithoutAddons<Options extends object>
  * Infers any Addons for the Block from existing creations.
  * @param context Shared Block helper functions and information.
  * @template Addons Block-specific extensions, as defined by the Block's schema.
+ * @template Options Options values as described by the Base's options schema.
  */
-export type BlockIntake<Addons extends object> = (
-	context: BlockIntakeContext,
+export type BlockIntake<Addons extends object, Options extends object> = (
+	context: BlockIntakeContext<Options>,
 ) => Partial<Addons> | undefined;
 
 /**
@@ -236,7 +242,7 @@ export interface BlockWithAddons<Addons extends object, Options extends object>
 	 * Infers Addons from existing files in the repository.
 	 * @see {@link https://www.create.bingo/engines/stratum/apis/create-base#createblock-intake}
 	 */
-	intake?: BlockIntake<Addons>;
+	intake?: BlockIntake<Addons, Options>;
 
 	/**
 	 * Generates the creations describing a portion of a repository.

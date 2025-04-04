@@ -1,11 +1,19 @@
 import { IntakeDirectory } from "bingo-fs";
 import { BlockWithAddons } from "bingo-stratum";
+import { StratumTemplateOptions } from "bingo-stratum/lib/types/templates.js";
 
-export interface TestIntakeSettings {
+import { createFailingObject } from "./utils.js";
+
+export interface TestIntakeSettings<Options extends object> {
 	/**
 	 * Existing file creations, if available.
 	 */
 	files: IntakeDirectory;
+
+	/**
+	 * Any options values as described by the Block's Base's options schema, as well as preset.
+	 */
+	options?: Options & StratumTemplateOptions;
 }
 
 /**
@@ -14,7 +22,12 @@ export interface TestIntakeSettings {
  */
 export function testIntake<Addons extends object, Options extends object>(
 	block: BlockWithAddons<Addons, Options>,
-	settings: TestIntakeSettings,
+	settings: TestIntakeSettings<Options>,
 ): Partial<Addons> | undefined {
-	return block.intake?.(settings);
+	return block.intake?.({
+		...settings,
+		options:
+			settings.options ??
+			(createFailingObject("options", "the Block") as Options),
+	});
 }
