@@ -39,7 +39,7 @@
 		"@eslint/js": "9.23.0",
 		"@types/eslint-plugin-markdown": "2.0.2",
 		"@types/node": "22.13.9",
-		"@vitest/coverage-v8": "3.0.7",
+		"@vitest/coverage-v8": "3.1.1",
 		"@vitest/eslint-plugin": "1.1.36",
 		"console-fail-test": "0.5.0",
 		"cspell": "8.18.0",
@@ -65,7 +65,7 @@
 		"sentences-per-line": "0.3.0",
 		"typescript": "5.8.2",
 		"typescript-eslint": "8.26.0",
-		"vitest": "3.0.7"
+		"vitest": "3.1.1"
 	},
 	"engines": {
 		"node": ">=18.3.0"
