@@ -38,7 +38,6 @@
 		"hash-object": "^5.0.1",
 		"hosted-git-info": "^8.0.2",
 		"new-github-repository": "^0.2.1",
-		"prettier": "3.5.3",
 		"read-package-up": "^11.0.0",
 		"read-pkg": "^9.0.1",
 		"slugify": "^1.6.6",
