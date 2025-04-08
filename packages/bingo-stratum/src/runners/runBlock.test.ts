@@ -63,8 +63,7 @@ describe("runBlock", () => {
 			  "writeFile": [
 			    [
 			      "README.md",
-			      "# abc
-			",
+			      "# abc",
 			    ],
 			  ],
 			}
@@ -139,9 +138,7 @@ describe("runBlock", () => {
 				    [
 				      "README.md",
 				      "# abc
-
-				def
-				",
+				def",
 				    ],
 				  ],
 				}
