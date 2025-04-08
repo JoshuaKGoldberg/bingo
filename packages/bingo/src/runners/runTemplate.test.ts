@@ -61,8 +61,7 @@ describe("runTemplate", () => {
 			  "writeFile": [
 			    [
 			      "README.md",
-			      "# abc
-			",
+			      "# abc",
 			    ],
 			  ],
 			}

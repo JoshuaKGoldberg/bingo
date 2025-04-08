@@ -140,9 +140,6 @@ importers:
       new-github-repository:
         specifier: ^0.2.1
         version: 0.2.1
-      prettier:
-        specifier: 3.5.3
-        version: 3.5.3
       read-package-up:
         specifier: ^11.0.0
         version: 11.0.0
