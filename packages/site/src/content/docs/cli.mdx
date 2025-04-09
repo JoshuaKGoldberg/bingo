@@ -10,7 +10,7 @@ That CLI will interactively prompt you for any required options that can't be in
 
 For example, to run [create-typescript-app](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app" />
 
 ```plaintext
 ┌  ✨ create-typescript-app@2.0.0 ✨
@@ -39,7 +39,7 @@ For example, creating a new repository in a subdirectory:
 
 <PackageManagers
 	args="--directory my-fancy-project"
-	pkg="create-typescript-app@beta"
+	pkg="create-typescript-app"
 	type="dlx"
 />
 
@@ -49,7 +49,7 @@ For example, creating a new repository in a subdirectory:
 
 Prints help text.
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" args="--help" />
+<PackageManagers type="dlx" pkg="create-typescript-app" args="--help" />
 
 ### `--mode`
 
@@ -61,11 +61,7 @@ If not provided, it will be inferred based on whether Bingo is being run in an e
 
 For example, specifying creating a new repository with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers
-	args="--mode setup"
-	pkg="create-typescript-app@beta"
-	type="dlx"
-/>
+<PackageManagers args="--mode setup" pkg="create-typescript-app" type="dlx" />
 
 ### `--offline`
 
@@ -79,7 +75,7 @@ The repository will roughly be a local-only creation.
 
 For example, specifying creating a new repository offline with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" args="--offline" />
+<PackageManagers type="dlx" pkg="create-typescript-app" args="--offline" />
 
 :::caution
 `--offline` doesn't prevent templates from accidentally running scripts that make network requests.
@@ -92,7 +88,7 @@ If you are finding your template still sends requests with `--offline`, file a b
 
 Prints the Bingo package version.
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" args="--version" />
+<PackageManagers type="dlx" pkg="create-typescript-app" args="--version" />
 
 ## Template Flags
 
@@ -103,7 +99,7 @@ For example, if a template defines a `title` option, `--title` will be type `str
 
 <PackageManagers
 	args="--title 'My New App'"
-	pkg="create-typescript-app@beta"
+	pkg="create-typescript-app"
 	type="dlx"
 />
 

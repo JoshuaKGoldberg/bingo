@@ -1,3 +1,5 @@
+import { intakeDirectory } from "bingo-fs";
+
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
 import { prepareOptions } from "../../preparation/prepareOptions.js";
 import { runTemplate } from "../../runners/runTemplate.js";
@@ -10,26 +12,34 @@ import { runSpinnerTask } from "../display/runSpinnerTask.js";
 import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
+import { CLIMessage } from "../messages.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
 import { CLIStatus } from "../status.js";
 import { ModeResults } from "../types.js";
 import { clearTemplateFiles } from "./clearTemplateFiles.js";
 import { getForkedRepositoryLocator } from "./getForkedRepositoryLocator.js";
+import { readConfigSettings } from "./readConfigSettings.js";
 
-export interface RunModeTransitionSettings<OptionsShape extends AnyShape> {
-	args: string[];
+export interface RunModeTransitionSettings<
+	OptionsShape extends AnyShape,
+	Refinements,
+> {
+	argv: string[];
 	configFile: string | undefined;
 	directory?: string;
 	display: ClackDisplay;
 	from: string;
 	help?: boolean;
 	offline?: boolean;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 }
 
-export async function runModeTransition<OptionsShape extends AnyShape>({
-	args,
+export async function runModeTransition<
+	OptionsShape extends AnyShape,
+	Refinements,
+>({
+	argv,
 	configFile,
 	directory = ".",
 	display,
@@ -37,7 +47,7 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 	help,
 	offline,
 	template,
-}: RunModeTransitionSettings<OptionsShape>): Promise<ModeResults> {
+}: RunModeTransitionSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("transition", from, template);
 	}
@@ -68,32 +78,51 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 		);
 	}
 
-	const providedOptions = parseZodArgs(args, template.options);
-	const existingOptions = await runSpinnerTask(
+	const providedOptions = parseZodArgs(argv, template.options);
+
+	const loadedConfig = await readConfigSettings(
+		configFile,
+		directory,
+		template,
+	);
+	if (loadedConfig instanceof Error) {
+		logRerunSuggestion(argv, providedOptions);
+		return { error: loadedConfig, status: CLIStatus.Error };
+	}
+
+	const preparedOptions = await runSpinnerTask(
 		display,
 		"Inferring options from existing repository",
 		"Inferred options from existing repository",
 		async () => {
 			return await prepareOptions(template, {
 				...system,
-				existing: { ...providedOptions, directory },
+				existing: {
+					...loadedConfig?.options,
+					...providedOptions,
+					directory,
+				},
 				offline,
 			});
 		},
 	);
-	if (existingOptions instanceof Error) {
-		logRerunSuggestion(args, providedOptions);
-		return { error: existingOptions, status: CLIStatus.Error };
+	if (preparedOptions instanceof Error) {
+		logRerunSuggestion(argv, providedOptions);
+		return { status: CLIStatus.Error };
 	}
 
 	const baseOptions = await promptForOptionSchemas(template, {
-		existing: existingOptions,
+		existing: { ...providedOptions, ...preparedOptions },
 		system,
 	});
 	if (baseOptions.cancelled) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return { status: CLIStatus.Cancelled };
 	}
+
+	const files = await intakeDirectory(directory, {
+		exclude: /node_modules|^\.git$/,
+	});
 
 	const creation = await runSpinnerTask(
 		display,
@@ -103,40 +132,50 @@ export async function runModeTransition<OptionsShape extends AnyShape>({
 			await runTemplate(template, {
 				...system,
 				directory,
+				files,
 				mode: "transition",
 				offline,
 				options: baseOptions.completed,
+				refinements: loadedConfig?.refinements,
 			}),
 	);
 	if (creation instanceof Error) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			error: creation,
-			outro: `Leaving changes to the local directory on disk. 👋`,
+			outro: CLIMessage.Leaving,
 			status: CLIStatus.Error,
 		};
 	}
 
-	if (repositoryLocator) {
-		await runSpinnerTask(
-			display,
-			"Creating initial commit",
-			"Created initial commit",
-			async () => {
-				await createInitialCommit(system.runner, { amend: true, offline });
-			},
-		);
-
-		logRerunSuggestion(args, baseOptions.prompted);
+	if (!repositoryLocator) {
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			outro: `Done. Enjoy your new repository! 💝`,
+			outro: CLIMessage.Done,
 			status: CLIStatus.Success,
 		};
 	}
 
-	logRerunSuggestion(args, baseOptions.prompted);
-	return {
-		outro: `Done. Enjoy your updated repository! 💝`,
-		status: CLIStatus.Success,
-	};
+	const commit = await runSpinnerTask(
+		display,
+		"Creating initial commit",
+		"Created initial commit",
+		async () => {
+			await createInitialCommit(system.runner, {
+				amend: true,
+				push: !offline,
+			});
+		},
+	);
+
+	logRerunSuggestion(argv, baseOptions.prompted);
+
+	return commit instanceof Error
+		? {
+				outro: CLIMessage.Leaving,
+				status: CLIStatus.Error,
+			}
+		: {
+				outro: CLIMessage.New,
+				status: CLIStatus.Success,
+			};
 }

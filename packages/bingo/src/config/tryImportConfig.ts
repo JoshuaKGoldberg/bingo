@@ -1,11 +1,11 @@
 import { tryImportWithPredicate } from "../cli/tryImportWithPredicate.js";
-import { isCreatedConfig } from "../predicates/isCreatedConfig.js";
+import { isTemplateConfig } from "../predicates/isTemplateConfig.js";
 
 export async function tryImportConfig(configFile: string) {
 	return await tryImportWithPredicate(
 		async (moduleName) => (await import(moduleName)) as object,
 		configFile,
-		isCreatedConfig,
+		isTemplateConfig,
 		"config from createConfig()",
 	);
 }

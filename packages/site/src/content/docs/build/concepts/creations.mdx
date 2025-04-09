@@ -66,38 +66,38 @@ See [Packages > `bingo-fs` > Files](/build/packages/bingo-fs#files) for more inf
 Network requests to send after files are created.
 
 This can be useful when repository settings or other APIs are necessary to align the created repository to what templates have produced.
+Each object under `requests` describes a network request to send.
 
-Each request may be specified as an object with:
-
-- `id` (`string`): Unique ID to know how to deduplicate previous creations during [merging](/build/details/merging#requests)
-- `send` (function): Asynchronous method that sends the request, which receives an object parameter containing:
-  - `fetch`: Equivalent to the global `fetch`
-  - `octokit`: [GitHub Octokit](https://github.com/octokit/octokit.js?tab=readme-ov-file#octokit-api-client) that uses the `fetch` internally
-
-For example, this template a GitHub repository's default branch to `main`:
+For example, this template populates a `good first issue` label:
 
 ```ts
 import { createTemplate } from "bingo";
+import { z } from "zod";
 
 export default createTemplate({
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
 	produce({ options }) {
 		return {
 			requests: [
 				{
-					id: "default-branch",
-					async send({ octokit }) {
-						await octokit.rest.repos.update({
-							default_branch: "main",
-							owner: options.owner,
-							repo: options.repository,
-						});
+					endpoint: "POST /repos/{owner}/{repo}/labels",
+					parameters: {
+						owner: options.owner,
+						repo: options.repository,
+						title: "good first issue",
 					},
+					type: "octokit",
 				},
 			],
 		};
 	},
 });
 ```
+
+See [Packages > `bingo-requests` > Requests](/build/packages/bingo-requests#requests) for more information on the `requests` format.
 
 ### `scripts`
 

@@ -20,9 +20,10 @@ Bingo templates can be defined in as little as two files:
 :::tip
 For example Bingo template repositories, see:
 
-- [create-example-minimal](https://github.com/JoshuaKGoldberg/create-example-minimal): The barest bones template as created by this docs page
-- [create-example](https://github.com/JoshuaKGoldberg/create-example): A larger template with more options and tests
+- [create-example-minimal](https://github.com/bingo-examples/create-example-minimal): The barest bones template as created by this docs page
+- [create-example](https://github.com/bingo-examples/create-example): A larger template with more options and tests
 
+[github.com/bingo-examples](https://github.com/bingo-examples) contains more examples of Bingo templates.
 :::
 
 ### 1. Template File
@@ -44,7 +45,7 @@ npm i bingo
 ```js title="template.js"
 import { createTemplate } from "bingo";
 
-export default createTemplate({
+const template = createTemplate({
 	produce() {
 		return {
 			files: {
@@ -53,6 +54,10 @@ export default createTemplate({
 		};
 	},
 });
+
+export default template;
+
+export const { createConfig } = template;
 ```
 
 You can then provide the path to that file to the [`bingo` CLI](/build/cli) to create a `README.md` file:

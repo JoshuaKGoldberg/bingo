@@ -1,4 +1,5 @@
 import * as prompts from "@clack/prompts";
+import chalk from "chalk";
 
 import { packageData } from "../packageData.js";
 import { AnyShape } from "../types/shapes.js";
@@ -14,10 +15,15 @@ import { CLIStatus } from "./status.js";
 
 /**
  * Runs an interactive CLI to generate and apply a template's output.
+ * @template OptionsShape Schemas of options the template takes in.
+ * @template Refinements Any optional template-specific customizations.
  * @see {@link https://create.bingo/build/apis/run-template-cli}
  */
-export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
-	template: Template<OptionsShape>,
+export async function runTemplateCLI<
+	OptionsShape extends AnyShape,
+	Refinements,
+>(
+	template: Template<OptionsShape, Refinements>,
 	providedTemplatePackageData?: DisplayPackageData,
 ) {
 	const templatePackageData =
@@ -28,7 +34,7 @@ export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
 		return CLIStatus.Error;
 	}
 
-	const { args, values } = parseProcessArgv();
+	const { argv, values } = parseProcessArgv();
 	if (values.version) {
 		console.log(`${packageData.name}@${packageData.version}`);
 		console.log(`${templatePackageData.name}@${templatePackageData.version}`);
@@ -38,12 +44,12 @@ export async function runTemplateCLI<OptionsShape extends AnyShape = AnyShape>(
 	return await runInsideClackDisplay(templatePackageData, async (display) => {
 		if (template.about?.repository) {
 			prompts.log.info(
-				`Learn more on:\n  https://github.com/${template.about.repository.owner}/${template.about.repository.repository}`,
+				`Learn more on:\n  ${chalk.blue(`https://github.com/${template.about.repository.owner}/${template.about.repository.repository}`)}`,
 			);
 		}
 
 		return await runCLI({
-			args,
+			argv,
 			display,
 			from: templatePackageData.name,
 			template,

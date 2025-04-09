@@ -5,6 +5,11 @@ import { mergeAddonsIfUpdated } from "./mergeAddonsIfUpdated.js";
 describe("mergeArgsIfUpdated", () => {
 	it.each([
 		[{}, {}, undefined],
+		[[], [], undefined],
+		[[], {}, new Error("Mismatched merging addons (Array.isArray).")],
+		[{}, [], new Error("Mismatched merging addons (Array.isArray).")],
+		[["a"], ["a"], undefined],
+		[["a"], ["b"], ["a", "b"]],
 		[{ a: true }, {}, { a: true }],
 		[{ a: true }, { a: null }, undefined],
 		[{ a: true }, { a: true }, undefined],

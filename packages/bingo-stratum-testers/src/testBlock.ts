@@ -6,6 +6,7 @@ import {
 	ProduceBlockSettingsWithAddons,
 } from "bingo-stratum";
 import { BlockCreation } from "bingo-stratum/lib/types/creations.js";
+import { StratumTemplateOptions } from "bingo-stratum/lib/types/templates.js";
 
 import { createFailingObject } from "./utils.js";
 
@@ -17,10 +18,28 @@ export interface BlockContextSettingsWithOptionalAddons<
 }
 
 export interface BlockContextSettingsWithoutAddons<Options extends object> {
+	/**
+	 * Which repository mode Bingo to simulate being run in.
+	 * @see {@link https://create.bingo/build/concepts/modes}
+	 */
 	mode?: ProductionMode;
-	options?: Options;
+
+	/**
+	 * Whether to simulate being run in an "offline" mode.
+	 * @see {@link http://create.bingo/build/details/contexts#options-offline}
+	 */
+	offline?: boolean;
+
+	/**
+	 * Any options values as described by the Block's Base's options schema, as well as preset.
+	 */
+	options?: Options & StratumTemplateOptions;
 }
 
+/**
+ * Simulates running a Block in-memory for tests.
+ * @see {@link https://www.create.bingo/engines/stratum/packages/bingo-stratum-testers/#testblock}
+ */
 export function testBlock<Addons extends object, Options extends object>(
 	block: BlockWithAddons<Addons, Options>,
 	settings: BlockContextSettingsWithOptionalAddons<Addons, Options>,
@@ -36,9 +55,11 @@ export function testBlock<Addons extends object, Options extends object>(
 	return produceBlock(
 		block as BlockWithAddons<Addons, Options>,
 		{
-			addons: {},
-			options: createFailingObject("options", "the Block") as Options,
 			...settings,
+			addons: settings.addons ?? {},
+			options:
+				settings.options ??
+				(createFailingObject("options", "the Block") as Options),
 		} as ProduceBlockSettingsWithAddons<Addons, Options>,
 	);
 }

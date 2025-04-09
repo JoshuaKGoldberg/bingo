@@ -108,6 +108,10 @@ export default defineConfig({
 										{ label: "bingo", link: "build/packages/bingo" },
 										{ label: "bingo-fs", link: "build/packages/bingo-fs" },
 										{
+											label: "bingo-requests",
+											link: "build/packages/bingo-requests",
+										},
+										{
 											label: "bingo-systems",
 											link: "build/packages/bingo-systems",
 										},
@@ -232,9 +236,18 @@ export default defineConfig({
 					},
 				),
 			],
-			social: {
-				github: "https://github.com/JoshuaKGoldberg/bingo",
-			},
+			social: [
+				{
+					href: "https://discord.gg/Jh85eMGQnV",
+					icon: "discord",
+					label: "Discord",
+				},
+				{
+					href: "https://github.com/JoshuaKGoldberg/bingo",
+					icon: "github",
+					label: "Github",
+				},
+			],
 			tableOfContents: {
 				maxHeadingLevel: 4,
 			},

@@ -1,48 +1,94 @@
+import { SystemRunner } from "bingo-systems";
+import { ExecaError, Result as ExecaResult } from "execa";
+import { getGitHubAuthToken } from "get-github-auth-token";
+import { newGitHubRepository } from "new-github-repository";
 import { Octokit } from "octokit";
 
-import { RepositoryLocator } from "./getRepositoryLocator.js";
+import { AnyShape } from "../../types/shapes.js";
+import { Template } from "../../types/templates.js";
+import { ClackDisplay } from "../display/createClackDisplay.js";
+import { runSpinnerTask } from "../display/runSpinnerTask.js";
+import { promptForOptionSchema } from "../prompts/promptForOptionSchema.js";
+import { isStringLikeSchema } from "../schemas/isStringLikeSchema.js";
 
-export async function createRepositoryOnGitHub(
-	target: RepositoryLocator,
+export interface PartialRepositoryLocator {
+	owner?: string;
+	repository: string;
+}
+
+export interface RepositoryLocator extends PartialRepositoryLocator {
+	owner: string;
+}
+
+export async function createRepositoryOnGitHub<
+	OptionsShape extends AnyShape,
+	Refinements,
+>(
+	display: ClackDisplay,
+	{ owner: requestedOwner, repository }: PartialRepositoryLocator,
 	octokit: Octokit,
-	source?: RepositoryLocator,
-) {
-	if (source) {
-		await octokit.rest.repos.createUsingTemplate({
-			name: target.repository,
-			owner: target.owner,
-			template_owner: source.owner,
-			template_repo: source.repository,
-		});
-	} else {
-		const currentUser = await octokit.rest.users.getAuthenticated();
+	runner: SystemRunner,
+	template: Template<OptionsShape, Refinements>,
+): Promise<Error | RepositoryLocator | undefined> {
+	const hasStringLikeOwner = hasStringLikeOption(template.options, "owner");
+	const hasStringLikeRepository = hasStringLikeOption(
+		template.options,
+		"repository",
+	);
 
-		if (currentUser.data.login === target.owner) {
-			await octokit.rest.repos.createForAuthenticatedUser({
-				name: target.repository,
-			});
-		} else {
-			await octokit.rest.repos.createInOrg({
-				name: target.repository,
-				org: target.owner,
-			});
-		}
+	if (!hasStringLikeOwner) {
+		return new Error(
+			hasStringLikeRepository
+				? `To run with --mode setup and not --offline, options.owner must be a string-like schema.`
+				: `To run with --mode setup and not --offline, options.owner and options.repository must be string-like schemas.`,
+		);
 	}
 
-	// GitHub asynchronously initializes default repo metadata such as labels.
-	// There's no built-in API to determine whether initialization is done,
-	// but we can approximate that by polling for whether labels are created.
-	// https://github.com/JoshuaKGoldberg/bingo/issues/243
-	// On the off chance the repository's organization has no default labels,
-	// we only retry up to 10 times.
-	for (let i = 0; i < 10; i += 1) {
-		const response = await octokit.request("GET /repos/{owner}/{repo}/labels", {
-			owner: target.owner,
-			repo: target.repository,
-		});
-
-		if (response.data.length) {
-			break;
-		}
+	if (!hasStringLikeRepository) {
+		return new Error(
+			`To run with --mode setup and not --offline, options.repository must be a string-like schema.`,
+		);
 	}
+
+	// We'll only want to create a repository if we're logged in.
+	// getGitHubAuthToken is intentionally what Bingo uses to create an Octokit.
+	const authToken = await getGitHubAuthToken();
+	if (!authToken.succeeded) {
+		return undefined;
+	}
+
+	const ownerRaw =
+		requestedOwner ??
+		stdoutIfNotError(await runner("gh config get user -h github.com")) ??
+		(await promptForOptionSchema(
+			"owner",
+			template.options.owner,
+			"organization or username owning the repository",
+			undefined,
+		));
+
+	const owner = String(ownerRaw);
+	const error = await runSpinnerTask(
+		display,
+		"Creating repository on GitHub",
+		"Created repository on GitHub",
+		async () => {
+			await newGitHubRepository({
+				octokit,
+				owner,
+				repository,
+				template: template.about?.repository,
+			});
+		},
+	);
+
+	return error || { owner, repository };
+}
+
+function hasStringLikeOption(options: AnyShape, key: string): boolean {
+	return key in options && isStringLikeSchema(options[key]);
+}
+
+function stdoutIfNotError(value: ExecaError | ExecaResult) {
+	return value instanceof Error ? undefined : value.stdout;
 }

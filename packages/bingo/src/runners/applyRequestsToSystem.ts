@@ -1,21 +1,32 @@
-import { CreatedRequest } from "../types/creations.js";
+import { CreatedRequest } from "bingo-requests";
+
 import { SystemContext } from "../types/system.js";
+import { getRequestSender } from "./getRequestSender.js";
 
 export async function applyRequestsToSystem(
 	requests: CreatedRequest[],
-	system: Pick<SystemContext, "display" | "fetchers">,
+	system: SystemContext,
 ) {
 	await Promise.all(
 		requests.map(async (request) => {
-			system.display.item("request", request.id, { start: Date.now() });
-
-			try {
-				await request.send(system.fetchers);
-			} catch (error) {
-				system.display.item("request", request.id, { error });
+			const sender = getRequestSender(system.fetchers, request);
+			if (!sender) {
+				return;
 			}
 
-			system.display.item("request", request.id, { end: Date.now() });
+			const { id, send } = sender;
+
+			system.display.item("request", id, { start: Date.now() });
+
+			try {
+				await send();
+			} catch (error) {
+				if (!request.silent) {
+					system.display.item("request", id, { error });
+				}
+			}
+
+			system.display.item("request", id, { end: Date.now() });
 		}),
 	);
 }

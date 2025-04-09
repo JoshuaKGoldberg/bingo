@@ -8,11 +8,12 @@ export function logSchemasHelpOptions(packageName: string, schemas: AnyShape) {
 		packageName,
 		Object.entries(schemas)
 			.map(([flag, schema]) => ({
-				flag,
+				flag: `--${flag}`,
 				text: asSentence(schema.description),
 				type: getSchemaTypeName(schema),
 			}))
 			// TODO: Once a Zod-to-args conversion is made, reuse that here...
+			// https://github.com/JoshuaKGoldberg/bingo/issues/285
 			.filter((entry) => !entry.type.startsWith("object")),
 	);
 }

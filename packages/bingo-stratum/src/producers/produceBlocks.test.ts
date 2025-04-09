@@ -1,3 +1,4 @@
+import { IntakeFileEntry } from "bingo-fs";
 import { describe, expect, it, test, vi } from "vitest";
 import { z } from "zod";
 
@@ -34,7 +35,7 @@ describe("produceBlocks", () => {
 		});
 	});
 
-	it("adds addons when provided", () => {
+	it("adds addons when provided only under blockAddons", () => {
 		const block = base.createBlock({
 			about: {
 				name: "Example Block",
@@ -50,13 +51,91 @@ describe("produceBlocks", () => {
 		});
 
 		const result = produceBlocks([block], {
-			addons: [block({ extra: "line" })],
+			blockAddons: [block({ extra: "line" })],
 			options: { value: "Hello, world!" },
 		});
 
 		expect(result).toEqual({
 			files: {
 				"README.md": "Hello, world!\nline",
+			},
+		});
+	});
+
+	it("adds addons when provided only via Block intake", () => {
+		const block = base.createBlock({
+			about: {
+				name: "Example Block",
+			},
+			addons: {
+				extra: z.string().optional(),
+			},
+			intake({ files }) {
+				return {
+					extra: (files["README.md"] as IntakeFileEntry)[0].split("\n").at(-1),
+				};
+			},
+			produce({ addons, options }) {
+				return {
+					files: { "README.md": [options.value, addons.extra].join("\n") },
+				};
+			},
+		});
+
+		const result = produceBlocks([block], {
+			files: {
+				"README.md": ["Before\nline"],
+			},
+			options: { value: "Hello, world!" },
+		});
+
+		expect(result).toEqual({
+			files: {
+				"README.md": "Hello, world!\nline",
+			},
+		});
+	});
+
+	it("adds merges addons when provided by Block intake and blockAddons", () => {
+		const block = base.createBlock({
+			about: {
+				name: "Example Block",
+			},
+			addons: {
+				a: z.string().optional(),
+				b: z.string().optional(),
+				c: z.string().optional(),
+			},
+			intake() {
+				return {
+					a: "intake",
+					b: "intake",
+				};
+			},
+			produce({ addons, options }) {
+				return {
+					files: {
+						"README.md": [options.value, addons.a, addons.b, addons.c].join(
+							"\n",
+						),
+					},
+				};
+			},
+		});
+
+		const result = produceBlocks([block], {
+			blockAddons: [
+				block({
+					b: "provided",
+					c: "provided",
+				}),
+			],
+			options: { value: "Hello, world!" },
+		});
+
+		expect(result).toEqual({
+			files: {
+				"README.md": "Hello, world!\nintake\nprovided\nprovided",
 			},
 		});
 	});

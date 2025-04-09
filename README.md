@@ -5,7 +5,7 @@
 <p align="center">
 	<!-- prettier-ignore-start -->
 	<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-	<a href="#contributors" target="_blank"><img alt="👪 All Contributors: 5" src="https://img.shields.io/badge/%F0%9F%91%AA_all_contributors-5-21bb42.svg" /></a>
+	<a href="#contributors" target="_blank"><img alt="👪 All Contributors: 8" src="https://img.shields.io/badge/%F0%9F%91%AA_all_contributors-8-21bb42.svg" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<!-- prettier-ignore-end -->
 	<a href="https://github.com/JoshuaKGoldberg/bingo/blob/main/.github/CODE_OF_CONDUCT.md" target="_blank"><img alt="🤝 Code of Conduct: Kept" src="https://img.shields.io/badge/%F0%9F%A4%9D_code_of_conduct-kept-21bb42" /></a>
@@ -32,10 +32,15 @@ See **[create.bingo](https://create.bingo)** for documentation on getting starte
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/boneskull"><img src="https://avatars.githubusercontent.com/u/924465?v=4?s=100" width="100px;" alt="Christopher Hiller"/><br /><sub><b>Christopher Hiller</b></sub></a><br /><a href="#ideas-boneskull" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=boneskull" title="Documentation">📖</a> <a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=boneskull" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://effectivetypescript.com"><img src="https://avatars.githubusercontent.com/u/98301?v=4?s=100" width="100px;" alt="Dan Vanderkam"/><br /><sub><b>Dan Vanderkam</b></sub></a><br /><a href="#ideas-danvk" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://demian.click"><img src="https://avatars.githubusercontent.com/u/95881717?v=4?s=100" width="100px;" alt="Demian Parkhomenko"/><br /><sub><b>Demian Parkhomenko</b></sub></a><br /><a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=demianparkhomenko" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://johnnyreilly.com/"><img src="https://avatars.githubusercontent.com/u/1010525?v=4?s=100" width="100px;" alt="John Reilly"/><br /><sub><b>John Reilly</b></sub></a><br /><a href="#ideas-johnnyreilly" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.joshuakgoldberg.com/"><img src="https://avatars.githubusercontent.com/u/3335181?v=4?s=100" width="100px;" alt="Josh Goldberg ✨"/><br /><sub><b>Josh Goldberg ✨</b></sub></a><br /><a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=JoshuaKGoldberg" title="Code">💻</a> <a href="#content-JoshuaKGoldberg" title="Content">🖋</a> <a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=JoshuaKGoldberg" title="Documentation">📖</a> <a href="#ideas-JoshuaKGoldberg" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-JoshuaKGoldberg" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-JoshuaKGoldberg" title="Maintenance">🚧</a> <a href="#projectManagement-JoshuaKGoldberg" title="Project Management">📆</a> <a href="#tool-JoshuaKGoldberg" title="Tools">🔧</a> <a href="https://github.com/JoshuaKGoldberg/bingo/issues?q=author%3AJoshuaKGoldberg" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://nick.scialli.me"><img src="https://avatars.githubusercontent.com/u/7538045?v=4?s=100" width="100px;" alt="Nick Scialli"/><br /><sub><b>Nick Scialli</b></sub></a><br /><a href="https://github.com/JoshuaKGoldberg/bingo/issues?q=author%3Anas5w" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/astrochemx"><img src="https://avatars.githubusercontent.com/u/105541001?v=4?s=100" width="100px;" alt="Vladyslav Shevchenko"/><br /><sub><b>Vladyslav Shevchenko</b></sub></a><br /><a href="https://github.com/JoshuaKGoldberg/bingo/issues?q=author%3Aastrochemx" title="Bug reports">🐛</a> <a href="https://github.com/JoshuaKGoldberg/bingo/commits?author=astrochemx" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/YashSaxena9"><img src="https://avatars.githubusercontent.com/u/50399404?v=4?s=100" width="100px;" alt="Yash Saxena"/><br /><sub><b>Yash Saxena</b></sub></a><br /><a href="https://github.com/JoshuaKGoldberg/bingo/issues?q=author%3Ayashsaxena9" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

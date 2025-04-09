@@ -56,7 +56,7 @@ describe("produceStratumTemplate", () => {
 			produce({ options }) {
 				return {
 					files: {
-						"value.txt": options.value,
+						"value.txt": `${options.value} (${options.preset})`,
 					},
 				};
 			},
@@ -80,7 +80,7 @@ describe("produceStratumTemplate", () => {
 
 		expect(actual).toEqual({
 			files: {
-				"value.txt": "abc",
+				"value.txt": "abc (test)",
 			},
 		});
 	});

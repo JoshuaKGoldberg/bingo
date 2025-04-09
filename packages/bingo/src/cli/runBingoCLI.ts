@@ -14,7 +14,7 @@ import { makeRelative } from "./utils.js";
  * @returns CLI status to assign to `process.exitCode`.
  */
 export async function runBingoCLI() {
-	const { args, positionals, values } = parseProcessArgv();
+	const { argv, positionals, values } = parseProcessArgv();
 	if (values.version) {
 		console.log(packageData.version);
 		return CLIStatus.Success;
@@ -34,7 +34,7 @@ export async function runBingoCLI() {
 		}
 
 		const result = await runCLI({
-			args,
+			argv,
 			display,
 			from: `bingo ${from}`,
 			template,

@@ -25,14 +25,14 @@ export type LazyOptionalOptions<Options> = {
  */
 export interface OptionsContext<Options extends object> {
 	/**
-	 * Logs a message to the running user.
-	 */
-	log: ContextLog;
-
-	/**
 	 * Existing directory of files on disk, if available.
 	 */
 	files?: CreatedDirectory;
+
+	/**
+	 * Logs a message to the running user.
+	 */
+	log: ContextLog;
 
 	/**
 	 * Whether Bingo is being run in an "offline" mode.

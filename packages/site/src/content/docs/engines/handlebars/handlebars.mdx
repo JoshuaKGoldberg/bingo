@@ -3,11 +3,21 @@ description: Applies Handlebars templates from a single path.
 title: handlebars()
 ---
 
-The exported `handlebars()` function generates [`files` Creations](/build/concepts/creations#files) using Handlebars templates on disk.
-It takes up to two parameters:
+`bingo-handlebars` exports three primary functions for directly using Handlebars templates in Bingo templates:
 
-1. `sourcePath: string` _(required)_: absolute path to a template file or a directory containing Handlebars templates files
+- [`handlebars`](#handlebars): generates a directory or files from a path
+- [`handlebarsFile`](#handlebarsfile): generates a file from a path
+- [`handlebarsDirectory`](#handlebarsdirectory): generates a directory from a path
+
+Each function generates [`files` Creations](/build/concepts/creations#files) using Handlebars templates on disk.
+Each takes up to two parameters:
+
+1. `sourcePath: string` _(required)_: absolute path to a Handlebars template file or directory
 2. `options: object` _(optional)_: any values to use in the templates
+
+## `handlebars`
+
+Generates files creations from a directory of templates or a single template file.
 
 For example, this template uses a `../template/package.json.hbs` file relative to the template's source file:
 
@@ -59,9 +69,69 @@ Given the options `{ owner: "your-username", repository : "my-handlebars-app" }`
 }
 ```
 
+### `handlebarsDirectory`
+
+Behaves the same as `handlebars()`, but only supports generating from a directory.
+Throws an error if the `sourcePath` is a file.
+
+```ts
+import { createTemplate } from "bingo";
+import { handlebarsDirectory } from "bingo-handlebars";
+import path from "node:path";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		return {
+			files: await handlebarsDirectory(
+				path.join(import.meta.dirname, "../template"),
+				options,
+			),
+		};
+	},
+});
+```
+
+This can be useful for locations such as the root [`file` Creation](/build/concepts/creations#files) where TypeScript requires a directory (`CreatedDirectory`) rather than a file (`CreatedFileEntry`).
+
+### `handlebarsFile`
+
+Behaves the same as `handlebars()`, but only supports generating a single file.
+Throws an error if the `sourcePath` is a directory.
+
+```ts
+import { createTemplate } from "bingo";
+import { handlebarsFile } from "bingo-handlebars";
+import path from "node:path";
+
+export default createTemplate({
+	about: { name: "My Handlebars Template" },
+	options: {
+		owner: z.string(),
+		repository: z.string(),
+	},
+	async produce({ options }) {
+		return {
+			files: {
+				"package.json": await handlebarsFile(
+					path.join(import.meta.dirname, "../template/package.json.hbs"),
+					options,
+				),
+			},
+		};
+	},
+});
+```
+
+This can be useful for locations where TypeScript requires a file (`CreatedFileEntry`) rather than a directory (`CreatedDirectory`).
+
 ## Directories
 
-If the path given to the generated `handlebars()` contains a directory, that directory will be recursively read.
+Directory paths given to [`handlebars()`](#handlebars) and [`handlebarsDirectory()`](#handlebarsdirectory) will be recursively read.
 Any file names ending with `.hbs` will have that suffix removed.
 
 For example, this template uses a `../template` directory relative to the template's source file for all its `files` Creations:

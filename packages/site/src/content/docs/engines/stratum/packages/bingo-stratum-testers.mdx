@@ -24,7 +24,7 @@ Stratum generally reuses existing Bingo tester APIs when possible:
 
 Other Stratum constructs behave differently:
 
-- [Blocks](/engines/stratum/concepts/blocks): may be tested directly with [`testBlock`](#testblock)
+- [Blocks](/engines/stratum/concepts/blocks): may be tested directly with [`testBlock`](#testblock) and [`testIntake`](#testintake)
 - [Presets](/engines/stratum/concepts/presets): do not have a corresponding API, as they can be tested by passing the `preset` option to a Template that includes them
 
 ## `testBlock`
@@ -44,8 +44,8 @@ import { describe, expect, it } from "vitest";
 import { blockNvmrc } from "./blockNvmrc";
 
 describe("blockNvmrc", () => {
-	it("returns an .nvmrc", async () => {
-		const actual = await testBlock(blockNvmrc);
+	it("returns an .nvmrc", () => {
+		const actual = testBlock(blockNvmrc);
 
 		expect(actual).toEqual({
 			files: { ".nvmrc": "20.12.2" },
@@ -92,8 +92,8 @@ const blockPrettier = base.createBlock({
 });
 
 describe("blockPrettier", () => {
-	it("creates a .prettierrc.json when provided options", async () => {
-		const actual = await testBlock(blockPrettier, {
+	it("creates a .prettierrc.json when provided options", () => {
+		const actual = testBlock(blockPrettier, {
 			addons: {
 				config: {
 					useTabs: true,
@@ -115,7 +115,7 @@ describe("blockPrettier", () => {
 
 ### `options` {#testblock-options}
 
-[Base Options](/engines/stratum/concepts/bases#options) may be provided under `options`.
+[Base Options](/engines/stratum/concepts/bases#options) may be provided under `options`, as well as `preset: string`.
 
 For example, this test asserts that a README.md uses the `title` defined under `options`:
 
@@ -129,25 +129,62 @@ const blockReadme = base.createBlock({
 	produce({ options }) {
 		return {
 			files: {
-				"README.md": `# ${options.title}`,
+				"README.md": `# ${options.title} (${options.preset})`,
 			},
 		};
 	},
 });
 
 describe("blockDocs", () => {
-	it("uses options.name for the README.md title", async () => {
-		const actual = await testBlock(blockReadme, {
+	it("uses options.name for the README.md title", () => {
+		const actual = testBlock(blockReadme, {
 			options: {
+				preset: "test",
 				title: "My Project",
 			},
 		});
 
 		expect(actual).toEqual({
 			files: {
-				"README.md": `# My Project`,
+				"README.md": `# My Project (test)`,
 			},
 		});
+	});
+});
+```
+
+## `testIntake`
+
+For [Blocks with `intake`](/engines/stratum/apis/create-base#createblock-intake), a `testIntake` function is exported that is analogous to [`testOptions`](/build/packages/bingo-testers#testoptions).
+It takes in two arguments:
+
+1. `block` _(required)_: a [Block](/engines/stratum/concepts/blocks)
+2. `settings` _(optional)_: an [Intake Context](/engines/stratum/details/contexts#intake-contexts)
+
+### `files` {#testintake-files}
+
+A [bingo-fs directory](/build/packages/bingo-fs) may be provided under `files`.
+Files in the directory must be stored as [`[string, CreatedFileMetatdata?]` tuples](/build/packages/bingo-fs#files)
+
+For example, this test asserts that an nvmrc Block intakes a `version` Addon from an existing `.nvmrc` file on disk:
+
+```ts
+import { testIntake } from "create-testers";
+import { describe, expect, it } from "vitest";
+
+import { blockNvmrc } from "./blockNvmrc";
+
+describe("intake", () => {
+	it("returns an .nvmrc", () => {
+		const version = "20.12.2";
+
+		const actual = testIntake(blockNvmrc, {
+			files: {
+				".nvmrc": [`${version}\n`],
+			},
+		});
+
+		expect(actual).toEqual({ version });
 	});
 });
 ```

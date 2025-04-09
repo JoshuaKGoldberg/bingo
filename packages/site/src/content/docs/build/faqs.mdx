@@ -81,8 +81,6 @@ This is for two reasons:
 - Long-term, the engine should not be locked into any one schema engine.
   Adopting Zod-specific features will make it harder to swap between other implementers of [standard-schema](https://github.com/standard-schema/standard-schema) in the future if needed.
 
-See the [`create-example` Base `prepare()` implementation](https://github.com/JoshuaKGoldberg/create-example/blob/c6714eeb02a5106eb5e4e4694f1e8b590444030d/src/base.ts#L138) (TODO: FIX LINK once it exists 😄) for an example of values used across Options.
-
 ### Why is the template `prepare()` function synchronous?
 
 > Or: why must options defaults be provided as asynchronous functions, rather than having `prepare()` itself `await` for their values?
@@ -110,9 +108,42 @@ See [Packages > `bingo-systems`](/build/packages/bingo-systems) for documentatio
 Not every caller of [`produceTemplate()`](/build/apis/produce-template) or [`runTemplate()`](/build/apis/run-template) may want to asynchronously load in options.
 Some callers might have separately loaded in all required options, and not want to allow any to run their defaults logic.
 
+## Refinements
+
+### Why have both Options and Refinements?
+
+> Or: what is the different between config file `options` and `refinements`?
+
+Options are specified by Zod schemas, and validated at runtime using those schemas.
+They are meant to be JSON-serializable values.
+Most of them can be specified on a CLI.
+
+Refinements are meant for runtime values that can't be parsed and/or validated by Zod schemas.
+These are typically classes, functions, or other non-serializable instances can't be specified on a CLI.
+Refinements are instead generally retrieved with an `import` from a template package.
+
+For example, [Stratum](/engines/stratum/about) templates allow customizing [Blocks](/engines/stratum/concepts/blocks) via refinements:
+
+```ts title="create-typescript-app.config.ts"
+import { blockAreTheTypesWrong, createConfig } from "create-typescript-app";
+
+export default createConfig({
+	refinements: {
+		blocks: {
+			add: [blockAreTheTypesWrong],
+		},
+	},
+});
+```
+
+See:
+
+- [Configuration](/configuration) for general information on configuration files
+- [Stratum > Details > Configurations](/engines/stratum/details/configurations#blocks) for more details on Stratum configuration files
+
 ## Productions
 
-### Why do `produce()`, `setup()`, or `transition()` support asynchronous functions?
+### Why do `produce()`, `setup()`, and `transition()` support asynchronous functions?
 
 > Or: why do these methods' types allow returning a Promise?
 

@@ -1,16 +1,22 @@
-import { describe, expect, it, vi } from "vitest";
+import { CreatedFetchRequest, CreatedOctokitRequest } from "bingo-requests";
+import { describe, expect, it } from "vitest";
 
 import { mergeRequests } from "./mergeRequests.js";
 
+const owner = "test-owner";
+const repo = "test-repo";
+
 describe("mergeRequests", () => {
-	it("returns both requests when they have different ids", () => {
-		const first = {
-			id: "a",
-			send: vi.fn(),
+	it("returns fetch and octokit requests together when both are provided", () => {
+		const first: CreatedOctokitRequest = {
+			endpoint: "POST /repos/{owner}/{repo}/labels",
+			parameters: { name: "...", owner, repo },
+			type: "octokit",
 		};
-		const second = {
-			id: "b",
-			send: vi.fn(),
+
+		const second: CreatedFetchRequest = {
+			type: "fetch",
+			url: "https://create.bingo",
 		};
 
 		const actual = mergeRequests([first], [second]);
@@ -18,18 +24,23 @@ describe("mergeRequests", () => {
 		expect(actual).toEqual([first, second]);
 	});
 
-	it("returns only the second request when they have the same id", () => {
-		const first = {
-			id: "a",
-			send: vi.fn(),
-		};
-		const second = {
-			id: "a",
-			send: vi.fn(),
+	it("returns one merged request when a new request can be merged", () => {
+		const first: CreatedOctokitRequest = {
+			endpoint: "POST /repos/{owner}/{repo}/labels",
+			parameters: { name: "...", owner, repo },
+			type: "octokit",
 		};
 
-		const actual = mergeRequests([first], [second]);
+		const second: CreatedFetchRequest = {
+			type: "fetch",
+			url: "https://create.bingo",
+		};
 
-		expect(actual).toEqual([second]);
+		const actual = mergeRequests(
+			[first, second],
+			[{ ...second, init: { method: "POST" } }],
+		);
+
+		expect(actual).toEqual([{ ...second, init: { method: "POST" } }, first]);
 	});
 });

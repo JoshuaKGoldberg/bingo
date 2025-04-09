@@ -1,15 +1,6 @@
 import { CreatedDirectory } from "bingo-fs";
+import { CreatedRequest } from "bingo-requests";
 import { SystemFetchers } from "bingo-systems";
-
-/**
- * A request to make to set up part of a repository's tooling.
- * @todo This will eventually become a serializable format:
- * https://github.com/JoshuaKGoldberg/bingo/issues/65
- */
-export interface CreatedRequest {
-	id: string;
-	send: CreatedRequestSender;
-}
 
 export type CreatedRequestSender = (fetchers: SystemFetchers) => Promise<void>;
 
@@ -23,8 +14,19 @@ export type CreatedScript = CreatedScriptWithOptions | string;
  * Commands to run to set up part of a repository's tooling.
  */
 export interface CreatedScriptWithOptions {
+	/**
+	 * Shell scripts to run within the phase, in order.
+	 */
 	commands: string[];
+
+	/**
+	 * What order, relative to any other command groups, to run in.
+	 */
 	phase?: number;
+
+	/**
+	 * Whether to skip logging errors if the script fails.
+	 */
 	silent?: boolean;
 }
 

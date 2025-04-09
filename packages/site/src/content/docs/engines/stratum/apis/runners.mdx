@@ -5,7 +5,8 @@ title: Stratum Runner APIs
 
 Stratum generally reuses existing Bingo runner APIs when possible:
 
-- [Templates](/engines/stratum/concepts/templates) are standard Bingo templates, and so can be provided to [`runTemplate`](/build/apis/run-template).
+- [Bases](/engines/stratum/concepts/bases) contain the properties needed to be provided to [`prepareOptions`](/build/apis/prepare-options)
+- [Templates](/engines/stratum/concepts/templates) are standard Bingo templates, and so can be provided to [`runTemplate`](/build/apis/run-template)
 
 The `bingo-stratum` package provides additional runner APIs for other layers:
 
@@ -164,7 +165,7 @@ Given a [Preset](/engines/stratum/concepts/presets), runs a [Creation](/build/co
 For example, given this Preset that includes the `blockReadme` from [`runBlock`](#runblock), `runPreset` can run its `produce()` with any provided options:
 
 ```ts
-import { producePreset } from "bingo";
+import { runPreset } from "bingo";
 
 import { base } from "./base";
 import { blockReadme } from "./blockReadme";
@@ -175,31 +176,8 @@ const preset = base.createPreset({
 });
 
 // { files: { "README.md": `# My App` } }
-producePreset(preset, {
-	options: { title: "My App" },
-});
-```
-
-### `addons` {#preset-addons}
-
-Any of [Addons](/engines/stratum/apis/create-base#createblock-addons) to pass to the Preset's Blocks.
-
-For example, this production adds a `"generated"` Addon to a Prettier Block:
-
-```ts
-import { Preset, runPreset } from "bingo";
-import { z } from "zod";
-
-import { blockPrettier } from "./blockPrettier";
-
-declare const preset: Preset;
-
 await runPreset(preset, {
-	addons: [blockPrettier({ ignores: ["generated"] })],
-	options: {
-		name: "My Production",
-	},
-	preset: "example",
+	options: { title: "My App" },
 });
 ```
 
@@ -225,8 +203,8 @@ await runPreset(preset, {
 	},
 	options: {
 		name: "My Production",
+		preset: "example",
 	},
-	preset: "example",
 });
 ```
 
@@ -249,8 +227,9 @@ declare const preset: Preset;
 
 await runPreset(preset, {
 	offline: true,
-	options: {},
-	preset: "example",
+	options: {
+		preset: "example",
+	},
 });
 ```
 
@@ -277,8 +256,8 @@ declare const preset: Preset<{ name: z.ZodString }>;
 await runPreset(preset, {
 	options: {
 		name: "My Production",
+		preset: "example",
 	},
-	preset: "example",
 });
 ```
 
@@ -296,4 +275,88 @@ import { preset } from "./preset";
 const options = await prepareBase(base);
 
 await runPreset(preset, { options });
+```
+
+### `refinements` {#preset-refinements}
+
+Any optional Stratum customizations.
+These are analogous to [Details > Configurations > Refinements](/engines/stratum/details/configurations).
+
+#### `addons` {#preset-addons}
+
+Any [Addons](/engines/stratum/apis/create-base#createblock-addons) to pass to the Preset's Blocks.
+
+For example, this production adds a `"generated"` Addon to a Prettier Block:
+
+```ts
+import { Preset, runPreset } from "bingo";
+import { z } from "zod";
+
+import { blockPrettier } from "./blockPrettier";
+
+declare const preset: Preset;
+
+await runPreset(preset, {
+	addons: [
+		blockPrettier({
+			ignores: ["generated"],
+		}),
+	],
+	options: {
+		name: "My Production",
+		preset: "example",
+	},
+});
+```
+
+#### `blocks` {#preset-blocks}
+
+Any Blocks to `add` and/or `remove`.
+
+For example, this production swaps in a Jest Block instead of a Vitest Block:
+
+```ts
+import { Preset, runPreset } from "bingo";
+import { z } from "zod";
+
+import { blockJest } from "./blockJest";
+import { blockVitest } from "./blockVitest";
+
+declare const preset: Preset;
+
+await runPreset(preset, {
+	blocks: {
+		add: [blockJest],
+		exclude: [blockVitest],
+	},
+	options: {
+		name: "My Production",
+		preset: "example",
+	},
+});
+```
+
+See [Configurations > `blocks`](/engines/stratum/details/configurations#blocks) for how this is used.
+
+### `template` {#preset-template}
+
+Parent Template that contains the Preset.
+This is used to resolve any [Block Refinements](/engines/stratum/concepts/templates#refinement-options) that add blocks.
+
+For example, this production runs a Preset that includes an "Extra Fun" Block from its parent Template:
+
+```ts
+import { Preset, producePreset } from "bingo";
+import { z } from "zod";
+
+declare const preset: Preset;
+declare const template: Template;
+
+producePreset(preset, {
+	options: {
+		"add-extra-fun": true,
+		name: "My Production",
+	},
+	preset: "example",
+});
 ```

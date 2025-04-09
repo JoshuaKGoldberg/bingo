@@ -22,10 +22,10 @@ export * from "./contexts/createSystemContext.js";
 export * from "./contexts/createSystemContextWithAuth.js";
 export * from "./mergers/mergeCreations.js";
 export * from "./runners/applyFilesToSystem.js";
-export * from "./utils/awaitLazyProperties.js";
 
 // Types
 export type * from "./types/about.js";
+export type * from "./types/configs.js";
 export type * from "./types/creations.js";
 export type * from "./types/inputs.js";
 export type * from "./types/modes.js";

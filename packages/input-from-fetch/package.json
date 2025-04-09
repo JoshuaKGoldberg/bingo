@@ -1,7 +1,8 @@
 {
 	"name": "input-from-fetch",
-	"version": "0.5.1",
-	"description": "create input that runs a network request.",
+	"version": "0.5.4",
+	"description": "Bingo input that runs a network request.",
+	"homepage": "https://www.create.bingo",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",

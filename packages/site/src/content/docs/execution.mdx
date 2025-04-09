@@ -28,7 +28,7 @@ When running a Bingo template in setup mode, it will:
 
 For example, to generate a new repository using [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app" />
 
 ```plaintext
 ┌  ✨ create-typescript-app@2.0.0 ✨
@@ -40,11 +40,7 @@ For example, to generate a new repository using [`create-typescript-app`](https:
 
 You can force running in setup mode in a non-empty directory with `--mode setup`:
 
-<PackageManagers
-	args="--mode setup"
-	pkg="create-typescript-app@beta"
-	type="dlx"
-/>
+<PackageManagers args="--mode setup" pkg="create-typescript-app" type="dlx" />
 
 ## Transition Mode
 
@@ -61,7 +57,7 @@ When running a Bingo template in transition mode, it will:
 
 For example, to update an existing repository to the latest [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app):
 
-<PackageManagers type="dlx" pkg="create-typescript-app@beta" />
+<PackageManagers type="dlx" pkg="create-typescript-app" />
 
 ```plaintext
 ┌  ✨ create-typescript-app@2.0.0 ✨
@@ -75,7 +71,7 @@ You can force running in transition mode in a non-Git directory with `--mode tra
 
 <PackageManagers
 	args="--mode transition"
-	pkg="create-typescript-app@beta"
+	pkg="create-typescript-app"
 	type="dlx"
 />
 

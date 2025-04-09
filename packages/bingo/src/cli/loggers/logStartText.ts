@@ -18,7 +18,7 @@ export function logStartText(
 
 	if (offline) {
 		prompts.log.message(
-			"--offline enabled. You'll need to git push any changes manually.",
+			`${chalk.blue("--offline")} enabled. You'll need to git push any changes manually.`,
 		);
 	}
 }

@@ -1,7 +1,8 @@
 {
 	"name": "bingo-stratum",
-	"version": "0.5.1",
+	"version": "0.5.11",
 	"description": "Highly composable, customizable templating engine for Bingo. 🏭",
+	"homepage": "https://www.create.bingo/engines/stratum/packages/bingo-stratum",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/JoshuaKGoldberg/bingo",
@@ -24,6 +25,8 @@
 		"build": "tsc"
 	},
 	"dependencies": {
+		"all-properties-lazy": "^0.1.0",
+		"cached-factory": "^0.1.0",
 		"chalk": "^5.4.1",
 		"hash-object": "^5.0.1",
 		"octokit": "^4.1.2",
@@ -31,7 +34,7 @@
 		"without-undefined-properties": "^0.1.1"
 	},
 	"devDependencies": {
-		"@types/node": "22.13.4",
+		"@types/node": "22.13.9",
 		"bingo": "workspace:^"
 	},
 	"peerDependencies": {

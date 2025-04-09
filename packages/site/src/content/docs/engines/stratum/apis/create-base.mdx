@@ -37,7 +37,7 @@ export const base = createBase({
 ```
 
 :::tip
-Base `option` are directly used as a [Template `options`](/build/apis/create-template#options) when a Stratum Template is generated.
+Base `options` are used as [Stratum Template `options`](/build/apis/create-template#options).
 :::
 
 ### `prepare` {#createbase-prepare}
@@ -69,7 +69,7 @@ export const base = createBase({
 ```
 
 :::tip
-Base `prepare()` functions are directly used as [Template `prepare()`](/build/apis/create-template#prepare) when a Stratum Template is generated.
+Base `prepare()` functions are used as [Stratum Template `prepare()`](/build/apis/create-template#prepare).
 :::
 
 ## `createBlock`
@@ -120,17 +120,17 @@ import { z } from "zod";
 import { base } from "./base";
 
 export const blockPrettier = base.createBlock({
-	args: {
+	addons: {
 		plugins: z.array(z.string()).optional(),
 	},
-	async produce({ args }) {
+	async produce({ addons }) {
 		return {
 			files: {
 				".prettierrc.json":
-					args.plugins &&
+					addons.plugins &&
 					JSON.stringify({
 						$schema: "http://json.schemastore.org/prettierrc",
-						plugins: args.plugins,
+						plugins: addons.plugins,
 					}),
 			},
 		};
@@ -139,6 +139,83 @@ export const blockPrettier = base.createBlock({
 ```
 
 See [Stratum > Concepts > Blocks > Addons](/engines/stratum/concepts/blocks#addons) for more information.
+
+### `intake` {#createblock-intake}
+
+An optional function to intake default [`addons`](#createblock-addons) values from existing files on disk.
+
+It receives one parameter: an [Intake Context](/engines/stratum/details/contexts#intake-contexts) object containing any existing files.
+It may return an object with any default values for the Block's Addons.
+
+For example, this Block reads in existing Prettier plugins from a Prettier config file:
+
+```ts
+import { z } from "zod";
+
+import { base } from "./base";
+
+export const blockPrettier = base.createBlock({
+	addons: {
+		plugins: z.array(z.string()).optional(),
+	},
+	intake({ files }) {
+		const existingConfig = files[".prettierrc.json"]?.[0];
+
+		return {
+			plugins: existingConfig && JSON.parse(existingConfig).plugins,
+		};
+	},
+	async produce({ addons }) {
+		// ...
+	},
+});
+```
+
+### `setup` {#createblock-setup}
+
+Additional production function for initializing a new repository with the Block.
+If defined, it will only be called in [setup mode](/execution#setup-mode).
+
+For example, this Block creates a starter `index.js` file when first run:
+
+```ts
+import { base } from "./base";
+
+export const blockStarterFile = createBlock({
+	setup() {
+		return {
+			files: {
+				"index.js": `console.log("Hello, world!");`,
+			},
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+### `transition` {#createblock-transition}
+
+Additional production function for migrating an existing repository to the Block.
+If defined, it will only be called in [transition mode](/execution#transition-mode).
+
+For example, this Block deletes any already-existing test config files when run on an existing repository:
+
+```ts
+import { base } from "./base";
+
+export const blockConfigFiles = createBlock({
+	setup({ addons }) {
+		return {
+			commands: ["rm .mocha* jest.config.* vitest.config.*"],
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
 
 ### `produce` {#createblock-produce}
 
@@ -266,6 +343,42 @@ Repositories generated from that template would indicate _generated from [Joshua
 This is the same `about` field as the general Bingo [`createTemplate` API](/build/apis/create-template#about).
 :::
 
+### `prepare` {#createtemplate-prepare}
+
+Sets up lazily loaded default values for options.
+Receives an [Options Context](/build/details/contexts#options-contexts) and returns values or lazy functions for options values.
+
+Templates can optionally define a `prepare()` function that provides fallback values for options.
+Those values will be used if the user doesn't provide explicit values during creation.
+
+For example, this template defaults its `value` option to `"default"` if not provided:
+
+```ts
+import { createTemplate } from "bingo";
+
+export default createTemplate({
+	options: {
+		value: z.string().optional(),
+	},
+	prepare() {
+		return {
+			value: "default",
+		};
+	},
+	produce() {
+		// ...
+	},
+});
+```
+
+Running that template without an explicit `--value` would be equivalent to running with `--value "default"`.
+
+#### Preset Inference
+
+During transition mode, Stratum will attempt to infer a default value for `--preset` based using files on disk.
+That default value is computed by comparing existing files on disk to the files that would be produced by the Blocks.
+If Preset with the greatest percentage matches 35% or more of its created files, it will be used as the default.
+
 ### `presets` {#createtemplate-presets}
 
 The Presets users can choose from with the Template, in order of how they should be listed.
@@ -295,9 +408,9 @@ export const templateTypeScriptApp = base.createTemplate({
 
 ### `suggested` {#createtemplate-suggested}
 
-The suggested Preset to select for users, if not the first in the array.
+The suggested Preset to select for users by default, if not the first in the array.
 
-This should be the same string as one of the `labels` under [`presets`](#createtemplate-presets).
+This should be the same values as under [`presets`](#createtemplate-presets).
 
 For example, this Template defaults to the `"Common"` Preset:
 

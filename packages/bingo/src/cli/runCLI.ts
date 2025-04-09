@@ -20,21 +20,21 @@ const valuesSchema = z.object({
 	repository: z.string().optional(),
 });
 
-export interface RunCLISettings<OptionsShape extends AnyShape = AnyShape> {
-	args: string[];
+export interface RunCLISettings<OptionsShape extends AnyShape, Refinements> {
+	argv: string[];
 	display: ClackDisplay;
 	from: string;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 	values: RunCLIRawValues;
 }
 
-export async function runCLI<OptionsShape extends AnyShape = AnyShape>({
-	args,
+export async function runCLI<OptionsShape extends AnyShape, Refinements>({
+	argv,
 	display,
 	from,
 	template,
 	values,
-}: RunCLISettings<OptionsShape>) {
+}: RunCLISettings<OptionsShape, Refinements>) {
 	const validatedValues = valuesSchema.parse(values);
 	const productionSettings = await readProductionSettings({
 		from,
@@ -47,7 +47,7 @@ export async function runCLI<OptionsShape extends AnyShape = AnyShape>({
 
 	const sharedSettings = {
 		...validatedValues,
-		args,
+		argv,
 		display,
 		from,
 		template,

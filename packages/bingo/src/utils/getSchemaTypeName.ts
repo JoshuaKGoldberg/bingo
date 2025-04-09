@@ -1,4 +1,5 @@
 // TODO: Split Zod generation out into standalone package
+// https://github.com/JoshuaKGoldberg/bingo/issues/285
 /* eslint-disable @eslint-community/eslint-comments/disable-enable-pair */
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
@@ -21,7 +22,8 @@ export function getSchemaTypeName(schema: z.ZodTypeAny): string {
 			(schemaInner._def as z.ZodUnionDef).options
 				.map((constituent) => getSchemaTypeName(constituent))
 				// TODO: Once these can be parsed as args, reuse that here...
-				.filter((typeName) => typeName !== "object")
+				// https://github.com/JoshuaKGoldberg/bingo/issues/285
+				.filter((typeName) => !["object", "record"].includes(typeName))
 				.join(" | ")
 		);
 	}

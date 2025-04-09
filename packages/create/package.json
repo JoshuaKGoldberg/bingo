@@ -1,6 +1,6 @@
 {
 	"name": "create",
-	"version": "0.5.1",
+	"version": "0.5.5",
 	"description": "You probably meant `npm create`, not `npx create`. ❌",
 	"repository": {
 		"type": "git",

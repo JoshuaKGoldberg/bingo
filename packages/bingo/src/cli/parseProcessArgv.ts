@@ -1,6 +1,7 @@
 import { parseArgs, ParseArgsConfig } from "node:util";
 
 // TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
+// https://github.com/JoshuaKGoldberg/bingo/issues/284
 
 type ParseArgsOptionsConfig = NonNullable<ParseArgsConfig["options"]>;
 
@@ -39,11 +40,10 @@ export interface RunCLIRawValues {
 }
 
 export function parseProcessArgv() {
-	const args = process.argv.slice(2);
 	return {
-		args,
+		argv: process.argv,
 		...parseArgs({
-			args,
+			args: process.argv.slice(2),
 			options: cliArgsOptions,
 			strict: false,
 		}),

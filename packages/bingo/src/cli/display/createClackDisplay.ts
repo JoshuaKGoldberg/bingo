@@ -9,6 +9,7 @@ export interface ClackDisplay extends Display {
 }
 
 // TODO: suggest making a type for all these things to Clack :)
+// https://github.com/bombshell-dev/clack/issues/248
 export type ClackSpinner = ReturnType<typeof prompts.spinner>;
 
 export type SystemItemsDump = Record<string, Record<string, DisplayItem>>;
@@ -24,8 +25,9 @@ export function createClackDisplay(): ClackDisplay {
 			Object.assign(groups.get(group).get(id), item);
 		},
 		log(message) {
-			// TODO: file bug? on clack that there's an extra line
-			process.stdout.moveCursor(0, -1);
+			// https://github.com/JoshuaKGoldberg/bingo/issues/343
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			process.stdout.moveCursor?.(0, -1);
 			prompts.log.step(message + "\n");
 		},
 	} satisfies Display;

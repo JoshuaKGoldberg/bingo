@@ -58,6 +58,34 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "danvk",
+      "name": "Dan Vanderkam",
+      "avatar_url": "https://avatars.githubusercontent.com/u/98301?v=4",
+      "profile": "https://effectivetypescript.com",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "astrochemx",
+      "name": "Vladyslav Shevchenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105541001?v=4",
+      "profile": "https://github.com/astrochemx",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "yashsaxena9",
+      "name": "Yash Saxena",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50399404?v=4",
+      "profile": "https://github.com/YashSaxena9",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

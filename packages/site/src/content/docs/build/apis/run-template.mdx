@@ -49,6 +49,75 @@ Use the asynchronous [`prepareOptions`](/build/apis/prepare-options) API to gene
 
 ## Settings
 
+### `directory`
+
+Current working directory ("cwd") path to use for the file system and running scripts.
+Defaults to `"."`, or the process cwd.
+
+For example, this produces a template in a child `scratch` directory:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+
+const template = createTemplate({
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# My App`,
+			},
+		};
+	},
+});
+
+await runTemplate(template, { directory: "scratch " });
+```
+
+```md title="scratch/README.md"
+# My App
+```
+
+The directory will be created if it doesn't exist.
+
+### `mode`
+
+Which [mode](/build/concepts/modes) to run in, as either `"setup"` or `"transition"`.
+
+If provided, the corresponding [`setup()`](/build/apis/create-template#setup) or [`transition()`](/build/apis/create-template#transition) will be called before [`produce()`](/build/apis/create-template#produce).
+Creations from the production methods will be merged per [Details > Merging](/build/details/merging).
+
+For example, this template creates a starter `index.js` file on setup:
+
+```ts
+import { createTemplate, runTemplate } from "bingo";
+
+const template = createTemplate({
+	setup() {
+		return {
+			files: {
+				"index.js": "console.log('Hello, world!');"
+			}
+		}
+	}
+	produce({ options }) {
+		return {
+			files: {
+				"README.md": `# My App`,
+			},
+		};
+	},
+});
+
+// {
+//   creation: {
+//     files: {
+//       "index.js": "console.log('Hello, world!');",
+//       "README.md": "# My App",
+//     }
+//   },
+// }
+await runTemplate(template, { mode: "setup" });
+```
+
 ### `options`
 
 Any number of options defined by the template's [`options` schema](/build/apis/create-template#options).
@@ -115,15 +184,6 @@ const template = createTemplate({
 // {
 //   creation: {
 //     files: {
-//       "README.md": "# My App",
-//     }
-//   },
-// }
-await runTemplate(template);
-
-// {
-//   creation: {
-//     files: {
 //       "index.js": "console.log('Hello, world!');",
 //       "README.md": "# My App",
 //     }
@@ -158,3 +218,27 @@ await runTemplate(template);
 // { scripts: ["pnpm install --offline"] }
 await runTemplate(template, { offline: true });
 ```
+
+### `refinements`
+
+Any optional customizations from a template-specific config file.
+
+For example, [Stratum](/engines/stratum/about) templates allow customizing [Blocks](/engines/stratum/concepts/blocks) via refinements:
+
+```ts title="create-typescript-app.config.ts"
+import { blockAreTheTypesWrong, template } from "create-typescript-app";
+import { runTemplate } from "bingo";
+
+await runTemplate(template, {
+	refinements: {
+		blocks: {
+			add: [blockAreTheTypesWrong],
+		},
+	},
+});
+```
+
+See:
+
+- [Configuration](/configuration) for general information on configuration files
+- [Stratum > Details > Configurations](/engines/stratum/details/configurations#blocks) for more details on Stratum configuration files

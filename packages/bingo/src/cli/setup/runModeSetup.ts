@@ -1,5 +1,6 @@
 import * as prompts from "@clack/prompts";
 import chalk from "chalk";
+import { z } from "zod";
 
 import { createSystemContextWithAuth } from "../../contexts/createSystemContextWithAuth.js";
 import { prepareOptions } from "../../preparation/prepareOptions.js";
@@ -13,6 +14,7 @@ import { runSpinnerTask } from "../display/runSpinnerTask.js";
 import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
+import { CLIMessage } from "../messages.js";
 import { parseZodArgs } from "../parsers/parseZodArgs.js";
 import { promptForDirectory } from "../prompts/promptForDirectory.js";
 import { promptForOptionSchemas } from "../prompts/promptForOptionSchemas.js";
@@ -21,30 +23,34 @@ import { ModeResults } from "../types.js";
 import { makeRelative } from "../utils.js";
 import { createRepositoryOnGitHub } from "./createRepositoryOnGitHub.js";
 import { createTrackingBranches } from "./createTrackingBranches.js";
-import { getRepositoryLocator } from "./getRepositoryLocator.js";
 
-export interface RunModeSetupSettings<OptionsShape extends AnyShape> {
-	args: string[];
+export interface RunModeSetupSettings<
+	OptionsShape extends AnyShape,
+	Refinements,
+> {
+	argv: string[];
 	directory?: string;
 	display: ClackDisplay;
 	from: string;
 	help?: boolean;
 	offline?: boolean;
-	owner?: string;
 	repository?: string;
-	template: Template<OptionsShape>;
+	template: Template<OptionsShape, Refinements>;
 }
 
-export async function runModeSetup<OptionsShape extends AnyShape>({
-	args,
-	repository,
-	directory: requestedDirectory = repository,
+export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
+	argv,
 	display,
 	from,
 	help,
 	offline,
+	repository: requestedRepository,
 	template,
-}: RunModeSetupSettings<OptionsShape>): Promise<ModeResults> {
+
+	// TODO: See if this gets fixed in eslint-plugin-perfectionist?
+	// https://github.com/azat-io/eslint-plugin-perfectionist/issues/491
+	directory: requestedDirectory = requestedRepository,
+}: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("setup", from, template);
 	}
@@ -53,7 +59,7 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 
 	const directory = await promptForDirectory({
 		requestedDirectory,
-		requestedRepository: repository,
+		requestedRepository,
 		template,
 	});
 	if (prompts.isCancel(directory)) {
@@ -66,41 +72,64 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 		offline,
 	});
 
-	const providedOptions = parseZodArgs(args, template.options);
-	const preparedOptions = await prepareOptions(template, {
-		...system,
-		existing: { ...providedOptions, directory },
-		offline,
+	const providedOptions = parseZodArgs(argv, {
+		directory: z.string().optional(),
+		owner: z.string().optional(),
+		repository: z.string().optional(),
+		...template.options,
 	});
 
+	const preparedOptions = await runSpinnerTask(
+		display,
+		"Inferring default options from system",
+		"Inferred default options from system",
+		async () => {
+			return await prepareOptions(template, {
+				...system,
+				existing: { ...providedOptions, directory },
+				offline,
+			});
+		},
+	);
+	if (preparedOptions instanceof Error) {
+		logRerunSuggestion(argv, providedOptions);
+		return { status: CLIStatus.Error };
+	}
+
+	const repository = requestedRepository ?? directory;
 	const baseOptions = await promptForOptionSchemas(template, {
 		existing: {
 			directory,
-			repository: repository ?? directory,
+			repository,
 			...providedOptions,
 			...preparedOptions,
 		},
 		system,
 	});
 	if (baseOptions.cancelled) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return { status: CLIStatus.Cancelled };
 	}
 
-	const locator = getRepositoryLocator(baseOptions.completed);
-
-	if (!offline) {
-		await runSpinnerTask(
-			display,
-			"Creating repository on GitHub",
-			"Created repository on GitHub",
-			async () => {
-				await createRepositoryOnGitHub(
-					locator,
+	const remote =
+		offline || !system.fetchers.octokit
+			? undefined
+			: await createRepositoryOnGitHub(
+					display,
+					{ repository, ...baseOptions.completed },
 					system.fetchers.octokit,
-					template.about?.repository,
+					system.runner,
+					template,
 				);
-			},
+
+	if (remote instanceof Error) {
+		logRerunSuggestion(argv, baseOptions.prompted);
+		return { error: remote, status: CLIStatus.Error };
+	}
+
+	if (!offline && !remote) {
+		prompts.log.warn(
+			"Running in local-only mode without a repository on GitHub. To push to GitHub, log in with the GitHub CLI (cli.github.com) or run with a GH_TOKEN process environment variable.",
 		);
 	}
 
@@ -120,39 +149,46 @@ export async function runModeSetup<OptionsShape extends AnyShape>({
 			}),
 	);
 	if (creation instanceof Error) {
-		logRerunSuggestion(args, baseOptions.prompted);
+		logRerunSuggestion(argv, baseOptions.prompted);
 		return {
-			error: creation,
-			outro: `Leaving changes to the local directory on disk. 👋`,
+			outro: CLIMessage.Leaving,
 			status: CLIStatus.Error,
 		};
 	}
 
-	await runSpinnerTask(
+	const preparationError = await runSpinnerTask(
 		display,
 		"Preparing local repository",
 		"Prepared local repository",
 		async () => {
-			await createTrackingBranches(locator, system.runner);
-			await createInitialCommit(system.runner, { offline });
+			await createTrackingBranches(remote, system.runner);
+			await createInitialCommit(system.runner, { push: !!remote });
 			await clearLocalGitTags(system.runner);
 		},
 	);
 
-	logRerunSuggestion(args, baseOptions.prompted);
 	prompts.log.message(
 		[
-			"Great, you've got a new repository ready to use in:",
+			"You've got a new repository ready to use in:",
 			`  ${chalk.green(makeRelative(directory))}`,
-			...(offline
-				? []
-				: [
+			...(remote
+				? [
 						"",
 						"It's also pushed to GitHub on:",
-						`  ${chalk.green(`https://github.com/${locator.owner}/${locator.repository}`)}`,
-					]),
+						`  ${chalk.green(`https://github.com/${remote.owner}/${remote.repository}`)}`,
+					]
+				: []),
 		].join("\n"),
 	);
+
+	logRerunSuggestion(argv, baseOptions.prompted);
+
+	if (preparationError) {
+		return {
+			outro: CLIMessage.Leaving,
+			status: CLIStatus.Error,
+		};
+	}
 
 	return {
 		outro: `Thanks for using ${chalk.bgGreenBright.black(from)}! 💝`,
