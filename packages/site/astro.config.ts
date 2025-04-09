@@ -221,6 +221,7 @@ export default defineConfig({
 				]),
 			],
 			social: {
+				discord: "https://discord.gg/Jh85eMGQnV",
 				github: "https://github.com/JoshuaKGoldberg/bingo",
 			},
 			tableOfContents: {
