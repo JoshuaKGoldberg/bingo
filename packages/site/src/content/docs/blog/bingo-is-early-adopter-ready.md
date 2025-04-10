@@ -87,9 +87,9 @@ That's all you have to do define your first Bingo template! ✨
 
 Bingo templates can onboard many more features, including:
 
-- [Additionally defining network requests and/or shell scripts](/concepts/creations)
+- [Additionally defining network requests and/or shell scripts](/build/concepts/creations)
 - [Defining files with Handlebars templates](/engines/handlebars/about)
-- [Presets of configurable, swappable "Blocks" of features](/enginges/stratum/about)
+- [Presets of configurable, swappable "Blocks" of features](/engines/stratum/about)
 - [Unit testing template creations](/build/packages/bingo-testers)
 
 :::tip
@@ -116,7 +116,7 @@ Bugs and missing features you discover will be prioritized early on so you can h
 
 The Bingo framework is a huge step forward in how to define repository frameworks.
 I hope you'll join me in trying it out.
-[Your First Bingo Template](/blog/your-first-bingo-tempalte) will walk you through building your first template with Bingo.
+[Your First Bingo Template](/blog/your-first-bingo-template) will walk you through building your first template with Bingo.
 
 Please, try Bingo out and give feedback:
 

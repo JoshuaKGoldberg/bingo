@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"composite": true,
+		"skipLibCheck": true,
 		"noEmit": false
 	},
 	"extends": "./tsconfig.base.json",
