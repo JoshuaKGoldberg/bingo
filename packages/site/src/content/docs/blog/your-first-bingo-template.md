@@ -2,21 +2,18 @@
 authors:
   - joshuakgoldberg
 date: 2025-04-10
-excerpt: Bingo is a repostitory template framework.
-  So you'd like to build a repository template with Bingo.
+excerpt: So you'd like to build a repository template with Bingo?
   Wonderful!
-  <br />
-  <br />
   This guide will walk you through creating your first template with Bingo.
-  The template will create files on disk and be able to run on the command-line.
+  The template will create files on disk and be runnable on the command-line.
 title: Your First Bingo Template
 ---
 
-So you'd like to build a repository template with Bingo.
+So you'd like to build a repository template with Bingo?
 Wonderful!
 
 This guide will walk you through creating your first template with Bingo.
-The template will create files on disk and be able to run on the command-line.
+The template will create files on disk and be runnable on the command-line.
 
 ## Requirements
 
@@ -73,10 +70,10 @@ export default template;
 export const { createConfig } = template;
 ```
 
-You can then provide the path to that file to the [`bingo` CLI](/build/cli) to create a `README.md` file:
+You can then provide the path to that file to the [`bingo` CLI](/build/cli) to create a `README.md` file in a `generated/` directory:
 
 ```shell
-npx bingo template.js
+npx bingo template.js --directory generated
 ```
 
 ```md title="README.md"
@@ -89,8 +86,9 @@ You just built and ran your first template with Bingo.
 ### 2. Runner File
 
 Bingo templates provide their own CLI to use instead of `bingo`.
+That way end-users don't need to install any Bingo dependencies, just the template.
 
-Create one in an `index.js` file with the following content:
+Create an `index.js` file with the following content:
 
 ```js title="index.js"
 #!/usr/bin/env node
@@ -118,7 +116,7 @@ You and your template's users will now be able to run your template with `npx`.
 Try it out locally with:
 
 ```shell
-npx .
+npx . --directory generated
 ```
 
 ```plaintext
