@@ -5,7 +5,7 @@ date: 2025-04-10
 excerpt: So you'd like to build a repository template with Bingo?
   Wonderful!
   This guide will walk you through creating your first template with Bingo.
-  The template will create files on disk and be runnable on the command-line.
+  The template will create a file and be runnable on the command-line.
 title: Your First Bingo Template
 ---
 
@@ -13,7 +13,7 @@ So you'd like to build a repository template with Bingo?
 Wonderful!
 
 This guide will walk you through creating your first template with Bingo.
-The template will create files on disk and be runnable on the command-line.
+The template will create a file and be runnable on the command-line.
 
 ## Requirements
 
@@ -76,7 +76,28 @@ You can then provide the path to that file to the [`bingo` CLI](/build/cli) to c
 npx bingo template.js --directory generated
 ```
 
-```md title="README.md"
+```plaintext
+┌  ✨ bingo@... ✨
+│
+◇  Imported ./template.js
+│
+◇  Running with mode --setup
+│
+◇  Inferred default options from system
+│
+▲  Running in local-only mode. Add string-like options.owner and options.repository schemas to enable creating a repository on GitHub.
+│
+◇  Ran the bingo template.js template
+│
+◇  Prepared local repository
+│
+│  You've got a new repository ready to use in:
+│    ./generated
+│
+└  Thanks for using bingo template.js! 💝
+```
+
+```md title="generated/README.md"
 # Hello, world!
 ```
 
@@ -122,8 +143,9 @@ npx . --directory generated
 ```plaintext
 ┌  ✨ my-template@0.0.0 ✨
 │
-│  Running with mode --transition using the template:
-│    my-template
+◇  Running with mode --transition
+│
+◇  Inferred options from existing repository
 │
 ◇  Ran my-template
 │
