@@ -52,9 +52,7 @@ export async function runModeTransition<
 		return logHelpText("transition", from, template);
 	}
 
-	const transitionType = configFile ? "config file" : "template";
-
-	logStartText("transition", from, transitionType, offline);
+	logStartText("transition", offline);
 
 	const system = await createSystemContextWithAuth({
 		directory,

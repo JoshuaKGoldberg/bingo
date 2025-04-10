@@ -5,16 +5,9 @@ import { ProductionMode } from "../../types/modes.js";
 
 export function logStartText(
 	mode: ProductionMode,
-	from: string,
-	type: string,
 	offline: boolean | undefined,
 ) {
-	prompts.log.step(
-		[
-			`Running with mode --${mode} using the ${type}:`,
-			`  ${chalk.green(from)}`,
-		].join("\n"),
-	);
+	prompts.log.step(`Running with mode --${mode}`);
 
 	if (offline) {
 		prompts.log.message(

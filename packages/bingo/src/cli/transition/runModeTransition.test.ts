@@ -287,12 +287,7 @@ describe("runModeTransition", () => {
 			outro: "Done. Enjoy your new repository! 💝",
 			status: CLIStatus.Success,
 		});
-		expect(mockLogStartText).toHaveBeenCalledWith(
-			"transition",
-			from,
-			"template",
-			undefined,
-		);
+		expect(mockLogStartText).toHaveBeenCalledWith("transition", undefined);
 		expect(mockClearTemplateFiles).toHaveBeenCalled();
 		expect(mockClearLocalGitTags).toHaveBeenCalled();
 		expect(mockCreateInitialCommit).toHaveBeenCalledWith(mockSystem.runner, {
@@ -324,12 +319,7 @@ describe("runModeTransition", () => {
 			outro: "Done. Enjoy your new repository! 💝",
 			status: CLIStatus.Success,
 		});
-		expect(mockLogStartText).toHaveBeenCalledWith(
-			"transition",
-			from,
-			"template",
-			true,
-		);
+		expect(mockLogStartText).toHaveBeenCalledWith("transition", true);
 		expect(mockClearTemplateFiles).toHaveBeenCalled();
 		expect(mockClearLocalGitTags).toHaveBeenCalled();
 		expect(mockCreateInitialCommit).toHaveBeenCalledWith(mockSystem.runner, {
