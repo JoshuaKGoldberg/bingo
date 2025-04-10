@@ -36,7 +36,7 @@ export async function runBingoCLI() {
 		const result = await runCLI({
 			argv,
 			display,
-			from: `bingo ${from}`,
+			from: "bingo",
 			template,
 			values,
 		});

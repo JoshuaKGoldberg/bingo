@@ -1,6 +1,6 @@
 {
 	"name": "bingo",
-	"version": "0.5.15",
+	"version": "0.5.16",
 	"description": "Delightful templates for web repositories. 💝",
 	"homepage": "https://create.bingo",
 	"repository": {
@@ -46,7 +46,7 @@
 	},
 	"devDependencies": {
 		"@types/hosted-git-info": "3.0.5",
-		"@types/node": "22.13.9",
+		"@types/node": "22.14.0",
 		"execa": "9.5.2",
 		"octokit": "4.1.2"
 	},

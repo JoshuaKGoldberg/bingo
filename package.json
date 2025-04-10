@@ -38,7 +38,7 @@
 		"@eslint-community/eslint-plugin-eslint-comments": "4.4.1",
 		"@eslint/js": "9.23.0",
 		"@types/eslint-plugin-markdown": "2.0.2",
-		"@types/node": "22.13.9",
+		"@types/node": "22.14.0",
 		"@vitest/coverage-v8": "3.1.1",
 		"@vitest/eslint-plugin": "1.1.36",
 		"console-fail-test": "0.5.0",
@@ -64,7 +64,7 @@
 		"prettier-plugin-sh": "0.16.0",
 		"sentences-per-line": "0.3.0",
 		"typescript": "5.8.2",
-		"typescript-eslint": "8.26.0",
+		"typescript-eslint": "8.29.0",
 		"vitest": "3.1.1"
 	},
 	"engines": {

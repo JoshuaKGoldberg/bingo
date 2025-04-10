@@ -50,10 +50,6 @@ const options = {
 	repository: "mock-repository",
 };
 
-const templateWithoutOptions = createTemplate({
-	produce: vi.fn(),
-});
-
 const templateWithOwnerAndRepository = createTemplate({
 	options: { owner: z.string(), repository: z.string() },
 	produce: vi.fn(),
@@ -70,73 +66,53 @@ const templateWithRepository = createTemplate({
 });
 
 describe("createRepositoryOnGitHub", () => {
-	it("returns an error when both owner and repository are not string-likes", async () => {
+	it("returns a warning when owner is not a string-like", async () => {
 		const mockRunner = vi.fn();
 
 		const actual = await createRepositoryOnGitHub(
 			display,
 			options,
-			mockOctokit,
-			mockRunner,
-			templateWithoutOptions,
-		);
-
-		expect(actual).toEqual(
-			new Error(
-				`To run with --mode setup and not --offline, options.owner and options.repository must be string-like schemas.`,
-			),
-		);
-		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
-		expect(mockRunner).not.toHaveBeenCalled();
-		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
-		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
-	});
-
-	it("returns an error when owner is not a string-like", async () => {
-		const mockRunner = vi.fn();
-
-		const actual = await createRepositoryOnGitHub(
-			display,
-			options,
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithRepository,
 		);
 
-		expect(actual).toEqual(
-			new Error(
-				`To run with --mode setup and not --offline, options.owner must be a string-like schema.`,
-			),
-		);
+		expect(actual).toEqual({
+			offline: true,
+			warning:
+				"Running in local-only mode. Add string-like options.owner and options.repository schemas to enable creating a repository on GitHub.",
+		});
 		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
 	});
 
-	it("returns an error when repository is not a string-like", async () => {
+	it("returns a warning when repository is not a string-like", async () => {
 		const mockRunner = vi.fn();
 
 		const actual = await createRepositoryOnGitHub(
 			display,
 			options,
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithOwner,
 		);
 
-		expect(actual).toEqual(
-			new Error(
-				`To run with --mode setup and not --offline, options.repository must be a string-like schema.`,
-			),
-		);
+		expect(actual).toEqual({
+			offline: true,
+			warning:
+				"Running in local-only mode. Add string-like options.owner and options.repository schemas to enable creating a repository on GitHub.",
+		});
 		expect(mockGetGitHubAuthToken).not.toHaveBeenCalled();
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
 	});
 
-	it("returns undefined when getGitHubAuthToken does not retrieve a token", async () => {
+	it("returns an offline warning when getGitHubAuthToken does not retrieve a token", async () => {
 		const mockRunner = vi.fn();
 
 		mockGetGitHubAuthToken.mockResolvedValueOnce({ succeeded: false });
@@ -144,12 +120,17 @@ describe("createRepositoryOnGitHub", () => {
 		const actual = await createRepositoryOnGitHub(
 			display,
 			options,
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toBeUndefined();
+		expect(actual).toEqual({
+			offline: true,
+			warning:
+				"Running in local-only mode. To push to GitHub, log in with the GitHub CLI (cli.github.com) or run with a GH_TOKEN process environment variable.",
+		});
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).not.toHaveBeenCalled();
@@ -165,12 +146,16 @@ describe("createRepositoryOnGitHub", () => {
 		const actual = await createRepositoryOnGitHub(
 			display,
 			options,
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual(options);
+		expect(actual).toEqual({
+			offline: false,
+			remote: { owner, repository },
+		});
 		expect(mockRunner).not.toHaveBeenCalled();
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
@@ -191,12 +176,16 @@ describe("createRepositoryOnGitHub", () => {
 		const actual = await createRepositoryOnGitHub(
 			display,
 			{ owner: undefined, repository },
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual(options);
+		expect(actual).toEqual({
+			offline: false,
+			remote: { owner, repository },
+		});
 		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
 		expect(mockPromptForOptionSchema).not.toHaveBeenCalled();
 		expect(mockNewGitHubRepository).toHaveBeenCalledWith({
@@ -218,12 +207,16 @@ describe("createRepositoryOnGitHub", () => {
 		const actual = await createRepositoryOnGitHub(
 			display,
 			{ owner: undefined, repository },
+			false,
 			mockOctokit,
 			mockRunner,
 			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toEqual(options);
+		expect(actual).toEqual({
+			offline: false,
+			remote: { owner, repository },
+		});
 		expect(mockRunner).toHaveBeenCalledWith("gh config get user -h github.com");
 		expect(mockPromptForOptionSchema).toHaveBeenCalledWith(
 			"owner",
@@ -248,11 +241,15 @@ describe("createRepositoryOnGitHub", () => {
 		const actual = await createRepositoryOnGitHub(
 			display,
 			options,
+			false,
 			mockOctokit,
 			vi.fn(),
 			templateWithOwnerAndRepository,
 		);
 
-		expect(actual).toBe(error);
+		expect(actual).toEqual({
+			offline: true,
+			remote: error,
+		});
 	});
 });

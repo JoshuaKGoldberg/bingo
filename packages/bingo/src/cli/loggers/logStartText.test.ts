@@ -20,20 +20,19 @@ vi.mock("@clack/prompts", () => ({
 
 describe("logStartText", () => {
 	it("only logs an initial message when offline is falsy", () => {
-		logStartText("transition", "from", "type", false);
+		logStartText("transition", false);
 
 		expect(mockStep.mock.calls).toMatchInlineSnapshot(`
 			[
 			  [
-			    "Running with mode --transition using the type:
-			  from",
+			    "Running with mode --transition",
 			  ],
 			]
 		`);
 	});
 
 	it("additionally logs an offline when offline is true", () => {
-		logStartText("transition", "from", "type", true);
+		logStartText("transition", true);
 
 		expect(mockMessage.mock.calls).toMatchInlineSnapshot(`
 			[
@@ -45,8 +44,7 @@ describe("logStartText", () => {
 		expect(mockStep.mock.calls).toMatchInlineSnapshot(`
 			[
 			  [
-			    "Running with mode --transition using the type:
-			  from",
+			    "Running with mode --transition",
 			  ],
 			]
 		`);

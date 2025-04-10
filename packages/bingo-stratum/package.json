@@ -34,7 +34,7 @@
 		"without-undefined-properties": "^0.1.1"
 	},
 	"devDependencies": {
-		"@types/node": "22.13.9",
+		"@types/node": "22.14.0",
 		"bingo": "workspace:^"
 	},
 	"peerDependencies": {
