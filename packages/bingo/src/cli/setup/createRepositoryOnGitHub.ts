@@ -16,9 +16,17 @@ export interface PartialRepositoryLocator {
 	repository: string;
 }
 
+export interface RepositoryCreationResult {
+	offline?: boolean;
+	remote?: Error | RepositoryLocator;
+	warning?: string;
+}
+
 export interface RepositoryLocator extends PartialRepositoryLocator {
 	owner: string;
 }
+
+const offlinePrefix = "Running in local-only mode.";
 
 export async function createRepositoryOnGitHub<
 	OptionsShape extends AnyShape,
@@ -26,35 +34,34 @@ export async function createRepositoryOnGitHub<
 >(
 	display: ClackDisplay,
 	{ owner: requestedOwner, repository }: PartialRepositoryLocator,
+	requestedOffline: boolean | undefined,
 	octokit: Octokit,
 	runner: SystemRunner,
 	template: Template<OptionsShape, Refinements>,
-): Promise<Error | RepositoryLocator | undefined> {
+): Promise<RepositoryCreationResult> {
 	const hasStringLikeOwner = hasStringLikeOption(template.options, "owner");
 	const hasStringLikeRepository = hasStringLikeOption(
 		template.options,
 		"repository",
 	);
 
-	if (!hasStringLikeOwner) {
-		return new Error(
-			hasStringLikeRepository
-				? `To run with --mode setup and not --offline, options.owner must be a string-like schema.`
-				: `To run with --mode setup and not --offline, options.owner and options.repository must be string-like schemas.`,
-		);
-	}
-
-	if (!hasStringLikeRepository) {
-		return new Error(
-			`To run with --mode setup and not --offline, options.repository must be a string-like schema.`,
-		);
+	if (!hasStringLikeOwner || !hasStringLikeRepository) {
+		return {
+			offline: true,
+			warning: requestedOffline
+				? undefined
+				: `${offlinePrefix} Add string-like options.owner and options.repository schemas to enable creating a repository on GitHub.`,
+		};
 	}
 
 	// We'll only want to create a repository if we're logged in.
 	// getGitHubAuthToken is intentionally what Bingo uses to create an Octokit.
 	const authToken = await getGitHubAuthToken();
 	if (!authToken.succeeded) {
-		return undefined;
+		return {
+			offline: true,
+			warning: `${offlinePrefix} To push to GitHub, log in with the GitHub CLI (cli.github.com) or run with a GH_TOKEN process environment variable.`,
+		};
 	}
 
 	const ownerRaw =
@@ -82,7 +89,15 @@ export async function createRepositoryOnGitHub<
 		},
 	);
 
-	return error || { owner, repository };
+	return error
+		? {
+				offline: true,
+				remote: error,
+			}
+		: {
+				offline: false,
+				remote: { owner, repository },
+			};
 }
 
 function hasStringLikeOption(options: AnyShape, key: string): boolean {

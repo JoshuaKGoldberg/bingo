@@ -43,7 +43,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	display,
 	from,
 	help,
-	offline,
+	offline: requestedOffline,
 	repository: requestedRepository,
 	template,
 
@@ -55,7 +55,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return logHelpText("setup", from, template);
 	}
 
-	logStartText("setup", from, "template", offline);
+	logStartText("setup", requestedOffline);
 
 	const directory = await promptForDirectory({
 		requestedDirectory,
@@ -69,7 +69,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	const system = await createSystemContextWithAuth({
 		directory,
 		display,
-		offline,
+		offline: requestedOffline,
 	});
 
 	const providedOptions = parseZodArgs(argv, {
@@ -87,7 +87,7 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 			return await prepareOptions(template, {
 				...system,
 				existing: { ...providedOptions, directory },
-				offline,
+				offline: requestedOffline,
 			});
 		},
 	);
@@ -111,12 +111,13 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { status: CLIStatus.Cancelled };
 	}
 
-	const remote =
-		offline || !system.fetchers.octokit
-			? undefined
+	const { offline, remote, warning } =
+		requestedOffline || !system.fetchers.octokit
+			? { offline: true, remote: undefined }
 			: await createRepositoryOnGitHub(
 					display,
 					{ repository, ...baseOptions.completed },
+					requestedOffline,
 					system.fetchers.octokit,
 					system.runner,
 					template,
@@ -127,10 +128,8 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 		return { error: remote, status: CLIStatus.Error };
 	}
 
-	if (!offline && !remote) {
-		prompts.log.warn(
-			"Running in local-only mode without a repository on GitHub. To push to GitHub, log in with the GitHub CLI (cli.github.com) or run with a GH_TOKEN process environment variable.",
-		);
+	if (warning) {
+		prompts.log.warn(warning);
 	}
 
 	const descriptor = template.about?.name ?? from;
