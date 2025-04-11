@@ -220,10 +220,18 @@ export default defineConfig({
 					},
 				]),
 			],
-			social: {
-				discord: "https://discord.gg/Jh85eMGQnV",
-				github: "https://github.com/JoshuaKGoldberg/bingo",
-			},
+			social: [
+				{
+					href: "https://discord.gg/Jh85eMGQnV",
+					icon: "discord",
+					label: "Discord",
+				},
+				{
+					href: "https://github.com/JoshuaKGoldberg/bingo",
+					icon: "github",
+					label: "Github",
+				},
+			],
 			tableOfContents: {
 				maxHeadingLevel: 4,
 			},
