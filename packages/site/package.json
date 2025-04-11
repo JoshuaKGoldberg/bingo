@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",
-		"@astrojs/starlight": "^0.33.0",
+		"@astrojs/starlight": "^0.33.1",
 		"@konami-emoji-blast/astro": "^0.1.1",
 		"@types/node": "^22.14.0",
 		"astro": "^5.6.1",
@@ -21,7 +21,7 @@
 		"remark-custom-heading-id": "^2.0.0",
 		"starlight-links-validator": "^0.15.1",
 		"starlight-package-managers": "^0.10.0",
-		"starlight-sidebar-topics": "^0.5.0",
+		"starlight-sidebar-topics": "^0.5.1",
 		"typescript": "^5.8.3"
 	},
 	"devDependencies": {
