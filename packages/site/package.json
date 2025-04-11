@@ -19,6 +19,7 @@
 		"astro": "^5.6.1",
 		"konami-emoji-blast": "^0.5.9",
 		"remark-custom-heading-id": "^2.0.0",
+		"starlight-blog": "^0.20.0",
 		"starlight-links-validator": "^0.15.1",
 		"starlight-package-managers": "^0.10.0",
 		"starlight-sidebar-topics": "^0.5.1",
