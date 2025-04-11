@@ -15,7 +15,7 @@
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/starlight": "^0.32.2",
 		"@konami-emoji-blast/astro": "^0.1.1",
-		"@types/node": "^22.13.9",
+		"@types/node": "^22.14.0",
 		"astro": "^5.4.2",
 		"konami-emoji-blast": "^0.5.9",
 		"remark-custom-heading-id": "^2.0.0",
@@ -25,6 +25,6 @@
 		"typescript": "^5.8.3"
 	},
 	"devDependencies": {
-		"sharp": "0.34.0"
+		"sharp": "0.34.1"
 	}
 }
