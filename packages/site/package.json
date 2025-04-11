@@ -22,7 +22,7 @@
 		"starlight-blog": "^0.20.0",
 		"starlight-links-validator": "^0.15.1",
 		"starlight-package-managers": "^0.10.0",
-		"starlight-sidebar-topics": "^0.5.1",
+		"starlight-sidebar-topics": "^0.5.0",
 		"typescript": "^5.8.3"
 	},
 	"devDependencies": {

@@ -405,7 +405,7 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0(@astrojs/starlight@0.33.1(astro@5.6.1(@types/node@22.14.0)(jiti@2.4.2)(rollup@4.36.0)(typescript@5.8.3)(yaml@2.7.0)))
       starlight-sidebar-topics:
-        specifier: ^0.5.1
+        specifier: ^0.5.0
         version: 0.5.1(@astrojs/starlight@0.33.1(astro@5.6.1(@types/node@22.14.0)(jiti@2.4.2)(rollup@4.36.0)(typescript@5.8.3)(yaml@2.7.0)))
       typescript:
         specifier: ^5.8.3
