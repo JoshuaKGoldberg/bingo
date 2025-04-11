@@ -1,6 +1,3 @@
-// eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
-/* eslint-disable jsdoc/text-escaping -- https://github.com/gajus/eslint-plugin-jsdoc/issues/1360 */
-
 import { z } from "zod";
 
 /**

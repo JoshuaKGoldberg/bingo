@@ -8,7 +8,7 @@ import vitest from "@vitest/eslint-plugin";
 import jsdoc from "eslint-plugin-jsdoc";
 import jsonc from "eslint-plugin-jsonc";
 import markdown from "eslint-plugin-markdown";
-import packageJson from "eslint-plugin-package-json/configs/recommended";
+import packageJson from "eslint-plugin-package-json";
 import perfectionist from "eslint-plugin-perfectionist";
 import * as regexp from "eslint-plugin-regexp";
 import yml from "eslint-plugin-yml";
@@ -43,12 +43,9 @@ export default tseslint.config(
 	jsdoc.configs["flat/stylistic-typescript-error"],
 	...jsonc.configs["flat/recommended-with-json"],
 	...markdown.configs.recommended,
+	packageJson.configs.recommended,
 	perfectionist.configs["recommended-natural"],
 	regexp.configs["flat/recommended"],
-	{
-		extends: [packageJson],
-		files: ["**/package.json"],
-	},
 	{
 		extends: [...tseslint.configs.strict, ...tseslint.configs.stylistic],
 		files: ["**/*.js", "**/*.ts"],
