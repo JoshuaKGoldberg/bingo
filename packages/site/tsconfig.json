@@ -7,7 +7,6 @@
 		"paths": {
 			"~/*": ["src/*"]
 		},
-		"skipLibCheck": true,
 		"target": "esnext"
 	},
 	"extends": "astro/tsconfigs/strict"
