@@ -23,7 +23,7 @@
 		"starlight-links-validator": "^0.15.1",
 		"starlight-package-managers": "^0.10.0",
 		"starlight-sidebar-topics": "^0.6.0",
-		"typescript": "^5.8.3"
+		"typescript": "5.8.2"
 	},
 	"devDependencies": {
 		"sharp": "0.34.1"
