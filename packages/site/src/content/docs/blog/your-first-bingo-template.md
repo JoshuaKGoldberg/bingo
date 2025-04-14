@@ -2,18 +2,15 @@
 authors:
   - joshuakgoldberg
 date: 2025-02-20
-excerpt: So you'd like to build a repository template with Bingo?
-  Wonderful!
+excerpt: Bingo is a framework for delightful web repository templates.
   This guide will walk you through creating your first template with Bingo.
-  The template will create a file and be runnable on the command-line.
+  You'll see how to define a template that creates a single file, run that template locally with a Bingo CLI, and give that template its own CLI.
 title: Your First Bingo Template
 ---
 
-So you'd like to build a repository template with Bingo?
-Wonderful!
-
+Bingo is a framework for delightful web repository templates.
 This guide will walk you through creating your first template with Bingo.
-The template will create a file and be runnable on the command-line.
+You'll see how to define a template that creates a single file, run that template locally with a Bingo CLI, and give that template its own CLI.
 
 ## Requirements
 
