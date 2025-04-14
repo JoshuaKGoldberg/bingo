@@ -238,7 +238,7 @@ export default defineConfig({
 			],
 			social: [
 				{
-					href: "https://discord.gg/Jh85eMGQnV",
+					href: "https://discord.gg/SFsnbpWqpU",
 					icon: "discord",
 					label: "Discord",
 				},
