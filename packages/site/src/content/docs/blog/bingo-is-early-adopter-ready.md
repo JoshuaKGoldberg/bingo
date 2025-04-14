@@ -99,7 +99,7 @@ For more examples of templates built with Bingo, see: [bingo-examples](https://g
 
 Bingo is ready for you to use.
 
-The 2.x version of [create-typescript-app](https://github.com/JoshuaKGoldberg/create-typescript-app) ("CTA") for several months.
+The 2.x version of [create-typescript-app](https://github.com/JoshuaKGoldberg/create-typescript-app) ("CTA") has used Bingo in production for several months.
 CTA's 2.x graduated from beta to stable last month.
 It was able to do so because Bingo is generally stable at runtime: it does not crash in common usage scenarios and its APIs are documented.
 
