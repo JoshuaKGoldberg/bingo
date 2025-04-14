@@ -91,7 +91,7 @@ npx bingo template.js --directory generated
 │  You've got a new repository ready to use in:
 │    ./generated
 │
-└  Thanks for using bingo template.js! 💝
+└  Thanks for using bingo! 💝
 ```
 
 ```md title="generated/README.md"
