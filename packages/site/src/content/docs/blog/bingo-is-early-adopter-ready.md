@@ -1,7 +1,7 @@
 ---
 authors:
   - joshuakgoldberg
-date: 2025-04-10
+date: 2025-04-14
 excerpt: Hello, world! 💝
   <br />
   <br />

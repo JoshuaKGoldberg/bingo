@@ -1,7 +1,7 @@
 ---
 authors:
   - joshuakgoldberg
-date: 2025-04-10
+date: 2025-02-20
 excerpt: So you'd like to build a repository template with Bingo?
   Wonderful!
   This guide will walk you through creating your first template with Bingo.
