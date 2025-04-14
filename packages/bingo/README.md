@@ -26,8 +26,7 @@ Bingo also provides scaffolding to turn templates into a repository generator ak
 ## Status
 
 Bingo is early stage.
-It runs well but its APIs are still in flux.
-Please try it out and report any issues on GitHub!
+Please try it out and report any issues on [Discord](https://discord.gg/Jh85eMGQnV) or [GitHub](https://github.com/JoshuaKGoldberg/bingo)!
 🙏
 
 > 💙 This package was templated with [`create-typescript-app`](https://github.com/JoshuaKGoldberg/create-typescript-app).
