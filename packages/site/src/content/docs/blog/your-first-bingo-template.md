@@ -142,8 +142,6 @@ npx . --directory generated
 │
 ◇  Running with mode --transition
 │
-◇  Inferred options from existing repository
-│
 ◇  Ran my-template
 │
 └  Done. Enjoy your updated repository! 💝

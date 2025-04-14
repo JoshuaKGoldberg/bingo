@@ -88,22 +88,24 @@ export async function runModeTransition<
 		return { error: loadedConfig, status: CLIStatus.Error };
 	}
 
-	const preparedOptions = await runSpinnerTask(
-		display,
-		"Inferring options from existing repository",
-		"Inferred options from existing repository",
-		async () => {
-			return await prepareOptions(template, {
-				...system,
-				existing: {
-					...loadedConfig?.options,
-					...providedOptions,
-					directory,
-				},
-				offline,
-			});
-		},
-	);
+	const preparedOptions =
+		Object.keys(template.options).length &&
+		(await runSpinnerTask(
+			display,
+			"Inferring options from existing repository",
+			"Inferred options from existing repository",
+			async () => {
+				return await prepareOptions(template, {
+					...system,
+					existing: {
+						...loadedConfig?.options,
+						...providedOptions,
+						directory,
+					},
+					offline,
+				});
+			},
+		));
 	if (preparedOptions instanceof Error) {
 		logRerunSuggestion(argv, providedOptions);
 		return { status: CLIStatus.Error };
