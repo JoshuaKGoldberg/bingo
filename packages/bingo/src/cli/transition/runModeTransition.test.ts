@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 
 import { createTemplate } from "../../creators/createTemplate.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
@@ -133,7 +134,9 @@ const display: ClackDisplay = {
 
 const template = createTemplate({
 	about: { name: "Test Template" },
-	options: {},
+	options: {
+		value: z.string().optional(),
+	},
 	produce: vi.fn(),
 });
 
