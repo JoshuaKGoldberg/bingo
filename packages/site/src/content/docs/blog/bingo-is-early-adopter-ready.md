@@ -5,9 +5,9 @@ date: 2025-04-14
 excerpt: Hello, world! 💝
   <br />
   <br />
-  Bingo is a repository template framework.
-  It allows you to build delightful templates for web repositories.
-  I'm happy to announce that Bingo is _"early adopter ready"_.
+  Bingo is a new repository template framework.
+  It allows you to build delightful templates for web repositories with built-in support for friendly CLIs, type-safe options, and fully testable templates.
+  After half a year of early development, I'm happy to announce that Bingo is _"early adopter ready"_.
   If you maintain any kind of repository template, Bingo is ready for you to try out.
   <br />
   <br />
@@ -18,10 +18,10 @@ title: Bingo is Early Adopter Ready
 ---
 
 Hello, world! 💝
-Bingo is a repository template framework.
-It allows you to build delightful templates for web repositories.
+Bingo is a new repository template framework.
+It allows you to build delightful templates for web repositories with built-in support for friendly CLIs, type-safe options, and fully testable templates.
 
-Today, I'm happy to announce that Bingo is _"early adopter ready"_.
+After half a year of early development, I'm happy to announce that Bingo is _"early adopter ready"_.
 If you maintain any kind of repository template, Bingo is ready for you to try out.
 
 What's Bingo, you ask?
