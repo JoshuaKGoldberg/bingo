@@ -49,7 +49,7 @@ export async function runBlock<Addons extends object, Options extends object>(
 
 	const creation = produceBlock(
 		// TODO: Why are these assertions necessary?
-		// https://github.com/JoshuaKGoldberg/bingo/issues/283
+		// https://github.com/bingo-js/bingo/issues/283
 		block as BlockWithAddons<Addons, Options>,
 		settings as RunBlockSettingsWithRequiredAddons<Addons, Options>,
 	);

@@ -5,7 +5,7 @@
 	"homepage": "https://www.create.bingo",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"url": "https://github.com/bingo-js/bingo",
 		"directory": "packages/input-from-file-json"
 	},
 	"license": "MIT",

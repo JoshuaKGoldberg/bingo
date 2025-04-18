@@ -5,7 +5,7 @@
 	"description": "Composable, testable, type-safe templates. 💝",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/bingo"
+		"url": "https://github.com/bingo-js/bingo"
 	},
 	"license": "MIT",
 	"author": {

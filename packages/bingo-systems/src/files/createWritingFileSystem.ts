@@ -16,7 +16,7 @@ export function createWritingFileSystem() {
 			try {
 				// If the file had custom permissions written, it might support
 				// being deleted but not being written to.
-				// https://github.com/JoshuaKGoldberg/bingo/issues/238
+				// https://github.com/bingo-js/bingo/issues/238
 				await fs.rm(filePath);
 			} catch {
 				// If the file didn't exist, that's fine too.

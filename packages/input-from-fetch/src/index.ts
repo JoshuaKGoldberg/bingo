@@ -6,7 +6,7 @@ export const inputFromFetch = createInput({
 		options: z
 			.object({
 				// TODO: fill out!
-				// https://github.com/JoshuaKGoldberg/bingo/issues/282
+				// https://github.com/bingo-js/bingo/issues/282
 			})
 			.optional(),
 		resource: z.string(),

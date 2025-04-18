@@ -25,7 +25,7 @@ export function createClackDisplay(): ClackDisplay {
 			Object.assign(groups.get(group).get(id), item);
 		},
 		log(message) {
-			// https://github.com/JoshuaKGoldberg/bingo/issues/343
+			// https://github.com/bingo-js/bingo/issues/343
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			process.stdout.moveCursor?.(0, -1);
 			prompts.log.step(message + "\n");

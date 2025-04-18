@@ -243,7 +243,7 @@ export default defineConfig({
 					label: "Discord",
 				},
 				{
-					href: "https://github.com/JoshuaKGoldberg/bingo",
+					href: "https://github.com/bingo-js/bingo",
 					icon: "github",
 					label: "Github",
 				},
