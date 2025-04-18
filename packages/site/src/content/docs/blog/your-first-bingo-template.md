@@ -27,8 +27,8 @@ Bingo templates can be defined in as little as two files:
 :::tip
 For example Bingo template repositories, see:
 
-- [create-example-minimal](https://github.com/bingo-examples/create-example-minimal): The barest bones template as created by this docs page
-- [create-example](https://github.com/bingo-examples/create-example): A larger template with more options and tests
+- [create-example-minimal](https://github.com/bingo-js/create-example-minimal): The barest bones template as created by this docs page
+- [create-example](https://github.com/bingo-js/create-example): A larger template with more options and tests
 
 [github.com/bingo-examples](https://github.com/bingo-examples) contains more examples of Bingo templates.
 :::

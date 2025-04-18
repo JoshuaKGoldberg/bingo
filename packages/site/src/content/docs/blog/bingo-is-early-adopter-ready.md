@@ -120,6 +120,6 @@ I hope you'll join me in trying it out.
 Please, try Bingo out and give feedback:
 
 - [Bingo's Discord](https://discord.gg/SFsnbpWqpU): Join if you'd like to chat about Bingo and/or get help with templates
-- [github.com/JoshuaKGoldberg/bingo](https://github.com/JoshuaKGoldberg/bingo) is always open for bug reports, documentation suggestions, and feature requests
+- [github.com/bingo-js/bingo](https://github.com/bingo-js/bingo) is always open for bug reports, documentation suggestions, and feature requests
 
 Thanks for reading, and I look forward to seeing what you build with Bingo! 💝

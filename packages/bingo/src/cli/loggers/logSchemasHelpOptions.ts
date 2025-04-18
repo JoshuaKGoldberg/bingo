@@ -13,7 +13,7 @@ export function logSchemasHelpOptions(packageName: string, schemas: AnyShape) {
 				type: getSchemaTypeName(schema),
 			}))
 			// TODO: Once a Zod-to-args conversion is made, reuse that here...
-			// https://github.com/JoshuaKGoldberg/bingo/issues/285
+			// https://github.com/bingo-js/bingo/issues/285
 			.filter((entry) => !entry.type.startsWith("object")),
 	);
 }

@@ -5,7 +5,7 @@
 	"homepage": "https://www.create.bingo/engines/stratum/packages/bingo-stratum-testers",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"url": "https://github.com/bingo-js/bingo",
 		"directory": "packages/bingo-stratum-testers"
 	},
 	"license": "MIT",

@@ -27,7 +27,7 @@ export function inferExistingBlocks<OptionsShape extends AnyShape, Refinements>(
 		...context,
 
 		// TODO: It would be better to run the base.prepare first to generate option defaults.
-		// https://github.com/JoshuaKGoldberg/bingo/issues/289
+		// https://github.com/bingo-js/bingo/issues/289
 		options: context.options as Options,
 	};
 

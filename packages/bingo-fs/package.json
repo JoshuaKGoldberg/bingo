@@ -5,7 +5,7 @@
 	"homepage": "https://www.create.bingo/build/packages/bingo-fs",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"url": "https://github.com/bingo-js/bingo",
 		"directory": "packages/bingo-fs"
 	},
 	"license": "MIT",

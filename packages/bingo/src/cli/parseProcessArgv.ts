@@ -1,7 +1,7 @@
 import { parseArgs, ParseArgsConfig } from "node:util";
 
 // TODO: Send issue/PR to DefinitelyTyped to export these from node:util...
-// https://github.com/JoshuaKGoldberg/bingo/issues/284
+// https://github.com/bingo-js/bingo/issues/284
 
 type ParseArgsOptionsConfig = NonNullable<ParseArgsConfig["options"]>;
 

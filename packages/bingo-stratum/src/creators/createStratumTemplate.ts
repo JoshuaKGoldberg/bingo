@@ -62,7 +62,7 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			//   instead use imported Blocks in `refinements.blocks`.
 			//
 			// TODO: It would be nice to have labeled groups of options.
-			// https://github.com/JoshuaKGoldberg/bingo/issues/288
+			// https://github.com/bingo-js/bingo/issues/288
 			...Object.fromEntries(
 				namedBlocks
 					.map(
@@ -96,11 +96,11 @@ export function createStratumTemplate<OptionsShape extends AnyShape>(
 			const fromBase =
 				base.prepare?.(context) ??
 				// TODO: Why is this type assertion necessary?
-				// https://github.com/JoshuaKGoldberg/bingo/issues/287
+				// https://github.com/bingo-js/bingo/issues/287
 				({} as LazyOptionalOptions<Partial<Options>>);
 
 			// TODO: It would be better to run the base.prepare first to generate option defaults.
-			// https://github.com/JoshuaKGoldberg/bingo/issues/289
+			// https://github.com/bingo-js/bingo/issues/289
 			const existing = context.files && inferExistingBlocks(context, template);
 
 			if (!existing) {

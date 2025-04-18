@@ -4,7 +4,7 @@
 	"description": "You probably meant `npm create`, not `npx create`. ❌",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JoshuaKGoldberg/bingo",
+		"url": "https://github.com/bingo-js/bingo",
 		"directory": "packages/create"
 	},
 	"license": "MIT",
