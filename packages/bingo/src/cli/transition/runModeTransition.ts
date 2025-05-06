@@ -9,7 +9,6 @@ import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
-import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
 import { CLIMessage } from "../messages.js";
@@ -30,7 +29,6 @@ export interface RunModeTransitionSettings<
 	directory?: string;
 	display: ClackDisplay;
 	from: string;
-	help?: boolean;
 	offline?: boolean;
 	template: Template<OptionsShape, Refinements>;
 }
@@ -44,14 +42,9 @@ export async function runModeTransition<
 	directory = ".",
 	display,
 	from,
-	help,
 	offline,
 	template,
 }: RunModeTransitionSettings<OptionsShape, Refinements>): Promise<ModeResults> {
-	if (help) {
-		return logHelpText("transition", from, template);
-	}
-
 	logStartText("transition", offline);
 
 	const system = await createSystemContextWithAuth({

@@ -11,7 +11,6 @@ import { clearLocalGitTags } from "../clearLocalGitTags.js";
 import { createInitialCommit } from "../createInitialCommit.js";
 import { ClackDisplay } from "../display/createClackDisplay.js";
 import { runSpinnerTask } from "../display/runSpinnerTask.js";
-import { logHelpText } from "../loggers/logHelpText.js";
 import { logRerunSuggestion } from "../loggers/logRerunSuggestion.js";
 import { logStartText } from "../loggers/logStartText.js";
 import { CLIMessage } from "../messages.js";
@@ -32,7 +31,6 @@ export interface RunModeSetupSettings<
 	directory?: string;
 	display: ClackDisplay;
 	from: string;
-	help?: boolean;
 	offline?: boolean;
 	repository?: string;
 	template: Template<OptionsShape, Refinements>;
@@ -44,14 +42,9 @@ export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	directory: requestedDirectory = requestedRepository,
 	display,
 	from,
-	help,
 	offline: requestedOffline,
 	template,
 }: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
-	if (help) {
-		return logHelpText("setup", from, template);
-	}
-
 	logStartText("setup", requestedOffline);
 
 	const directory = await promptForDirectory({

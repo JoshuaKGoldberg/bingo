@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AnyShape } from "../types/shapes.js";
 import { Template } from "../types/templates.js";
 import { ClackDisplay } from "./display/createClackDisplay.js";
+import { logHelpText } from "./loggers/logHelpText.js";
 import { logOutro } from "./loggers/logOutro.js";
 import { RunCLIRawValues } from "./parseProcessArgv.js";
 import { readProductionSettings } from "./readProductionSettings.js";
@@ -43,6 +44,9 @@ export async function runCLI<OptionsShape extends AnyShape, Refinements>({
 	if (productionSettings instanceof Error) {
 		logOutro(chalk.red(productionSettings.message));
 		return CLIStatus.Error;
+	}
+	if (validatedValues.help) {
+		return logHelpText(productionSettings.mode, from, template);
 	}
 
 	const sharedSettings = {
