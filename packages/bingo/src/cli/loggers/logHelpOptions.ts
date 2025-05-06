@@ -34,5 +34,5 @@ export function logHelpOptions(
 		}),
 	].join("\n");
 
-	prompts.log.message(message.slice(0, message.lastIndexOf("\n")));
+	prompts.log.message(message.slice(0, `${message}\n`.lastIndexOf("\n")));
 }
