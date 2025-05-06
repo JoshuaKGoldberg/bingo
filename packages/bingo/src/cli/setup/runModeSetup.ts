@@ -40,16 +40,13 @@ export interface RunModeSetupSettings<
 
 export async function runModeSetup<OptionsShape extends AnyShape, Refinements>({
 	argv,
+	repository: requestedRepository,
+	directory: requestedDirectory = requestedRepository,
 	display,
 	from,
 	help,
 	offline: requestedOffline,
-	repository: requestedRepository,
 	template,
-
-	// TODO: See if this gets fixed in eslint-plugin-perfectionist?
-	// https://github.com/azat-io/eslint-plugin-perfectionist/issues/491
-	directory: requestedDirectory = requestedRepository,
 }: RunModeSetupSettings<OptionsShape, Refinements>): Promise<ModeResults> {
 	if (help) {
 		return logHelpText("setup", from, template);
