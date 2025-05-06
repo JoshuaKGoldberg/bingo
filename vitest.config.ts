@@ -9,6 +9,16 @@ export default defineConfig({
 		exclude: ["packages/*/lib"],
 		include: ["packages/*/src/**/*.ts"],
 		setupFiles: ["console-fail-test/setup"],
-		workspace: ["packages/*"],
+		workspace: [
+			"packages/*",
+			{
+				test: {
+					clearMocks: true,
+					exclude: ["packages/*/lib"],
+					include: ["packages/*/src"],
+					setupFiles: ["console-fail-test/setup"],
+				},
+			},
+		],
 	},
 });
