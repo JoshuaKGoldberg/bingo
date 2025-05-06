@@ -73,14 +73,6 @@ vi.mock("../createInitialCommit.js", () => ({
 	},
 }));
 
-const mockLogHelpText = vi.fn();
-
-vi.mock("../loggers/logHelpText.js", () => ({
-	get logHelpText() {
-		return mockLogHelpText;
-	},
-}));
-
 const mockLogRerunSuggestion = vi.fn();
 
 vi.mock("../loggers/logRerunSuggestion.js", () => ({
@@ -155,20 +147,6 @@ const promptedOptions = {
 };
 
 describe("runModeTransition", () => {
-	it("logs help text instead of running when help is true", async () => {
-		await runModeTransition({
-			argv,
-			configFile: undefined,
-			display,
-			from,
-			help: true,
-			template,
-		});
-
-		expect(mockLogHelpText).toHaveBeenCalledWith("transition", from, template);
-		expect(mockLogStartText).not.toHaveBeenCalled();
-	});
-
 	it("returns the error when readConfigSettings resolves an error", async () => {
 		const error = new Error("Oh no!");
 		mockReadConfigSettings.mockResolvedValueOnce(error);

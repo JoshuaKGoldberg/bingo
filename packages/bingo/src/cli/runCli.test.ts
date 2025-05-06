@@ -6,6 +6,14 @@ import { createClackDisplay } from "./display/createClackDisplay.js";
 import { runCLI } from "./runCLI.js";
 import { CLIStatus } from "./status.js";
 
+const mockLogHelpText = vi.fn();
+
+vi.mock("./loggers/logHelpText.js", () => ({
+	get logHelpText() {
+		return mockLogHelpText;
+	},
+}));
+
 const mockLogOutro = vi.fn();
 
 vi.mock("./loggers/logOutro.js", () => ({
@@ -59,6 +67,26 @@ describe("runCli", () => {
 
 		expect(mockLogOutro).toHaveBeenCalledWith(chalk.red(error.message));
 		expect(actual).toBe(CLIStatus.Error);
+	});
+
+	it("runs logHelpText when help is specified", async () => {
+		mockReadProductionSettings.mockResolvedValueOnce({
+			mode: "setup",
+		});
+
+		await runCLI({
+			argv,
+			display: createClackDisplay(),
+			from: "",
+			template,
+			values: {
+				help: true,
+			},
+		});
+
+		expect(mockLogHelpText).toHaveBeenCalledWith("setup", "", template);
+		expect(mockRunModeSetup).not.toHaveBeenCalled();
+		expect(mockRunModeTransition).not.toHaveBeenCalled();
 	});
 
 	it("runs runModeSetup when productionSettings.mode is setup", async () => {
